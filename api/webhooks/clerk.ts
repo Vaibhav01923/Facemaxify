@@ -1,4 +1,4 @@
-import { verifyWebhook } from "../utils/verifyWebhook";
+import { verifyWebhook } from "../../utils/verifyWebhook";
 import { createClient } from "@supabase/supabase-js";
 
 // Setup Supabase Client (Simulating Prisma client behavior)

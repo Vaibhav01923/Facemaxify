@@ -111,7 +111,7 @@ export const LandingPage: React.FC = () => {
           <br className="hidden sm:block" />
           Join the exclusive waitlist for early access.
           <br />
-          <span className="text-white font-semibold">
+          <span className="font-bold text-muted">
             Completely Free for first 25 users in the waitlist, no strings
             attached !
           </span>

@@ -90,7 +90,7 @@ export const LandingPage: React.FC = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="text-xs font-medium text-slate-300 tracking-wide uppercase">
-              Free For First 25 Users
+              Free For First 10 Users
             </span>
           </div>
         </motion.div>
@@ -112,7 +112,7 @@ export const LandingPage: React.FC = () => {
           Join the exclusive waitlist for early access.
           <br />
           <span className="font-bold text-muted">
-            Completely Free for first 25 users in the waitlist, no strings
+            Completely Free for first 10 users in the waitlist, no strings
             attached !
           </span>
         </motion.p>

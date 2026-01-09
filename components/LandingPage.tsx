@@ -90,7 +90,7 @@ export const LandingPage: React.FC = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="text-xs font-medium text-slate-300 tracking-wide uppercase">
-              Waitlist Open
+              Free For First 25 Users
             </span>
           </div>
         </motion.div>
@@ -110,6 +110,11 @@ export const LandingPage: React.FC = () => {
           The next generation of facial aesthetics analysis.{" "}
           <br className="hidden sm:block" />
           Join the exclusive waitlist for early access.
+          <br />
+          <span className="text-white font-semibold">
+            Completely Free for first 25 users in the waitlist, no strings
+            attached !
+          </span>
         </motion.p>
 
         {/* CTA */}
@@ -206,12 +211,16 @@ export const LandingPage: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-5xl font-bold mb-6">
-              Same Tech. <span className="text-indigo-400">Better Design.</span>
+              Same Tech.{" "}
+              <span className="text-indigo-400">Better Pricing.</span>
             </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-              We use the exact same advanced computer vision frameworks as the
-              industry leaders, but we package it with a focus on your privacy
-              and aesthetic journey.
+            <p className="text-slate-400 max-w-2xl mx-auto text-lg text-balance">
+              We use the exact same advanced computer vision frameworks that our
+              competitors use ! We don't Lie to our customers, a manual rating
+              by an expert will always be better, but If you want to use AI,
+              then{" "}
+              <span className="text-white font-extrabold">don't overpay</span>{" "}
+              for it !
             </p>
           </motion.div>
 

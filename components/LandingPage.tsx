@@ -26,8 +26,8 @@ export const LandingPage: React.FC = () => {
     // Initial fetch
     fetchUserCount();
 
-    // Poll every 10 seconds
-    const interval = setInterval(fetchUserCount, 10000);
+    // Poll every 30 seconds (Optimized for performance)
+    const interval = setInterval(fetchUserCount, 30000);
     return () => clearInterval(interval);
   }, []);
 

@@ -71,221 +71,83 @@ export const LandingPage: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Content - Minimal */}
       <motion.main
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative z-10 max-w-7xl mx-auto px-6 py-12 lg:py-20 flex flex-col items-center"
+        className="relative z-10 flex flex-col justify-center items-center min-h-[80vh] px-6 text-center"
       >
-        {/* Hero Text */}
-        <motion.div variants={item} className="text-center max-w-3xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/50 border border-indigo-500/20 mb-6 backdrop-blur-md">
+        {/* Badge */}
+        <motion.div variants={item} className="mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="text-xs font-medium text-indigo-300 tracking-wide uppercase">
-              AI Engine v2.0 Live
+            <span className="text-xs font-medium text-slate-300 tracking-wide uppercase">
+              Waitlist Open
             </span>
           </div>
-
-          <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">
-            Enhance Your <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 animate-gradient-x">
-              Aesthetic Potential
-            </span>
-          </h1>
-
-          <p className="text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Advanced facial harmonization analysis powered by deep learning. Get
-            precise symmetry scores, skin quality metrics, and personalized
-            improvement plans.
-          </p>
-
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <SignUpButton mode="modal">
-              <button className="group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] transition-all overflow-hidden">
-                <span className="relative z-10 flex items-center gap-2">
-                  Analyze My Face Free{" "}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-100 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
-            </SignUpButton>
-          </motion.div>
         </motion.div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-6xl">
-          {/* Feature 1: Large Scan Visualization */}
-          <motion.div
-            variants={item}
-            className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-slate-900/40 border border-slate-800/50 rounded-3xl p-8 backdrop-blur-sm relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-colors duration-500"></div>
-            <div className="relative z-10 h-full flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6">
-                  <Scan className="w-6 h-6 text-indigo-400" />
-                </div>
-                <h3 className="text-2xl font-bold mb-2">
-                  Deep Facial Analysis
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-                  Our AI maps 120+ landmarks to calculate your facial symmetry
-                  and proportions against the Golden Ratio.
-                </p>
-              </div>
-
-              {/* Abstract Scan Animation */}
-              <div className="mt-8 relative h-48 w-full bg-slate-950/50 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {/* Scan Line */}
-                  <div className="w-[120%] h-1 bg-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.5)] absolute top-0 animate-scan"></div>
-
-                  {/* Grid Lines */}
-                  <svg
-                    className="w-full h-full opacity-20"
-                    width="100%"
-                    height="100%"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <defs>
-                      <pattern
-                        id="grid"
-                        width="40"
-                        height="40"
-                        patternUnits="userSpaceOnUse"
-                      >
-                        <path
-                          d="M 40 0 L 0 0 0 40"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="0.5"
-                          className="text-indigo-500"
-                        />
-                      </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#grid)" />
-                  </svg>
-
-                  {/* Face Points (Abstract) */}
-                  <div className="relative w-32 h-40 border-2 border-indigo-500/30 rounded-[3rem] animate-pulse">
-                    <div className="absolute top-1/3 left-1/4 w-2 h-2 bg-indigo-400 rounded-full shadow-[0_0_10px_currentColor]"></div>
-                    <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-indigo-400 rounded-full shadow-[0_0_10px_currentColor]"></div>
-                    <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-8 h-1 bg-indigo-400/50 rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Feature 2: Score Card */}
-          <motion.div
-            variants={item}
-            className="col-span-1 md:col-span-1 bg-slate-900/40 border border-slate-800/50 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group"
-          >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Activity className="w-24 h-24 text-emerald-500" />
-            </div>
-            <h3 className="text-lg font-bold mb-1">Harmony Score</h3>
-            <p className="text-slate-500 text-xs mb-6">Real-time metric</p>
-            <div className="flex items-end gap-2">
-              <span className="text-5xl font-bold text-emerald-400">9.4</span>
-              <span className="text-sm text-slate-400 mb-2">/ 10</span>
-            </div>
-            <div className="mt-4 h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "94%" }}
-                transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-                className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
-              />
-            </div>
-          </motion.div>
-
-          {/* Feature 3: Skin Analysis */}
-          <motion.div
-            variants={item}
-            className="col-span-1 md:col-span-1 bg-slate-900/40 border border-slate-800/50 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group"
-          >
-            <div className="w-10 h-10 bg-pink-500/20 rounded-xl flex items-center justify-center mb-4">
-              <Sparkles className="w-5 h-5 text-pink-400" />
-            </div>
-            <h3 className="text-lg font-bold">Skin Quality</h3>
-            <p className="text-slate-400 text-sm mt-2">
-              Texture, redness, and clarity analysis with dermatologist-grade
-              precision.
-            </p>
-          </motion.div>
-
-          {/* Feature 4: Privacy */}
-          <motion.div
-            variants={item}
-            className="col-span-1 bg-slate-900/40 border border-slate-800/50 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group flex flex-col justify-center items-center text-center"
-          >
-            <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-              <Shield className="w-6 h-6 text-slate-300" />
-            </div>
-            <h3 className="font-bold">100% Private</h3>
-            <p className="text-xs text-slate-500 mt-2">
-              Analysis happens locally. Photos are deleted instantly if not
-              saved.
-            </p>
-          </motion.div>
-
-          {/* Feature 5: Trends */}
-          <motion.div
-            variants={item}
-            className="col-span-1 md:col-span-2 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-8 relative overflow-hidden text-white group"
-          >
-            <div className="relative z-10 flex flex-col h-full justify-between">
-              <div>
-                <div className="flex justify-between items-start">
-                  <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium border border-white/10">
-                    <TrendingUp className="w-3 h-3" /> Trending
-                  </div>
-                  <Lock className="w-5 h-5 opacity-50" />
-                </div>
-                <h3 className="text-2xl font-bold mt-4">Join the Waitlist</h3>
-                <p className="text-indigo-100 mt-2 text-sm max-w-sm">
-                  We are processing 10,000+ faces weekly. Secure your spot for
-                  premium features.
-                </p>
-              </div>
-              <SignUpButton mode="modal">
-                <button className="mt-8 bg-white text-indigo-600 px-6 py-3 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors w-fit shadow-lg">
-                  Get Access Now
-                </button>
-              </SignUpButton>
-            </div>
-
-            {/* Decorative BG */}
-            <div className="absolute right-[-20px] bottom-[-20px] opacity-10 scale-150 rotate-12 pointer-events-none">
-              <Scan className="w-64 h-64" />
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Footer */}
-        <motion.footer
+        {/* Hero Text */}
+        <motion.h1
           variants={item}
-          className="mt-20 border-t border-slate-800/50 pt-8 w-full max-w-7xl flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm gap-4"
+          className="text-6xl sm:text-8xl font-bold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-slate-500"
         >
-          <p>© 2026 Facemaxify AI. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-slate-300 transition-colors">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-slate-300 transition-colors">
-              Terms
-            </a>
-            <a href="#" className="hover:text-slate-300 transition-colors">
-              Twitter
-            </a>
+          Facemaxify
+        </motion.h1>
+
+        <motion.p
+          variants={item}
+          className="text-lg sm:text-xl text-slate-400 mb-12 max-w-xl mx-auto leading-relaxed font-light"
+        >
+          The next generation of facial aesthetics analysis.{" "}
+          <br className="hidden sm:block" />
+          Join the exclusive waitlist for early access.
+        </motion.p>
+
+        {/* CTA */}
+        <motion.div
+          variants={item}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <SignUpButton mode="modal">
+            <button className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]">
+              <span className="relative z-10">Secure Your Spot</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </button>
+          </SignUpButton>
+        </motion.div>
+
+        {/* Minimal Social Proof */}
+        <motion.div
+          variants={item}
+          className="mt-16 flex items-center gap-4 text-sm text-slate-500 font-medium"
+        >
+          <div className="flex -space-x-2">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="w-8 h-8 rounded-full border border-slate-900 bg-slate-800 flex items-center justify-center text-[10px] text-slate-400 overflow-hidden"
+              >
+                <div
+                  className={`w-full h-full bg-gradient-to-br ${
+                    [
+                      "from-purple-500 to-indigo-500",
+                      "from-blue-500 to-cyan-500",
+                      "from-emerald-500 to-teal-500",
+                      "from-amber-500 to-orange-500",
+                    ][i]
+                  } opacity-50`}
+                ></div>
+              </div>
+            ))}
           </div>
-        </motion.footer>
+          <span>Joined by 10,000+ users</span>
+        </motion.div>
       </motion.main>
 
       {/* CSS for custom animations (inline for simplicity) */}

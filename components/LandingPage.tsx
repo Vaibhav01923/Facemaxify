@@ -150,6 +150,13 @@ export const LandingPage: React.FC = () => {
               </div>
             ))}
           </div>
+          <span>
+            Joined by{" "}
+            <span className="text-white font-semibold">
+              {userCount !== null ? userCount.toLocaleString() : "..."}
+            </span>{" "}
+            users
+          </span>
         </motion.div>
 
         {/* Scroll Indicator */}

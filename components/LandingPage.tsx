@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SignUpButton, useUser } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
 import {
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { supabase } from "../services/supabase";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,6 +20,35 @@ function cn(...inputs: ClassValue[]) {
 
 export const LandingPage: React.FC = () => {
   const { isSignedIn } = useUser();
+  const [userCount, setUserCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Initial fetch
+    fetchUserCount();
+
+    // Poll every 10 seconds
+    const interval = setInterval(fetchUserCount, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUserCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from("users")
+        .select("*", { count: "exact", head: true });
+
+      if (error) {
+        console.error("Error fetching user count:", error);
+        return;
+      }
+
+      if (count !== null) {
+        setUserCount(count);
+      }
+    } catch (err) {
+      console.error("Failed to fetch user count:", err);
+    }
+  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -44,32 +74,6 @@ export const LandingPage: React.FC = () => {
         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 rounded-full blur-[150px] animate-pulse-slow delay-1000"></div>
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
       </div>
-
-      {/* Navigation / Header */}
-      <nav className="relative z-50 max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <span className="font-bold text-white text-lg">F</span>
-          </div>
-          <span className="font-bold text-xl tracking-tight hidden sm:block">
-            Facemaxify
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          {!isSignedIn && (
-            <SignUpButton mode="modal">
-              <button className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                Sign In
-              </button>
-            </SignUpButton>
-          )}
-          <SignUpButton mode="modal">
-            <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-indigo-50 transition-colors shadow-lg shadow-white/10">
-              Get Started <ArrowRight className="w-4 h-4 ml-1" />
-            </button>
-          </SignUpButton>
-        </div>
-      </nav>
 
       {/* Main Content - Minimal */}
       <motion.main
@@ -116,7 +120,7 @@ export const LandingPage: React.FC = () => {
         >
           <SignUpButton mode="modal">
             <button className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]">
-              <span className="relative z-10">Secure Your Spot</span>
+              <span className="relative z-10">Join the waitlist</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
           </SignUpButton>
@@ -146,7 +150,13 @@ export const LandingPage: React.FC = () => {
               </div>
             ))}
           </div>
-          <span>Joined by 10,000+ users</span>
+          <span>
+            Joined by{" "}
+            <span className="text-white font-semibold">
+              {userCount !== null ? userCount.toLocaleString() : "..."}
+            </span>{" "}
+            users
+          </span>
         </motion.div>
       </motion.main>
 

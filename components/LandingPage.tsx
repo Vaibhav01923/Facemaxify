@@ -157,7 +157,7 @@ export const LandingPage: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 cursor-pointer p-4 hover:text-indigo-400 transition-colors"
+          className="absolute bottom-10 left-0 w-full flex justify-center cursor-pointer p-4 hover:text-indigo-400 transition-colors"
           onClick={() => {
             document
               .getElementById("proof-section")

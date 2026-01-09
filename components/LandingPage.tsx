@@ -244,6 +244,7 @@ export const LandingPage: React.FC = () => {
               </motion.div>
             ))}
           </div>
+<span>Snippet from F**eIQ's website (their code was exposed and not secure, so we could replicate their exact formulas and algorithms)</span>
         </div>
       </section>
 

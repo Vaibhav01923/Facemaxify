@@ -1,7 +1,8 @@
-import { verifyWebhook } from "../_shared/verifyWebhook";
 import { createClient } from "@supabase/supabase-js";
+import { Webhook } from "svix";
 
-// Setup Supabase Client (Simulating Prisma client behavior)
+// Setup Supabase Client
+// Note: In serverless functions, we reuse the connection logic per invocation
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -12,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Verify (Matches reference structure)
+    // 1. Verify (Inline helper logic)
     const evt = await verifyWebhook(req);
 
     const { id } = evt.data;
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
       `Received webhook with ID ${id} and event type of ${eventType}`
     );
 
-    // 2. Handle Event (Matches reference structure)
+    // 2. Handle Event
     if (eventType === "user.created") {
       await handleUserCreated(evt.data);
     } else {
@@ -38,7 +39,7 @@ export default async function handler(req, res) {
   }
 }
 
-// 3. User Handler (Matches reference structure)
+// 3. User Handler
 async function handleUserCreated(data) {
   try {
     const { id, email_addresses, first_name, last_name, username, image_url } =
@@ -54,13 +55,11 @@ async function handleUserCreated(data) {
       return;
     }
 
-    // Replace Prisma with Supabase
     const { data: user, error } = await supabase
       .from("users")
       .insert({
         id: id,
         email: email,
-        // Match the name logic from reference
         full_name:
           first_name || last_name
             ? `${first_name || ""} ${last_name || ""}`.trim()
@@ -81,4 +80,48 @@ async function handleUserCreated(data) {
     console.error("Error creating user:", error);
     throw error;
   }
+}
+
+// 4. Verify Webhook Helper (Inlined to avoid bundling issues)
+async function verifyWebhook(req) {
+  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+
+  if (!WEBHOOK_SECRET) {
+    throw new Error(
+      "Please add CLERK_WEBHOOK_SECRET from Clerk Dashboard to .env"
+    );
+  }
+
+  // Get the headers
+  const svix_id = req.headers["svix-id"];
+  const svix_timestamp = req.headers["svix-timestamp"];
+  const svix_signature = req.headers["svix-signature"];
+
+  // If there are no headers, error out
+  if (!svix_id || !svix_timestamp || !svix_signature) {
+    throw new Error("Error occured -- no svix headers");
+  }
+
+  // Get the body
+  const payload = req.body;
+  const body = JSON.stringify(payload);
+
+  // Create a new Svix instance with your secret.
+  const wh = new Webhook(WEBHOOK_SECRET);
+
+  let evt;
+
+  // Attempt to verify the incoming webhook
+  try {
+    evt = wh.verify(body, {
+      "svix-id": svix_id,
+      "svix-timestamp": svix_timestamp,
+      "svix-signature": svix_signature,
+    });
+  } catch (err) {
+    console.error("Error verifying webhook:", err);
+    throw new Error("Error verifying webhook");
+  }
+
+  return evt;
 }

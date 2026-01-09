@@ -36,7 +36,10 @@ export default async function handler(req, res) {
       .json({ success: true, message: "Webhook processed successfully" });
   } catch (err) {
     console.error("Error processing webhook:", err);
-    return res.status(500).json({ error: "Error processing webhook" });
+    return res.status(500).json({
+      error: "Error processing webhook",
+      details: err instanceof Error ? err.message : String(err),
+    });
   }
 }
 

@@ -150,15 +150,65 @@ export const LandingPage: React.FC = () => {
               </div>
             ))}
           </div>
-          <span>
-            Joined by{" "}
-            <span className="text-white font-semibold">
-              {userCount !== null ? userCount.toLocaleString() : "..."}
-            </span>{" "}
-            users
-          </span>
+        {/* Scroll Indicator */}
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 cursor-pointer p-4 hover:text-indigo-400 transition-colors"
+            onClick={() => {
+                document.getElementById('proof-section')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+        >
+            <div className="flex flex-col items-center gap-2">
+                <span className="text-xs text-slate-500 uppercase tracking-widest">See the evidence</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m7 13 5 5 5-5"/>
+                    <path d="m7 6 5 5 5-5"/>
+                </svg>
+            </div>
         </motion.div>
       </motion.main>
+
+      {/* Proof Section */}
+      <section id="proof-section" className="relative z-10 py-24 px-6 min-h-screen flex flex-col items-center justify-center bg-[#050510]">
+          <div className="max-w-6xl mx-auto w-full">
+            <motion.div 
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8 }}
+                className="text-center mb-16"
+            >
+                <h2 className="text-3xl sm:text-5xl font-bold mb-6">Same Tech. <span className="text-indigo-400">Better Design.</span></h2>
+                <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+                    We use the exact same advanced computer vision frameworks as the industry leaders, 
+                    but we package it with a focus on your privacy and aesthetic journey.
+                </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                {[1, 2, 3].map((num, i) => (
+                    <motion.div 
+                        key={num}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.2 }}
+                        whileHover={{ y: -10 }}
+                        className="relative group rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/50 shadow-2xl"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-0 group-hover:opacity-60 transition-opacity z-10"></div>
+                        <img 
+                            src={`/proof-${num}.png`} 
+                            alt={`Comparison Proof ${num}`} 
+                            className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
+                        />
+                    </motion.div>
+                ))}
+            </div>
+          </div>
+      </section>
 
       {/* CSS for custom animations (inline for simplicity) */}
       <style>{`

@@ -195,7 +195,7 @@ export const LandingPage: React.FC = () => {
       {/* Proof Section */}
       <section
         id="proof-section"
-        className="relative z-10 py-24 px-6 min-h-screen flex flex-col items-center justify-center bg-[#050510]"
+        className="relative z-10 py-24 px-6 min-h-screen flex flex-col items-center justify-center"
       >
         <div className="max-w-6xl mx-auto w-full">
           <motion.div

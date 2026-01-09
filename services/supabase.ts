@@ -79,18 +79,3 @@ export const saveScanResult = async (
     return false;
   }
 };
-
-export const saveSignup = async (email: string) => {
-  try {
-    const { error } = await supabase.from("signups").insert({ email });
-
-    if (error) {
-      if (error.code === "23505") return true; // Unique violation means already signed up, treat as success
-      throw error;
-    }
-    return true;
-  } catch (error) {
-    console.error("Signup Error:", error);
-    return false;
-  }
-};

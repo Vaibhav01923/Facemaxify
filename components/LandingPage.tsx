@@ -19,9 +19,9 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export const LandingPage: React.FC = () => {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const [userCount, setUserCount] = useState<number | null>(null);
-
+  console.log(user);
   useEffect(() => {
     // Initial fetch
     fetchUserCount();
@@ -90,7 +90,7 @@ export const LandingPage: React.FC = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="text-xs font-medium text-slate-300 tracking-wide uppercase">
-              Free For First 10 Users
+              50% Off for First 50 Users
             </span>
           </div>
         </motion.div>
@@ -111,9 +111,12 @@ export const LandingPage: React.FC = () => {
           <br className="hidden sm:block" />
           Join the exclusive waitlist for early access.
           <br />
-          <span className="font-bold text-muted">
-            Completely Free for first 10 users in the waitlist, no strings
-            attached !
+          <span className="font-bold text-white">
+            Completely Free for first 10 users in the waitlist!
+          </span>
+          <br />
+          <span className="font-semibold text-indigo-300">
+            First 50 users get it at half the price when we launch.
           </span>
         </motion.p>
 
@@ -244,7 +247,18 @@ export const LandingPage: React.FC = () => {
               </motion.div>
             ))}
           </div>
-<span>Snippet from F**eIQ's website (their code was exposed and not secure, so we could replicate their exact formulas and algorithms)</span>
+          <div className="mt-8 text-center">
+            <p className="text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
+              <span className="inline-block px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700/50">
+                📸 Snippet from F**eIQ's website
+              </span>
+              <br />
+              <span className="text-xs text-slate-600 mt-2 inline-block">
+                (their code was exposed and not secure, so we could replicate
+                their exact formulas and algorithms)
+              </span>
+            </p>
+          </div>
         </div>
       </section>
 

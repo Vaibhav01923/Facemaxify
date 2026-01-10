@@ -1,20 +1,45 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { FinalResult } from "../types";
 import {
   calculateFrontRatios,
   calculateSideRatios,
   MetricResult,
 } from "../services/ratioCalculator";
+import { Button } from "./Button";
 import { RatioRow } from "./RatioRow";
 import { FaceOverlay } from "./FaceOverlay";
 
 interface DashboardProps {
-  data: FinalResult;
+  data?: FinalResult;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
-  const [activeTab, setActiveTab] = useState<"front" | "side">("front");
+  const [activeTab, setActiveTab] = useState<"overview" | "front" | "side">(
+    "front"
+  );
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
+
+  // Early return if no data provided
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8">
+        <div className="max-w-md text-center space-y-6">
+          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center text-4xl mx-auto">
+            📊
+          </div>
+          <h2 className="text-2xl font-bold">No Analysis Data</h2>
+          <p className="text-slate-400">
+            Upload and analyze a photo to view your facial analysis dashboard.
+          </p>
+          <button className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors">
+            Start New Analysis
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const frontMetrics = useMemo(() => {
     const metrics = calculateFrontRatios(data.frontLandmarks);
@@ -65,7 +90,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-8 border-b border-transparent">
-            {["front", "side"].map((tab) => (
+            {["overview", "front", "side"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
@@ -86,6 +111,62 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* OVERVIEW TAB */}
+        {activeTab === "overview" && (
+          <div className="space-y-8 animate-fadeIn">
+            <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-8 rounded-2xl border border-slate-800 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+              <div className="relative z-10">
+                <h2 className="text-2xl font-bold text-white mb-6">
+                  Harmonic Analysis
+                </h2>
+                {loading ? (
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-4 bg-slate-800 rounded w-full"></div>
+                    <div className="h-4 bg-slate-800 rounded w-5/6"></div>
+                  </div>
+                ) : (
+                  <div className="prose prose-invert max-w-none">
+                    <p className="text-slate-300 text-lg leading-relaxed font-light">
+                      {analysis?.harmonyAnalysis ||
+                        "Generating comprehensive facial analysis..."}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 relative z-10">
+                <div className="bg-slate-950/50 rounded-xl p-5 border border-slate-800">
+                  <h3 className="text-green-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>{" "}
+                    Strengths
+                  </h3>
+                  <ul className="space-y-3">
+                    {analysis?.strengths?.map((s: string, i: number) => (
+                      <li
+                        key={i}
+                        className="text-slate-300 text-sm flex items-start gap-2"
+                      >
+                        <span className="text-green-500/50 mt-1">✓</span> {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-slate-950/50 rounded-xl p-5 border border-slate-800">
+                  <h3 className="text-purple-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>{" "}
+                    Potential
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    {analysis?.improvement}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* FRONT RATIOS TAB */}
         {activeTab === "front" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fadeIn">

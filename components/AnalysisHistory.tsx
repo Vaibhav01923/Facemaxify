@@ -83,7 +83,7 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
 
         {!isPaid && (
           <button 
-            onClick={() => window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c"}
+            onClick={() => window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`}
             className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
           >
             <ArrowUpCircle className="w-4 h-4 text-white/80" />

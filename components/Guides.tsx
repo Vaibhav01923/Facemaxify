@@ -1,5 +1,6 @@
 import React from "react";
 import { Navbar } from "./Navbar";
+import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Clock, Lock } from "lucide-react";
 import { motion } from "framer-motion";
@@ -7,6 +8,7 @@ import { guides } from "../data/guidesData";
 
 export const Guides: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
   const navigate = useNavigate();
+  const { user } = useUser();
 
   return (
     <>
@@ -54,7 +56,7 @@ export const Guides: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+                          window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
                         }}
                         className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
                       >

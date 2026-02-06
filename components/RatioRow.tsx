@@ -1,5 +1,6 @@
 import React from 'react';
 import { MetricResult } from '../services/ratioCalculator';
+import { useUser } from "@clerk/clerk-react";
 
 interface RatioRowProps {
   metric: MetricResult;
@@ -8,6 +9,7 @@ interface RatioRowProps {
 }
 
 export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, isLocked = false }) => {
+  const { user } = useUser();
   const getScoreColor = (score: number) => {
     if (score >= 9) return "text-green-500";
     if (score >= 7) return "text-green-400";
@@ -42,7 +44,7 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, isLocked = 
            <button 
              onClick={(e) => {
                 e.stopPropagation();
-                window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+                window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
              }}
              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-xl shadow-indigo-500/20 active:scale-95"
            >

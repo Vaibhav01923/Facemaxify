@@ -73,7 +73,7 @@ export const LandingPage: React.FC = () => {
     if (isSignedIn && pendingAction) {
       localStorage.removeItem("pendingAction");
       if (pendingAction === "purchase") {
-        window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+        window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
       } else if (pendingAction === "dashboard") {
         window.location.href = "/dashboard";
       }
@@ -150,7 +150,7 @@ export const LandingPage: React.FC = () => {
                   localStorage.setItem("pendingAction", "purchase");
                   openSignIn();
                 } else {
-                  window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+                  window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
                 }
               }}
               className="group relative w-full sm:w-auto px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"

@@ -46,7 +46,7 @@ export const RATIO_CONFIGS = {
     eyebrowTilt: { name: "Eyebrow Tilt", ideal: 8.0, range: 3.0, decay: 0.2, unit: "°" },
     browLengthRatio: { name: "Brow Length to Face Width", ideal: 0.82, range: 0.05, decay: 4.0, unit: "x" },
     eyeSeparation: { name: "Eye Separation Ratio", ideal: 47.0, range: 1.0, decay: 0.2, unit: "%" },
-    oneEyeApart: { name: "One Eye Apart Test", ideal: 1.0, range: 0.05, decay: 2.35, unit: "x" },
+    oneEyeApart: { name: "One Eye Apart Test", ideal: 1.31, range: 0.02, decay: 11.89, unit: "x" },
     noseBridgeWidth: { name: "Nose Bridge to Nose Width", ideal: 3.0, range: 0.5, decay: 0.2, unit: "x" },
     nasalWH: { name: "Nasal W to H Ratio", ideal: 0.6, range: 0.05, decay: 0.2, unit: "x" },
     noseTipRotation: { name: "Nose Tip Rotation Angle", ideal: 95.0, range: 5.0, decay: 0.2, unit: "°" },

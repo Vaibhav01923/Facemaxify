@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { Webhook } from "svix";
+import { validateEvent } from "@polar-sh/sdk/webhooks";
 
 // Initialize Supabase Client (Vercel Serverless Environment)
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -36,15 +36,9 @@ export default async function handler(req, res) {
   // Read raw body
   const rawBody = await getRawBody(req);
 
-  const wh = new Webhook(WEBHOOK_SECRET);
   let evt;
-
   try {
-    evt = wh.verify(rawBody, {
-      "webhook-id": svix_id,
-      "webhook-timestamp": svix_timestamp,
-      "webhook-signature": svix_signature,
-    });
+    evt = validateEvent(rawBody, req.headers, WEBHOOK_SECRET);
   } catch (err) {
     console.error("Webhook verification failed:", err.message);
     return res.status(400).send("Webhook verification failed");

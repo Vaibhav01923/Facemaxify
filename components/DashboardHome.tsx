@@ -54,7 +54,8 @@ export const DashboardHome: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -5 }}
-                className={`group relative p-8 rounded-3xl border ${card.borderColor} bg-gradient-to-br ${card.color} backdrop-blur-xl transition-all overflow-hidden`}
+                onClick={() => navigate(card.route)}
+                className={`group relative p-8 rounded-3xl border ${card.borderColor} bg-gradient-to-br ${card.color} backdrop-blur-xl transition-all overflow-hidden cursor-pointer`}
               >
                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 
@@ -70,8 +71,11 @@ export const DashboardHome: React.FC = () => {
                 </p>
 
                 <button
-                  onClick={() => navigate(card.route)}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-slate-200 transition-all active:scale-95"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(card.route);
+                  }}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-slate-200 transition-all active:scale-95 cursor-pointer"
                 >
                   {card.buttonText}
                   <ArrowRight className="w-4 h-4" />

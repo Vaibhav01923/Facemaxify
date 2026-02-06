@@ -128,8 +128,7 @@ export const LandingPage: React.FC = () => {
           >
             <button
               onClick={() => {
-                // TODO: Replace 'YOUR_PRODUCT_ID_HERE' with your actual Polar Product Price ID from the Dashboard
-                window.location.href = "/api/checkout?products=YOUR_PRODUCT_ID_HERE";
+                window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
               }}
               className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"
             >

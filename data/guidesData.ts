@@ -67,8 +67,8 @@ export const guides: Guide[] = [
             content: "Use a red light lamp (approx. 670nm wavelength) once or twice a week for 15 minutes at a distance of 60-70cm. It increases blood flow, helps with elasticity, and improves overall mitochondrial function. Ensure you use protective eyewear."
           },
           {
-            title: "Professional Consultations",
-            content: "If you struggle with severe acne, scarring, or blackheads, consider monthly professional cleanings. For serious conditions, always seek a dermatologist's help before resorting to unverified online advice or strong medications like Accutane."
+            title: "Final Solution: Accutane",
+            content: "If you suffer with very bad acne, Fu'k it and use Accutane, but if possible do it under the supervision of a dermatologist."
           }
         ]
       },
@@ -76,8 +76,55 @@ export const guides: Guide[] = [
         title: "Nutritional Foundation",
         steps: [
           {
-            title: "Coming Soon",
-            content: "The nutritional section of this guide is currently being curated by our specialists. Stay tuned for scientifically-backed dietary protocols for skin health."
+            title: "Protein: The Building Block",
+            image: "https://images.unsplash.com/photo-1558163351-db3a0a38e8ec?auto=format&fit=crop&q=80&w=800",
+            content: "Eat enough protein to fuel your body as it literally creates everything from breaking the protein down into thousands of different amino acids, then rebuilding it to make your skin renew itself constantly. Aim for at least 2g / lean body mass kg (1 g / lbs) of animal-based protein per day."
+          },
+          {
+            title: "Essential Animal Fats",
+            image: "https://images.unsplash.com/photo-1514324263304-4c60011409f8?auto=format&fit=crop&q=80&w=800",
+            content: "Animal fats are essential for keeping your skin healthy and strong. Don't hesitate to eat plenty of saturated fat and cholesterol. Omega 3 and Omega 6 fatty acids are essential nutrients the body can't produce itself; they are the building blocks of cell membranes. Focus on keeping the omega 3:6 ratio between 1:1 and 1:4."
+          },
+          {
+            title: "Collagen Support",
+            image: "https://images.unsplash.com/photo-1594041154568-1200df18d530?auto=format&fit=crop&q=80&w=800",
+            content: "Aid your body's natural collagen production by making bone broth or supplementing through hydrolyzed animal collagen peptides (Beef, Fish, or Pork). Consuming around 20g of hydrolyzed beef collagen peptides daily can significantly improve skin elasticity."
+          },
+          {
+            title: "Hyaluronic Acid",
+            content: "Helps increase skin moisture and reduce dryness. You should aim for around 100-200mg daily from high-quality supplements."
+          },
+          {
+            title: "Vitamin A: Nature's Superfood",
+            image: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=800",
+            content: "Promotes skin health by providing protection from sunburn and fighting free radicals. Liver is the best natural source; just 100g of pork liver contains 700% of the RDA of vitamin A."
+          },
+          {
+            title: "Vitamin C & Glucose Competition",
+            image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc2069?auto=format&fit=crop&q=80&w=800",
+            content: "Ascorbic acid is essential for tissue repair and collagen formation. Crucially, glucose (sugar) competes with Vitamin C for absorption. If you eat many carbs, you need significantly more Vitamin C (aim for 2-3g per day). If you follow a carnivore-style diet, the natural ascorbic acid in liver (~40mg/100g) may suffice."
+          },
+          {
+            title: "Vitamin D: Rejuvenation",
+            image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800",
+            content: "Helps protect skin from premature aging. Those with darker skin living in northern climates should definitely supplement exogenously. Oily fish like mackerel and herring are excellent natural sources."
+          },
+          {
+            title: "Vitamin E: UV Defense",
+            content: "A powerful antioxidant that reduces UV damage from the sun and fights inflammation. Fish and seafood are great animal sources."
+          },
+          {
+            title: "Vitamin K2: Healing",
+            content: "Helps heal wounds, bruises, and stretch marks, while also brightening dark circles under eyes. Stick to the K2 variant found in animal sources for optimal absorption."
+          },
+          {
+            title: "Zinc: Anti-Inflammatory",
+            content: "Effective against acne due to its powerful anti-inflammatory effects. Found in abundance in red meat."
+          },
+          {
+            title: "Hydration Mastery",
+            image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&q=80&w=800",
+            content: "Consume at least 4-5 liters of water per day to help keep your skin moisturized from the inside out."
           }
         ]
       }

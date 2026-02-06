@@ -54,8 +54,8 @@ export default async function handler(req, res) {
     eventType === "checkout.updated"
   ) {
     const data = evt.data;
-    // Try both snake_case (standard webhook) and camelCase (SDK)
-    const email = data.customer_email || data.customerEmail;
+    // Trusted Source: Check metadata first (set by our checkout API), then fall back to form data
+    const email = data.metadata?.customer_email || data.customer_email || data.customerEmail;
 
     console.log("Webhook Data:", JSON.stringify(data)); // Log data for debugging
 

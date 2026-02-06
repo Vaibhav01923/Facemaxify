@@ -37,6 +37,12 @@ export default async function handler(req, res) {
       }
     }
 
+    // Forcefully inject the intended email into metadata so the webhook knows exactly who to upgrade
+    // This persists even if the user changes the email in the checkout UI
+    if (customerEmail) {
+      parsedMetadata.customer_email = String(customerEmail);
+    }
+
     const result = await polar.checkouts.create({
       products: products ? [String(products)] : [],
       successUrl: process.env.POLAR_SUCCESS_URL || 'https://facemaxify.com/dashboard',

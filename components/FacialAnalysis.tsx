@@ -224,7 +224,7 @@ export const FacialAnalysis: React.FC = () => {
 
   // WRAP EVERYTHING IN A SIDEBAR LAYOUT IF USER IS LOGGED IN
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
+    <div className="flex h-screen bg-[#050510] overflow-hidden">
       {user && (
         <AnalysisHistory 
           onSelectScan={loadFromHistory} 
@@ -233,24 +233,24 @@ export const FacialAnalysis: React.FC = () => {
         />
       )}
       
-      <div className="flex-1 flex flex-col min-w-0 bg-[#F8FAFC]">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#050510]">
         <div className="flex-1 overflow-y-auto relative">
           {/* Main Content Area */}
           {step === 0 && (
             <div className="flex flex-col items-center justify-center p-8 min-h-full">
-               <div className="max-w-md w-full bg-white border border-slate-100 shadow-sm rounded-3xl p-10 text-center">
-                <h1 className="text-3xl font-black text-slate-950 mb-4 tracking-tight">Facial Analysis</h1>
-                <p className="text-slate-500 mb-10 font-medium">
+               <div className="max-w-md w-full bg-slate-900/50 border border-white/5 backdrop-blur-xl rounded-3xl p-10 text-center shadow-2xl">
+                <h1 className="text-3xl font-black text-white mb-4 tracking-tight">Facial Analysis</h1>
+                <p className="text-slate-400 mb-10 font-medium">
                   Upload a front-facing photo to begin your aesthetic journey
                 </p>
 
                 {error && (
-                  <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm font-medium">
                     {error}
                   </div>
                 )}
 
-                <label className="block w-full cursor-pointer bg-[#0F172A] hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-slate-200 active:scale-[0.98]">
+                <label className="block w-full cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-indigo-500/10 active:scale-[0.98]">
                   <span>{loading ? "Processing..." : "Upload Front Photo"}</span>
                   <input
                     type="file"
@@ -283,13 +283,13 @@ export const FacialAnalysis: React.FC = () => {
 
           {step === 5 && (
             <div className="flex flex-col items-center justify-center p-8 min-h-full">
-              <div className="max-w-md w-full bg-white border border-slate-100 shadow-sm rounded-3xl p-10 text-center">
-                <h1 className="text-3xl font-black text-slate-950 mb-4 tracking-tight">Side Profile</h1>
-                <p className="text-slate-500 mb-10 font-medium italic">
+              <div className="max-w-md w-full bg-slate-900/50 border border-white/5 backdrop-blur-xl rounded-3xl p-10 text-center shadow-2xl">
+                <h1 className="text-3xl font-black text-white mb-4 tracking-tight">Side Profile</h1>
+                <p className="text-slate-400 mb-10 font-medium italic">
                   (Optional) Upload a side profile photo for additional analysis, or skip to see results
                 </p>
 
-                <label className="block w-full cursor-pointer bg-[#0F172A] hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-slate-200 active:scale-[0.98] mb-4">
+                <label className="block w-full cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-indigo-500/10 active:scale-[0.98] mb-4">
                   <span>{loading ? "Processing..." : "Upload Side Photo"}</span>
                   <input
                     type="file"
@@ -307,7 +307,7 @@ export const FacialAnalysis: React.FC = () => {
                 <button
                   onClick={handleSkipSidePhoto}
                   disabled={loading}
-                  className="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold py-4 px-6 rounded-2xl border border-slate-100 transition-all active:scale-[0.98]"
+                  className="w-full bg-white/5 hover:bg-white/10 text-slate-300 font-bold py-4 px-6 rounded-2xl border border-white/5 transition-all active:scale-[0.98]"
                 >
                   Skip & View Results
                 </button>
@@ -334,10 +334,10 @@ export const FacialAnalysis: React.FC = () => {
 
           {/* Loading Overlay for internal transitions */}
           {loading && (step !== 0 && step !== 5) && (
-             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50">
+             <div className="absolute inset-0 bg-[#050510]/60 backdrop-blur-sm flex items-center justify-center z-50">
               <div className="text-center">
                  <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                 <p className="text-slate-600 font-bold">Refining Analysis...</p>
+                 <p className="text-slate-400 font-bold tracking-wide">Refining Analysis...</p>
               </div>
             </div>
           )}

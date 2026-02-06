@@ -16,6 +16,7 @@ import { supabase } from "./services/supabase";
 import { DashboardHome } from "./components/DashboardHome";
 import { FacialAnalysis } from "./components/FacialAnalysis";
 import { Guides } from "./components/Guides";
+import { GuideDetail } from "./components/GuideDetail";
 
 const App: React.FC = () => {
   const { user, isLoaded } = useUser();
@@ -109,6 +110,15 @@ const App: React.FC = () => {
         element={
           <SignedIn>
             {hasAccess ? <Guides /> : <Navigate to="/" replace />}
+          </SignedIn>
+        }
+      />
+
+      <Route
+        path="/dashboard/guides/:guideId"
+        element={
+          <SignedIn>
+            {hasAccess ? <GuideDetail /> : <Navigate to="/" replace />}
           </SignedIn>
         }
       />

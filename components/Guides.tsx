@@ -1,7 +1,9 @@
 import React from "react";
 import { Navbar } from "./Navbar";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Clock } from "lucide-react";
+import { motion } from "framer-motion";
+import { guides } from "../data/guidesData";
 
 export const Guides: React.FC = () => {
   const navigate = useNavigate();
@@ -9,29 +11,89 @@ export const Guides: React.FC = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#050510] text-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="mb-6 bg-indigo-500/10 w-20 h-20 rounded-full flex items-center justify-center border border-indigo-500/20">
-          <Clock className="w-10 h-10 text-indigo-400 animate-pulse" />
-        </div>
+      <div className="min-h-screen bg-[#050510] text-white pt-24 px-6 pb-12 relative overflow-hidden">
+        {/* Background Blobs */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/5 rounded-full blur-[120px] pointer-events-none"></div>
         
-        <h1 className="text-4xl font-bold mb-4">Premium Guides</h1>
-        <p className="text-slate-400 text-lg mb-12 max-w-md mx-auto">
-          We are currently curating the most effective aesthetic improvement guides. 
-          Expect scientifically-backed content very soon.
-        </p>
+        <div className="max-w-5xl mx-auto relative z-10">
+          <header className="mb-12">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8 group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Back to Dashboard
+            </button>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+              Premium Guides
+            </h1>
+            <p className="text-slate-400 text-lg">
+              Unlock the secrets of peak aesthetics with our expert-curated content.
+            </p>
+          </header>
 
-        <div className="inline-flex flex-col gap-4">
-          <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-indigo-300 font-medium">
-             ✨ Coming Q1 2026
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {guides.map((guide, idx) => (
+              <motion.div
+                key={guide.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                onClick={() => navigate(`/dashboard/guides/${guide.id}`)}
+                className="group relative bg-slate-900/40 border border-slate-800 rounded-3xl p-6 cursor-pointer hover:bg-slate-800/40 transition-all hover:border-indigo-500/30 overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                   <Sparkles className="w-12 h-12 text-indigo-400" />
+                </div>
+                
+                <div className="mb-6 aspect-video bg-indigo-600/10 rounded-2xl flex items-center justify-center border border-white/5 overflow-hidden">
+                   <img 
+                    src={guide.thumbnail} 
+                    alt={guide.title} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=800";
+                    }}
+                   />
+                </div>
+
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-2 py-0.5 bg-indigo-500/20 border border-indigo-500/30 rounded-md text-indigo-400 text-[10px] font-bold uppercase tracking-wider">
+                    {guide.category}
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-500 text-xs font-medium">
+                    <Clock className="w-3 h-3" />
+                    {guide.readTime}
+                  </span>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">
+                  {guide.title}
+                </h3>
+                
+                <p className="text-sm text-slate-400 mb-6 line-clamp-2">
+                  {guide.description}
+                </p>
+
+                <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                  Read Full Guide
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </motion.div>
+            ))}
+
+            {/* Coming Soon Card */}
+            <div className="bg-white/5 border border-white/5 rounded-3xl p-6 flex flex-col items-center justify-center text-center opacity-60">
+               <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                  <BookOpen className="w-6 h-6 text-slate-500" />
+               </div>
+               <h3 className="text-lg font-bold text-slate-300 mb-2">More coming soon</h3>
+               <p className="text-xs text-slate-500 leading-relaxed">
+                  Deep dives on Jawline, Eyes, and Hairline improvements.
+               </p>
+            </div>
           </div>
-          
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mx-auto mt-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </button>
         </div>
       </div>
     </>

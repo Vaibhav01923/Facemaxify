@@ -10,7 +10,7 @@ import {
   initializeMediaPipe,
 } from "../services/mediaPipeService";
 import { standardizeImage } from "../utils/imageProcessing";
-import { saveScanResult } from "../services/supabase";
+import { saveScanResult, getScanHistory } from "../services/supabase";
 import { AnalysisHistory } from "./AnalysisHistory";
 
 export const FacialAnalysis: React.FC = () => {
@@ -45,10 +45,28 @@ export const FacialAnalysis: React.FC = () => {
   // Final Result
   const [finalResult, setFinalResult] = useState<FinalResult | null>(null);
 
-  // Initialize MediaPipe on mount
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [selectedScanId, setSelectedScanId] = useState<string | null>(null);
+
+  // Initialize MediaPipe and fetch history on mount
   React.useEffect(() => {
     initializeMediaPipe();
-  }, []);
+    
+    async function initHistory() {
+      if (user?.id) {
+        const data = await getScanHistory(user.id);
+        if (data && data.length > 0) {
+          // Default to latest scan
+          loadFromHistory(data[0]);
+          setSelectedScanId(data[0].id);
+        }
+        setHistoryLoaded(true);
+      } else {
+        setHistoryLoaded(true);
+      }
+    }
+    initHistory();
+  }, [user]);
 
   // PHASE A: NORMALIZATION PIPELINE
   const handleFrontPhotoUpload = async (file: File) => {
@@ -179,165 +197,152 @@ export const FacialAnalysis: React.FC = () => {
       frontLandmarks: scan.front_landmarks,
       sideLandmarks: scan.side_landmarks
     };
+    setSelectedScanId(scan.id);
     setFinalResult(historyResult);
     setStep(8);
   };
 
-  // RENDER BASED ON STEP
-  if (step === 9) {
+  const startNewAnalysis = () => {
+    setFinalResult(null);
+    setStep(0);
+    setFrontPhotoRaw(null);
+    setFrontPhotoStandardized(null);
+    setFrontLandmarks(null);
+    setSidePhotoRaw(null);
+    setSidePhotoStandardized(null);
+    setSideLandmarks(null);
+  };
+
+  // If we are still determining if history exists, show a basic loader
+  if (!historyLoaded) {
     return (
-      <div className="min-h-screen bg-[#050510] text-white">
-        <Navbar />
-        <div className="pt-24 px-6 max-w-4xl mx-auto">
-          <button 
-            onClick={() => setStep(0)}
-            className="mb-8 flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
-          >
-            ← Back to Analysis
-          </button>
-          <AnalysisHistory onSelectScan={loadFromHistory} />
-        </div>
+      <div className="min-h-screen bg-[#050510] flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
-  if (step === 0) {
-    // Upload Front Photo
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8">
-          <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
-            <h1 className="text-3xl font-bold mb-4">Facial Analysis</h1>
-            <p className="text-slate-400 mb-8">
-              Upload a front-facing photo to begin
-            </p>
 
-            {error && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            <label className="block w-full cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-4 text-center">
-              <span>{loading ? "Processing..." : "Get Started: Upload Front Photo"}</span>
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                disabled={loading}
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    handleFrontPhotoUpload(e.target.files[0]);
-                  }
-                }}
-              />
-            </label>
-
-            {user && (
-              <button 
-                onClick={() => setStep(9)}
-                className="mt-6 text-slate-400 hover:text-white transition-colors flex items-center gap-2 mx-auto justify-center group"
-              >
-                <Clock className="w-4 h-4 group-hover:text-indigo-400 transition-colors" />
-                <span className="text-sm font-medium">View Scan History</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (step === 4 && frontPhotoStandardized && frontLandmarks && frontBox) {
-    // PHASE B: Edit Front Landmarks
-    return (
-      <LandmarkEditor
-        photoUrl={frontPhotoStandardized}
-        initialLandmarks={frontLandmarks}
-        faceBox={frontBox}
-        onComplete={handleFrontEditComplete}
-        title="Refine Front View Landmarks"
-        landmarkType="front"
-      />
-    );
-  }
-
-  if (step === 5) {
-    // Upload Side Photo (Optional)
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8">
-          <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Side Profile (Optional)</h1>
-            <p className="text-slate-400 mb-8">
-              Upload a side profile photo for additional analysis, or skip to
-              see results
-            </p>
-
-            {error && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            <label className="block w-full cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-4">
-              <span>{loading ? "Processing..." : "Upload Side Photo"}</span>
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                disabled={loading}
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    handleSidePhotoUpload(e.target.files[0]);
-                  }
-                }}
-              />
-            </label>
-
-            <button
-              onClick={handleSkipSidePhoto}
-              disabled={loading}
-              className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-3 px-4 rounded-xl border border-slate-700 transition-colors"
-            >
-              Skip & View Results
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (step === 7 && sidePhotoStandardized && sideLandmarks && sideBox) {
-    // Edit Side Landmarks
-    return (
-      <LandmarkEditor
-        photoUrl={sidePhotoStandardized}
-        initialLandmarks={sideLandmarks}
-        faceBox={sideBox}
-        onComplete={handleSideEditComplete}
-        title="Refine Side Profile Landmarks"
-        landmarkType="side"
-      />
-    );
-  }
-
-  if (step === 8 && finalResult) {
-    // PHASE E: Dashboard with Results
-    return <ResultsDashboard data={finalResult} />;
-  }
-
-  // Loading state
+  // WRAP EVERYTHING IN A SIDEBAR LAYOUT IF USER IS LOGGED IN
   return (
-    <>
-      <Navbar />
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Processing...</p>
+    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
+      {user && (
+        <AnalysisHistory 
+          onSelectScan={loadFromHistory} 
+          onNewScan={startNewAnalysis}
+          selectedScanId={selectedScanId || undefined} 
+        />
+      )}
+      
+      <div className="flex-1 flex flex-col min-w-0 bg-[#F8FAFC]">
+        <div className="flex-1 overflow-y-auto relative">
+          {/* Main Content Area */}
+          {step === 0 && (
+            <div className="flex flex-col items-center justify-center p-8 min-h-full">
+               <div className="max-w-md w-full bg-white border border-slate-100 shadow-sm rounded-3xl p-10 text-center">
+                <h1 className="text-3xl font-black text-slate-950 mb-4 tracking-tight">Facial Analysis</h1>
+                <p className="text-slate-500 mb-10 font-medium">
+                  Upload a front-facing photo to begin your aesthetic journey
+                </p>
+
+                {error && (
+                  <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
+                    {error}
+                  </div>
+                )}
+
+                <label className="block w-full cursor-pointer bg-[#0F172A] hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-slate-200 active:scale-[0.98]">
+                  <span>{loading ? "Processing..." : "Upload Front Photo"}</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    disabled={loading}
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        handleFrontPhotoUpload(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && frontPhotoStandardized && frontLandmarks && frontBox && (
+            <div className="h-full">
+              <LandmarkEditor
+                photoUrl={frontPhotoStandardized}
+                initialLandmarks={frontLandmarks}
+                faceBox={frontBox}
+                onComplete={handleFrontEditComplete}
+                title="Refine Front View Landmarks"
+                landmarkType="front"
+              />
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="flex flex-col items-center justify-center p-8 min-h-full">
+              <div className="max-w-md w-full bg-white border border-slate-100 shadow-sm rounded-3xl p-10 text-center">
+                <h1 className="text-3xl font-black text-slate-950 mb-4 tracking-tight">Side Profile</h1>
+                <p className="text-slate-500 mb-10 font-medium italic">
+                  (Optional) Upload a side profile photo for additional analysis, or skip to see results
+                </p>
+
+                <label className="block w-full cursor-pointer bg-[#0F172A] hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-slate-200 active:scale-[0.98] mb-4">
+                  <span>{loading ? "Processing..." : "Upload Side Photo"}</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    disabled={loading}
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        handleSidePhotoUpload(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </label>
+
+                <button
+                  onClick={handleSkipSidePhoto}
+                  disabled={loading}
+                  className="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold py-4 px-6 rounded-2xl border border-slate-100 transition-all active:scale-[0.98]"
+                >
+                  Skip & View Results
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 7 && sidePhotoStandardized && sideLandmarks && sideBox && (
+            <div className="h-full">
+              <LandmarkEditor
+                photoUrl={sidePhotoStandardized}
+                initialLandmarks={sideLandmarks}
+                faceBox={sideBox}
+                onComplete={handleSideEditComplete}
+                title="Refine Side Profile Landmarks"
+                landmarkType="side"
+              />
+            </div>
+          )}
+
+          {step === 8 && finalResult && (
+            <ResultsDashboard data={finalResult} />
+          )}
+
+          {/* Loading Overlay for internal transitions */}
+          {loading && (step !== 0 && step !== 5) && (
+             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="text-center">
+                 <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                 <p className="text-slate-600 font-bold">Refining Analysis...</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

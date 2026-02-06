@@ -70,13 +70,22 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
               </p>
             </div>
           </div>
-          <button className="text-slate-500 hover:text-white transition-colors">
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
+          
+          {history.length > 0 && isPaid && (
+            <div className="text-right">
+              <div className="text-[10px] font-black text-indigo-400 uppercase tracking-tighter">Overall</div>
+              <div className="text-2xl font-black text-white tracking-tighter leading-none">
+                {Math.round((history.find(s => s.id === selectedScanId) || history[0]).overall_score * 10)}
+              </div>
+            </div>
+          )}
         </div>
 
         {!isPaid && (
-          <button className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]">
+          <button 
+            onClick={() => window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c"}
+            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
+          >
             <ArrowUpCircle className="w-4 h-4 text-white/80" />
             Upgrade to Pro
           </button>
@@ -120,22 +129,24 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-0.5">
-                <span className="text-[9px] font-black text-slate-600 uppercase tracking-tighter">Overall</span>
+                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">Overall Score</span>
                 <span className="text-[9px] font-bold text-slate-500">
                   {new Date(scan.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric'})}
                 </span>
               </div>
               
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1">
-                  {['H', 'A', 'D', 'F'].map((char) => (
-                    <div key={char} className="w-5 h-5 rounded-md border border-white/5 flex items-center justify-center text-[8px] font-bold text-slate-600">
-                      {char}
-                    </div>
-                  ))}
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-xl font-black text-white tracking-tighter">
+                  {isPaid ? (
+                    <>
+                      {Math.round(scan.overall_score * 10)}
+                      <span className="text-[10px] text-slate-600 ml-1 font-bold">/ 100</span>
+                    </>
+                  ) : (
+                    <span className="text-slate-600 blur-[4px] select-none text-sm">PRO</span>
+                  )}
                 </div>
-                <div className="flex-1 h-px bg-white/5" />
-                <ChevronRight className="w-3.5 h-3.5 text-slate-700" />
+                <ChevronRight className="w-4 h-4 text-slate-700" />
               </div>
             </div>
           </motion.div>
@@ -143,7 +154,7 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
 
         {history.length === 0 && (
           <div className="text-center py-12 px-4">
-            <p className="text-xs text-slate-600 font-medium">No skin history yet</p>
+            <p className="text-xs text-slate-600 font-medium tracking-tight">No scan history found</p>
           </div>
         )}
       </div>

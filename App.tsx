@@ -5,7 +5,7 @@ import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
 import { LandmarkEditor } from "./components/LandmarkEditor";
 import { Navbar } from "./components/Navbar";
-import { FinalResult, FrontLandmarks, SideLandmarks, Point } from "./types";
+import { FinalResult, FrontLandmarks, Point } from "./types";
 import {
   detectLandmarksInstant,
   initializeMediaPipe,
@@ -95,7 +95,7 @@ const App: React.FC = () => {
         path="/dashboard"
         element={
           <SignedIn>
-            {hasAccess ? <DashboardHome /> : <Navigate to="/" replace />}
+            <DashboardHome isPaid={hasAccess} />
           </SignedIn>
         }
       />
@@ -104,7 +104,7 @@ const App: React.FC = () => {
         path="/dashboard/facial-analysis"
         element={
           <SignedIn>
-            {hasAccess ? <FacialAnalysis /> : <Navigate to="/" replace />}
+            <FacialAnalysis isPaid={hasAccess} />
           </SignedIn>
         }
       />
@@ -113,7 +113,7 @@ const App: React.FC = () => {
         path="/dashboard/guides"
         element={
           <SignedIn>
-            {hasAccess ? <Guides /> : <Navigate to="/" replace />}
+            <Guides isPaid={hasAccess} />
           </SignedIn>
         }
       />
@@ -122,7 +122,7 @@ const App: React.FC = () => {
         path="/dashboard/guides/:guideId"
         element={
           <SignedIn>
-            {hasAccess ? <GuideDetail /> : <Navigate to="/" replace />}
+            {hasAccess ? <GuideDetail /> : <Navigate to="/dashboard/guides" replace />}
           </SignedIn>
         }
       />

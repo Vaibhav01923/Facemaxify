@@ -5,7 +5,7 @@ import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Clock } from "lucide-react
 import { motion } from "framer-motion";
 import { guides } from "../data/guidesData";
 
-export const Guides: React.FC = () => {
+export const Guides: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
   const navigate = useNavigate();
 
   return (
@@ -39,9 +39,30 @@ export const Guides: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                onClick={() => navigate(`/dashboard/guides/${guide.id}`)}
-                className="group relative bg-slate-900/40 border border-slate-800 rounded-3xl p-6 cursor-pointer hover:bg-slate-800/40 transition-all hover:border-indigo-500/30 overflow-hidden"
+                onClick={() => isPaid && navigate(`/dashboard/guides/${guide.id}`)}
+                className={`group relative bg-slate-900/40 border border-slate-800 rounded-3xl p-6 transition-all overflow-hidden ${
+                  isPaid ? "cursor-pointer hover:bg-slate-800/40 hover:border-indigo-500/30" : "cursor-default"
+                }`}
               >
+                {!isPaid && (
+                   <div className="absolute inset-0 bg-[#050510]/80 backdrop-blur-[4px] z-20 flex flex-col items-center justify-center text-center p-6">
+                      <div className="w-12 h-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/20">
+                        <Lock className="w-6 h-6 text-indigo-400" />
+                      </div>
+                      <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-tight">Locked Content</h4>
+                      <p className="text-slate-500 text-[11px] mb-4 leading-relaxed px-4">This guide is exclusive to premium members.</p>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+                        }}
+                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
+                      >
+                        Upgrade Now
+                      </button>
+                   </div>
+                )}
+
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
                    <Sparkles className="w-12 h-12 text-indigo-400" />
                 </div>
@@ -50,7 +71,7 @@ export const Guides: React.FC = () => {
                    <img 
                     src={guide.thumbnail} 
                     alt={guide.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className={`w-full h-full object-cover transition-transform duration-500 ${isPaid ? "group-hover:scale-110" : ""}`}
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=800";
@@ -77,7 +98,7 @@ export const Guides: React.FC = () => {
                 </p>
 
                 <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
-                  Read Full Guide
+                  {isPaid ? "Read Full Guide" : "Premium Guide"}
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </motion.div>

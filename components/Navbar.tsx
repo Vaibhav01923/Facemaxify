@@ -14,7 +14,7 @@ export const Navbar: React.FC = () => {
               ✨
             </div>
             <h1 className="text-lg font-bold tracking-tight text-white">
-              Aesthetix<span className="text-slate-500 font-normal">AI</span>
+              Facemaxify
             </h1>
           </div>
 

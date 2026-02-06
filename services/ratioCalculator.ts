@@ -1,5 +1,5 @@
 
-import { FrontLandmarks, SideLandmarks, Point } from "../types";
+import { FrontLandmarks, Point } from "../types";
 import { distance } from "../utils/geometry";
 
 export interface MetricResult {
@@ -269,61 +269,3 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   return results;
 };
 
-export const calculateSideRatios = (l: SideLandmarks): MetricResult[] => {
-  const results: MetricResult[] = [];
-  const faceHeightPx = math.distance(l.trichion, l.menton);
-  const mmScale = 190 / (faceHeightPx || 1);
-
-  const add = (key: keyof typeof RATIO_CONFIGS, value: number, landmarks: string[]) => {
-      const config = RATIO_CONFIGS[key];
-      if (!config) return;
-      results.push({
-          name: config.name,
-          value: parseFloat(value.toFixed(2)),
-          unit: config.unit,
-          idealMin: parseFloat((config.ideal - config.range).toFixed(2)),
-          idealMax: parseFloat((config.ideal + config.range).toFixed(2)),
-          score: parseFloat(calculateScore(key, value).toFixed(2)),
-          relatedLandmarks: landmarks
-      });
-  };
-
-  // Jaw Slope (Gonial Angle Side)
-  add('jawSlope', math.angle(l.gonionTop, l.gonionBottom, l.menton), ["gonionTop", "gonionBottom", "menton"]);
-  
-  // Nose Tip Position
-  const distToPlane = math.distPointToLine(l.pronasale, l.glabella, l.pogonion);
-  add('noseTipPos', distToPlane * mmScale, ["pronasale", "glabella", "pogonion"]);
-
-  // Nasal W to H (Projection / Height)
-  const nasalDepth = Math.abs(l.pronasale.x - l.subalare.x);
-  const nasalHeight = Math.abs(l.nasion.y - l.pronasale.y);
-  add('nasalWH', math.ratio(nasalDepth, nasalHeight), ["pronasale", "subalare", "nasion"]);
-
-  // Nose Tip Rotation
-  const tipAngle = math.lineAngle(l.subnasale, l.pronasale);
-  add('noseTipRotation', tipAngle, ["subnasale", "pronasale"]);
-
-  // Orbital Vector
-  const orbitalVec = (l.orbitale.x - l.cornealApex.x) * mmScale;
-  add('orbitalVector', orbitalVec, ["orbitale", "cornealApex"]);
-
-  // Z Angle
-  const zAngle = math.angleBetweenLines(l.porion, l.orbitale, l.pogonion, l.labraleSuperius);
-  add('zAngle', zAngle, ["porion", "orbitale", "pogonion", "labraleSuperius"]);
-
-  // Angles
-  add('nasofacialAngle', math.angle(l.nasion, l.pronasale, l.pogonion), ["nasion", "pronasale", "pogonion"]);
-  add('nasomentalAngle', math.angle(l.nasion, l.pronasale, l.menton), ["nasion", "pronasale", "menton"]);
-  add('mentolabialAngle', math.angle(l.labraleInferius, l.sublabiale, l.pogonion), ["labraleInferius", "sublabiale", "pogonion"]);
-  add('nasofrontalAngle', math.angle(l.glabella, l.nasion, l.pronasale), ["glabella", "nasion", "pronasale"]);
-
-  // Upper Forehead Slope
-  const foreheadAngle = math.lineAngle(l.trichion, l.glabella);
-  add('upperForeheadSlope', Math.abs(90 - foreheadAngle), ["trichion", "glabella"]);
-  
-  // Recession relative to Frankfort
-  add('recessionFrankfort', (l.pogonion.x - l.nasion.x) * mmScale, ["pogonion", "nasion"]);
-
-  return results;
-};

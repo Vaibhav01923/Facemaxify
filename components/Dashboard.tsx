@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { FinalResult } from "../types";
 import {
   calculateFrontRatios,
-  calculateSideRatios,
   MetricResult,
 } from "../services/ratioCalculator";
 import { Button } from "./Button";
@@ -11,10 +10,11 @@ import { FaceOverlay } from "./FaceOverlay";
 
 interface DashboardProps {
   data?: FinalResult;
+  isPaid?: boolean;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
-  const [activeTab, setActiveTab] = useState<"overview" | "front" | "side">(
+export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) => {
+  const [activeTab, setActiveTab] = useState<"overview" | "front">(
     "front"
   );
   const [analysis, setAnalysis] = useState<any>(null);
@@ -24,16 +24,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
   // Early return if no data provided
   if (!data) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8">
+      <div className="min-h-screen bg-[#050510] text-white flex flex-col items-center justify-center p-8">
         <div className="max-w-md text-center space-y-6">
-          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center text-4xl mx-auto">
+          <div className="w-20 h-20 bg-slate-900 border border-white/5 rounded-full flex items-center justify-center text-4xl mx-auto">
             📊
           </div>
           <h2 className="text-2xl font-bold">No Analysis Data</h2>
           <p className="text-slate-400">
             Upload and analyze a photo to view your facial analysis dashboard.
           </p>
-          <button className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors">
+          <button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition-colors">
             Start New Analysis
           </button>
         </div>
@@ -46,42 +46,55 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
     return metrics.sort((a, b) => a.score - b.score);
   }, [data.frontLandmarks]);
 
-  const sideMetrics = useMemo(() => {
-    if (!data.sideLandmarks) return [];
-    const metrics = calculateSideRatios(data.sideLandmarks);
-    return metrics.sort((a, b) => a.score - b.score);
-  }, [data.sideLandmarks]);
-
   const overallScore = useMemo(() => {
-    const allMetrics = [...frontMetrics, ...sideMetrics];
-    if (allMetrics.length === 0) return 0;
-    const total = allMetrics.reduce((acc, curr) => acc + curr.score, 0);
-    return (total / allMetrics.length).toFixed(1);
-  }, [frontMetrics, sideMetrics]);
+    if (frontMetrics.length === 0) return 0;
+    const total = frontMetrics.reduce((acc, curr) => acc + curr.score, 0);
+    return (total / frontMetrics.length).toFixed(1);
+  }, [frontMetrics]);
 
-  const hasSideProfile = !!data.sideLandmarks;
+  const ALLOWED_FREE_METRICS = [
+    "Jaw Frontal Angle",
+    "Middle Third",
+    "Mouth width to nose width ratio"
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-[#050510] text-slate-100 font-sans selection:bg-indigo-500/30">
+      {/* Premium Unlock Banner for Free Users */}
+      {!isPaid && (
+        <div className="bg-indigo-600 px-4 py-2 text-center relative z-50 overflow-hidden shadow-lg shadow-indigo-500/20">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-700 animate-gradient-x opacity-50"></div>
+          <p className="relative z-10 text-[11px] sm:text-xs font-black text-white uppercase tracking-widest flex items-center justify-center gap-3">
+            <span className="opacity-70">✨ Unlock 10+ Premium Facial Ratios & Guides</span>
+            <button 
+              onClick={() => window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c"}
+              className="bg-white text-indigo-600 px-3 py-1 rounded-full hover:scale-105 transition-transform"
+            >
+              Purchase Now
+            </button>
+          </p>
+        </div>
+      )}
+
       {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800 shadow-2xl shadow-black/20">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#050510]/80 border-b border-white/5 shadow-2xl shadow-black/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg shadow-lg shadow-blue-500/20">
+             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-lg shadow-lg shadow-indigo-500/20">
               ✨
             </div>
             <h1 className="text-lg font-bold tracking-tight text-white">
-              Aesthetix<span className="text-slate-500 font-normal">AI</span>
+              Facemaxify
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-right">
+            <div className={`text-right transition-opacity duration-300 ${isPaid ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
               <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">
-                Overall Score
+                Facial Harmony
               </div>
               <div className="text-xl font-bold text-white leading-none">
-                {overallScore}{" "}
-                <span className="text-sm text-slate-500">/ 10</span>
+                {Math.round(parseFloat(overallScore) * 10)}{" "}
+                <span className="text-sm text-slate-500">/ 100</span>
               </div>
             </div>
           </div>
@@ -90,19 +103,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-8 border-b border-transparent">
-            {["overview", "front", "side"].map((tab) => (
+            {["overview", "front"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
                 className={`pb-3 text-sm font-medium transition-all relative ${
                   activeTab === tab
-                    ? "text-blue-400"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "text-indigo-400"
+                    : "text-slate-500 hover:text-slate-200"
                 }`}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)} Ratios
+                {tab.charAt(0).toUpperCase() + tab.slice(1)} Analysis
                 {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
                 )}
               </button>
             ))}
@@ -114,12 +127,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* OVERVIEW TAB */}
         {activeTab === "overview" && (
           <div className="space-y-8 animate-fadeIn">
-            <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-8 rounded-2xl border border-slate-800 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-
-              <div className="relative z-10">
+            <div className="bg-slate-900/40 p-8 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden">
+               <div className="relative z-10">
                 <h2 className="text-2xl font-bold text-white mb-6">
-                  Harmonic Analysis
+                  Harmony Insights
                 </h2>
                 {loading ? (
                   <div className="animate-pulse space-y-3">
@@ -137,10 +148,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 relative z-10">
-                <div className="bg-slate-950/50 rounded-xl p-5 border border-slate-800">
-                  <h3 className="text-green-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>{" "}
-                    Strengths
+                <div className="bg-slate-950/50 rounded-xl p-5 border border-white/5">
+                  <h3 className="text-emerald-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>{" "}
+                    Top Traits
                   </h3>
                   <ul className="space-y-3">
                     {analysis?.strengths?.map((s: string, i: number) => (
@@ -148,17 +159,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
                         key={i}
                         className="text-slate-300 text-sm flex items-start gap-2"
                       >
-                        <span className="text-green-500/50 mt-1">✓</span> {s}
+                        <span className="text-emerald-500/50 mt-1">✓</span> {s}
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className="bg-slate-950/50 rounded-xl p-5 border border-slate-800">
-                  <h3 className="text-purple-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>{" "}
-                    Potential
+                <div className="bg-slate-950/50 rounded-xl p-5 border border-white/5">
+                  <h3 className="text-indigo-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>{" "}
+                    Enhancements
                   </h3>
-                  <p className="text-slate-300 text-sm leading-relaxed">
+                  <p className="text-slate-400 text-sm leading-relaxed">
                     {analysis?.improvement}
                   </p>
                 </div>
@@ -171,7 +182,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
         {activeTab === "front" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fadeIn">
             <div className="lg:col-span-5 space-y-4">
-              <div className="sticky top-24 bg-slate-900 rounded-2xl border border-slate-800 p-2 shadow-2xl">
+              <div className="sticky top-24 bg-slate-900/50 rounded-2xl border border-white/5 p-2 shadow-2xl">
                 <div className="aspect-[3/4] relative rounded-xl overflow-hidden bg-black">
                   <FaceOverlay
                     photoUrl={data.frontPhotoUrl}
@@ -181,23 +192,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
                   />
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12 text-center">
                     <h3 className="text-white font-bold tracking-wider text-sm uppercase">
-                      Front View
+                      Analysis View
                     </h3>
                   </div>
                 </div>
                 <div className="mt-3 px-2 pb-2">
                   {hoveredMetric ? (
                     <div className="text-center animate-fadeIn">
-                      <p className="text-blue-400 text-xs font-bold uppercase tracking-wider">
+                      <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider">
                         {hoveredMetric.name}
                       </p>
-                      <p className="text-slate-400 text-xs">
+                      <p className="text-slate-500 text-xs">
                         Score: {hoveredMetric.score}/10
                       </p>
                     </div>
                   ) : (
-                    <p className="text-center text-slate-500 text-xs">
-                      Hover over a ratio to visualize
+                    <p className="text-center text-slate-600 text-xs">
+                      Hover over a trait to visualize
                     </p>
                   )}
                 </div>
@@ -206,107 +217,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
 
             <div className="lg:col-span-7 space-y-6">
               <div>
-                <h2 className="text-3xl font-bold text-white mb-2">
-                  Front View Ratios
+                <h2 className="text-3xl font-black text-white mb-2 tracking-tight">
+                  Facial Ratios
                 </h2>
-                <p className="text-slate-400">
-                  Detailed breakdown of {frontMetrics.length} facial ratios,
-                  sorted by impact.
+                <p className="text-slate-500 font-medium">
+                  Detailed breakdown of {frontMetrics.length} metrics based on your anatomy.
                 </p>
               </div>
 
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
-                <div className="divide-y divide-slate-800/50">
+              <div className="bg-slate-900/30 rounded-2xl border border-white/5 overflow-hidden shadow-xl">
+                <div className="divide-y divide-white/5">
                   {frontMetrics.map((metric, idx) => (
                     <RatioRow
                       key={idx}
                       metric={metric}
                       onHover={setHoveredMetric}
+                      isLocked={!isPaid && !ALLOWED_FREE_METRICS.includes(metric.name)}
                     />
                   ))}
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* SIDE RATIOS TAB */}
-        {activeTab === "side" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fadeIn">
-            {hasSideProfile ? (
-              <>
-                <div className="lg:col-span-5 space-y-4">
-                  <div className="sticky top-24 bg-slate-900 rounded-2xl border border-slate-800 p-2 shadow-2xl">
-                    <div className="aspect-[3/4] relative rounded-xl overflow-hidden bg-black">
-                      <FaceOverlay
-                        photoUrl={data.sidePhotoUrl!}
-                        landmarks={data.sideLandmarks!}
-                        highlightedLandmarks={hoveredMetric?.relatedLandmarks}
-                        metricName={hoveredMetric?.name}
-                      />
-                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12 text-center">
-                        <h3 className="text-white font-bold tracking-wider text-sm uppercase">
-                          Side Profile
-                        </h3>
-                      </div>
-                    </div>
-                    <div className="mt-3 px-2 pb-2">
-                      {hoveredMetric ? (
-                        <div className="text-center animate-fadeIn">
-                          <p className="text-blue-400 text-xs font-bold uppercase tracking-wider">
-                            {hoveredMetric.name}
-                          </p>
-                          <p className="text-slate-400 text-xs">
-                            Score: {hoveredMetric.score}/10
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-center text-slate-500 text-xs">
-                          Hover over a ratio to visualize
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-7 space-y-6">
-                  <div>
-                    <h2 className="text-3xl font-bold text-white mb-2">
-                      Side Profile Ratios
-                    </h2>
-                    <p className="text-slate-400">
-                      Detailed breakdown of {sideMetrics.length} profile metrics
-                      and angular measurements.
-                    </p>
-                  </div>
-
-                  <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
-                    <div className="divide-y divide-slate-800/50">
-                      {sideMetrics.map((metric, idx) => (
-                        <RatioRow
-                          key={idx}
-                          metric={metric}
-                          onHover={setHoveredMetric}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="col-span-12 flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center text-3xl mb-4">
-                  🚫
-                </div>
-                <h2 className="text-xl font-bold text-white mb-2">
-                  Side Profile Skipped
-                </h2>
-                <p className="text-slate-400 max-w-md">
-                  You chose to skip the side profile analysis. Restart the
-                  process if you wish to include it.
-                </p>
-              </div>
-            )}
           </div>
         )}
       </main>

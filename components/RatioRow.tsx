@@ -4,9 +4,10 @@ import { MetricResult } from '../services/ratioCalculator';
 interface RatioRowProps {
   metric: MetricResult;
   onHover: (metric: MetricResult | null) => void;
+  isLocked?: boolean;
 }
 
-export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover }) => {
+export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, isLocked = false }) => {
   const getScoreColor = (score: number) => {
     if (score >= 9) return "text-green-500";
     if (score >= 7) return "text-green-400";
@@ -30,13 +31,29 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover }) => {
 
   return (
     <div 
-        className="py-4 border-b border-slate-800/50 last:border-0 hover:bg-slate-900 transition-colors px-4 cursor-default group"
-        onMouseEnter={() => onHover(metric)}
-        onMouseLeave={() => onHover(null)}
+        className={`py-4 border-b border-slate-800/50 last:border-0 transition-all px-4 cursor-default group relative ${
+            isLocked ? "bg-slate-900/10" : "hover:bg-slate-900 border-l-2 border-l-transparent hover:border-l-indigo-500"
+        }`}
+        onMouseEnter={() => !isLocked && onHover(metric)}
+        onMouseLeave={() => !isLocked && onHover(null)}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+      {isLocked && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[2px] bg-slate-950/20">
+           <button 
+             onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+             }}
+             className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-xl shadow-indigo-500/20 active:scale-95"
+           >
+             Purchase to Unlock
+           </button>
+        </div>
+      )}
+
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 transition-all duration-500 ${isLocked ? 'blur-[6px] grayscale opacity-40 select-none pointer-events-none' : ''}`}>
         <div className="flex-1">
-          <h4 className="font-medium text-slate-200 text-sm group-hover:text-blue-400 transition-colors">{metric.name}</h4>
+          <h4 className="font-medium text-slate-200 text-sm group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{metric.name}</h4>
         </div>
         
         {/* Visual Bar Area */}
@@ -46,21 +63,21 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover }) => {
 
             {/* Ideal Zone */}
             <div 
-                className="absolute top-0 bottom-0 rounded-sm bg-gradient-to-r from-transparent via-green-500/40 to-transparent border-b-2 border-green-500/60"
+                className="absolute top-0 bottom-0 rounded-sm bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent border-b-2 border-emerald-500/60"
                 style={{ left: `${idealStart}%`, width: `${idealWidth}%` }}
             ></div>
 
             {/* You Marker (The Knob) */}
             <div 
-                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_2px_5px_rgba(0,0,0,0.5)] z-10 border-2 border-slate-200 transition-all duration-500 ease-out flex items-center justify-center group-hover:scale-125 group-hover:border-blue-500"
+                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.5)] z-10 border-2 border-slate-200 transition-all duration-500 ease-out flex items-center justify-center group-hover:scale-125 group-hover:border-indigo-500"
                 style={{ left: `calc(${youPercent}% - 8px)` }}
             >
-                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></div>
             </div>
             
             {/* Tooltip on Hover */}
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded border border-slate-600 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
-                You: <span className="font-bold text-blue-400">{metric.value} {metric.unit}</span>
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded border border-slate-600 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none font-bold">
+                Level: <span className="text-indigo-400">{metric.value} {metric.unit}</span>
             </div>
         </div>
 
@@ -69,8 +86,8 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover }) => {
           <span className={`text-lg font-bold ${getScoreColor(metric.score)}`}>
             {metric.score}<span className="text-xs text-slate-600 ml-0.5">/10</span>
           </span>
-          <span className="text-[10px] text-slate-500">
-             Ideal: {metric.idealMin} - {metric.idealMax}
+          <span className="text-[10px] text-slate-500 uppercase font-medium tracking-tighter">
+             Perfect: {metric.idealMin} - {metric.idealMax}
           </span>
         </div>
       </div>

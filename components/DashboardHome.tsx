@@ -4,7 +4,7 @@ import { Navbar } from "./Navbar";
 import { motion } from "framer-motion";
 import { Sparkles, BookOpen, ArrowRight } from "lucide-react";
 
-export const DashboardHome: React.FC = () => {
+export const DashboardHome: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
   const navigate = useNavigate();
 
   const cards = [

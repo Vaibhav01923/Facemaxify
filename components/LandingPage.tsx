@@ -68,11 +68,15 @@ export const LandingPage: React.FC = () => {
   };
 
   useEffect(() => {
-    // Check if we need to redirect to checkout after login
-    const pendingCheckout = localStorage.getItem("pendingCheckout");
-    if (isSignedIn && pendingCheckout === "true") {
-      localStorage.removeItem("pendingCheckout");
-      window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+    // Check if we need to redirect after login
+    const pendingAction = localStorage.getItem("pendingAction");
+    if (isSignedIn && pendingAction) {
+      localStorage.removeItem("pendingAction");
+      if (pendingAction === "purchase") {
+        window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+      } else if (pendingAction === "dashboard") {
+        window.location.href = "/dashboard";
+      }
     }
   }, [isSignedIn]);
 
@@ -130,27 +134,53 @@ export const LandingPage: React.FC = () => {
           </span>
         </motion.p>
 
-        {/* CTA */}
+        {/* CTAs */}
+        <motion.div 
+          variants={item}
+          className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-lg"
+        >
           <motion.div
-            variants={item}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            className="w-full sm:w-auto"
           >
             <button
               onClick={() => {
                 if (!isSignedIn) {
-                  localStorage.setItem("pendingCheckout", "true");
+                  localStorage.setItem("pendingAction", "purchase");
                   openSignIn();
                 } else {
                   window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
                 }
               }}
-              className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"
+              className="group relative w-full sm:w-auto px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"
             >
               <span className="relative z-10">Purchase Now</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
           </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full sm:w-auto"
+          >
+            <button
+              onClick={() => {
+                if (!isSignedIn) {
+                  localStorage.setItem("pendingAction", "dashboard");
+                  openSignIn();
+                } else {
+                  window.location.href = "/dashboard";
+                }
+              }}
+              className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
+            >
+              <span className="relative z-10">Free Facial Analysis</span>
+              <Scan className="w-4 h-4" />
+            </button>
+          </motion.div>
+        </motion.div>
 
         {/* Minimal Social Proof */}
         <motion.div

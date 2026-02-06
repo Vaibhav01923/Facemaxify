@@ -51,13 +51,7 @@ export const saveScanResult = async (
 
     if (!frontUrl) throw new Error("Failed to upload front photo");
 
-    // 2. Upload Side Photo (if exists)
-    let sidePath = null;
-    if (data.sidePhotoUrl) {
-      sidePath = `side_${userId}_${Date.now()}.jpg`;
-      const sideUrl = await uploadImage(data.sidePhotoUrl, sidePath);
-      if (!sideUrl) console.warn("Failed to upload side photo");
-    }
+    // 2. Upload Side Photo (Removed)
 
     // 3. Save to DB
     const { error } = await supabase.from("scans").insert({
@@ -65,9 +59,7 @@ export const saveScanResult = async (
       gender: data.gender,
       race: data.race,
       front_photo_path: frontPath,
-      side_photo_path: sidePath,
       front_landmarks: data.frontLandmarks,
-      side_landmarks: data.sideLandmarks,
       overall_score: overallScore,
     });
 
@@ -93,14 +85,9 @@ export const getScanHistory = async (userId: string) => {
     // Convert relative paths to public URLs
     const scansWithUrls = data.map((scan) => {
       const frontUrl = supabase.storage.from("scans").getPublicUrl(scan.front_photo_path).data.publicUrl;
-      const sideUrl = scan.side_photo_path 
-        ? supabase.storage.from("scans").getPublicUrl(scan.side_photo_path).data.publicUrl
-        : null;
-      
       return {
         ...scan,
         front_photo_url: frontUrl,
-        side_photo_url: sideUrl,
       };
     });
 

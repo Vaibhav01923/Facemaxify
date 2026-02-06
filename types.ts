@@ -65,48 +65,14 @@ export type FrontLandmarks = {
   nasion: Point;
 };
 
-export type SideLandmarks = {
-  vertex: Point;
-  occiput: Point;
-  pronasale: Point;
-  neckPoint: Point;
-  porion: Point;
-  orbitale: Point;
-  tragus: Point;
-  intertragicNotch: Point;
-  cornealApex: Point;
-  cheekbone: Point;
-  eyelidEnd: Point;
-  lowerEyelid: Point;
-  trichion: Point;
-  glabella: Point;
-  forehead: Point;
-  nasion: Point;
-  rhinion: Point;
-  supratip: Point;
-  infratip: Point;
-  columella: Point;
-  subnasale: Point;
-  subalare: Point;
-  labraleSuperius: Point;
-  cheilion: Point;
-  labraleInferius: Point;
-  sublabiale: Point;
-  pogonion: Point;
-  menton: Point;
-  cervicalPoint: Point;
-  gonionTop: Point;
-  gonionBottom: Point;
-};
+
 
 export interface AppState {
   step: number;
   gender: string | null;
   race: string[];
   frontPhotoUrl: string | null;
-  sidePhotoUrl: string | null;
   frontLandmarks: FrontLandmarks | null;
-  sideLandmarks: SideLandmarks | null;
 }
 
 export type FinalResult = {
@@ -114,6 +80,4 @@ export type FinalResult = {
   frontPhotoUrl: string;
   gender: string;
   race: string;
-  sideLandmarks?: SideLandmarks | null;
-  sidePhotoUrl?: string | null;
 };

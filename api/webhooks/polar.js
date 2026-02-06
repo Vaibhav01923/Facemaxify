@@ -48,7 +48,11 @@ export default async function handler(req, res) {
   const eventType = evt.type;
   console.log(`Received webhook: ${eventType}`);
 
-  if (eventType === "checkout.created" || eventType === "order.created") {
+  if (
+    eventType === "checkout.created" || 
+    eventType === "order.created" || 
+    eventType === "checkout.updated"
+  ) {
     const data = evt.data;
     // Try both snake_case (standard webhook) and camelCase (SDK)
     const email = data.customer_email || data.customerEmail;

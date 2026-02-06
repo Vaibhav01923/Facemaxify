@@ -121,18 +121,22 @@ export const LandingPage: React.FC = () => {
         </motion.p>
 
         {/* CTA */}
-        <motion.div
-          variants={item}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <SignUpButton mode="modal">
-            <button className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]">
-              <span className="relative z-10">Join the waitlist</span>
+          <motion.div
+            variants={item}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <button
+              onClick={() => {
+                // TODO: Replace 'YOUR_PRODUCT_ID_HERE' with your actual Polar Product Price ID from the Dashboard
+                window.location.href = "/api/checkout?products=YOUR_PRODUCT_ID_HERE";
+              }}
+              className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"
+            >
+              <span className="relative z-10">Purchase Now</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
-          </SignUpButton>
-        </motion.div>
+          </motion.div>
 
         {/* Minimal Social Proof */}
         <motion.div

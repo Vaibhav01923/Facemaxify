@@ -59,7 +59,11 @@ const App: React.FC = () => {
   // Grant access if owner OR paid
   const hasAccess = isOwner || isPaid;
 
-  if (!isLoaded || checkingPayment) {
+  // Show loader while Clerk is loading, OR while we are checking payment, 
+  // OR if we have a user but haven't determined their paid status yet.
+  const isDeterminingAccess = !isLoaded || checkingPayment || (user && isPaid === null);
+
+  if (isDeterminingAccess) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>

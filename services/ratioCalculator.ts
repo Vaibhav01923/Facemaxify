@@ -21,7 +21,7 @@ export const RATIO_CONFIGS = {
     eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.0, range: 0.5, decay: 1.23, unit: "x" },
 
     interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.90, range: 0.05, decay: 3.25, unit: "x" },
-    mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.50, range: 0.1, decay: 4.90, unit: "x" },
+    mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.55, range: 0.1, decay: 4.90, unit: "x" },
     lipRatio: { name: "Lower Lip to Upper Lip Ratio", ideal: 1.618, range: 0.1, decay: 1.08, unit: "x" },
     mouthCorner: { name: "Mouth Corner Position", ideal: 0.91, range: 0.03, decay: 0.36, unit: "mm" },
     cupidsBowDepth: { name: "Cupid's Bow Depth", ideal: 3.0, range: 1.0, decay: 0.25, unit: "mm" },

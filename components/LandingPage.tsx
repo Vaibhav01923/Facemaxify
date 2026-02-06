@@ -78,9 +78,59 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#050510] text-white font-sans selection:bg-indigo-500/30 overflow-hidden relative">
-      {/* ... existing background code ... */}
-      
-      {/* ... Hero Section Code ... */}
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/10 rounded-full blur-[150px] animate-pulse-slow"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 rounded-full blur-[150px] animate-pulse-slow delay-1000"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+      </div>
+
+      {/* Main Content - Minimal */}
+      <motion.main
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="relative z-10 flex flex-col justify-center items-center min-h-[80vh] px-6 text-center"
+      >
+        {/* Badge */}
+        <motion.div variants={item} className="mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-xs font-medium text-slate-300 tracking-wide uppercase">
+              50% Off for First 50 Users
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Hero Text */}
+        <motion.h1
+          variants={item}
+          className="text-6xl sm:text-8xl font-bold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-slate-500"
+        >
+          Facemaxify
+        </motion.h1>
+
+        <motion.p
+          variants={item}
+          className="text-lg sm:text-xl text-slate-400 mb-12 max-w-xl mx-auto leading-relaxed font-light"
+        >
+          The next generation of facial aesthetics analysis.{" "}
+          <br className="hidden sm:block" />
+          Join the exclusive waitlist for early access.
+          <br />
+          <span className="font-bold text-white">
+            Completely Free for first 10 users in the waitlist!
+          </span>
+          <br />
+          <span className="font-semibold text-indigo-300">
+            First 50 users get it at half the price when we launch.
+          </span>
+        </motion.p>
+
+        {/* CTA */}
           <motion.div
             variants={item}
             whileHover={{ scale: 1.02 }}
@@ -97,7 +147,7 @@ export const LandingPage: React.FC = () => {
               }}
               className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"
             >
-              <span className="relative z-10">{isSignedIn ? "Purchase Now" : "Sign in to Purchase"}</span>
+              <span className="relative z-10">Purchase Now</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
           </motion.div>

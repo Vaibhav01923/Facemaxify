@@ -211,19 +211,19 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             return (
                 <>
                     {/* Left Eye Width */}
-                    <line x1={lOut.x} y1={lOut.y} x2={lIn.x} y2={lIn.y} stroke="white" strokeWidth="1.2" />
-                    <line x1={lOut.x} y1={lOut.y - 1.5} x2={lOut.x} y2={lOut.y + 1.5} stroke="white" strokeWidth="0.8" />
-                    <line x1={lIn.x} y1={lIn.y - 1.5} x2={lIn.x} y2={lIn.y + 1.5} stroke="white" strokeWidth="0.8" />
+                    <line x1={lOut.x} y1={lOut.y} x2={lIn.x} y2={lIn.y} stroke="white" strokeWidth="0.8" />
+                    <line x1={lOut.x} y1={lOut.y - 1} x2={lOut.x} y2={lOut.y + 1} stroke="white" strokeWidth="0.5" />
+                    <line x1={lIn.x} y1={lIn.y - 1} x2={lIn.x} y2={lIn.y + 1} stroke="white" strokeWidth="0.5" />
 
                     {/* Gap (Intercanthal) */}
-                    <line x1={lIn.x} y1={midY} x2={rIn.x} y2={midY} stroke="#22d3ee" strokeWidth="1.5" />
-                    <line x1={lIn.x} y1={midY - 2} x2={lIn.x} y2={midY + 2} stroke="#22d3ee" strokeWidth="1" />
-                    <line x1={rIn.x} y1={midY - 2} x2={rIn.x} y2={midY + 2} stroke="#22d3ee" strokeWidth="1" />
+                    <line x1={lIn.x} y1={midY} x2={rIn.x} y2={midY} stroke="#22d3ee" strokeWidth="1" />
+                    <line x1={lIn.x} y1={midY - 1.5} x2={lIn.x} y2={midY + 1.5} stroke="#22d3ee" strokeWidth="0.8" />
+                    <line x1={rIn.x} y1={midY - 1.5} x2={rIn.x} y2={midY + 1.5} stroke="#22d3ee" strokeWidth="0.8" />
 
                     {/* Right Eye Width */}
-                    <line x1={rIn.x} y1={rIn.y} x2={rOut.x} y2={rOut.y} stroke="white" strokeWidth="1.2" />
-                    <line x1={rIn.x} y1={rIn.y - 1.5} x2={rIn.x} y2={rIn.y + 1.5} stroke="white" strokeWidth="0.8" />
-                    <line x1={rOut.x} y1={rOut.y - 1.5} x2={rOut.x} y2={rOut.y + 1.5} stroke="white" strokeWidth="0.8" />
+                    <line x1={rIn.x} y1={rIn.y} x2={rOut.x} y2={rOut.y} stroke="white" strokeWidth="0.8" />
+                    <line x1={rIn.x} y1={rIn.y - 1} x2={rIn.x} y2={rIn.y + 1} stroke="white" strokeWidth="0.5" />
+                    <line x1={rOut.x} y1={rOut.y - 1} x2={rOut.x} y2={rOut.y + 1} stroke="white" strokeWidth="0.5" />
 
                     {/* Label for Gap */}
                     <g transform={`translate(${(lIn.x + rIn.x) / 2}, ${midY + 4})`}>

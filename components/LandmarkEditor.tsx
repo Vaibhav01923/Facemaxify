@@ -219,15 +219,53 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
       setTransform({ x: rawTx, y: rawTy, k: newK });
   };
 
+  // Calculate center point based on current transform
+  const getCenterPoint = useCallback(() => {
+    if (!containerRef.current || imgDim.w === 0 || imgDim.h === 0) return null;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+
+    // Inverse transform to find point under center
+    // Screen = Img * k + t  =>  Img = (Screen - t) / k
+    const imgX = (cx - transform.x) / transform.k;
+    const imgY = (cy - transform.y) / transform.k;
+
+    // Convert to relative 0-1000 scale
+    const x = (imgX / imgDim.w) * 1000;
+    const y = (imgY / imgDim.h) * 1000;
+
+    return { x, y };
+  }, [transform, imgDim]);
+
+  const saveCurrentPosition = () => {
+    const pt = getCenterPoint();
+    if (pt) {
+        setLandmarks(prev => ({
+            ...prev,
+            [activeKey]: pt
+        }));
+    }
+  };
+
   const handleNext = () => {
+      saveCurrentPosition();
       if (currentIndex < keys.length - 1) {
           setActiveKey(keys[currentIndex + 1]);
       } else {
-          onComplete(landmarks);
+          // For the last item, we need to ensure state is updated before completing
+          // But setLandmarks is async. So we calculate it directly for the onComplete callback
+          const pt = getCenterPoint();
+          const finalLandmarks = { ...landmarks };
+          if (pt) finalLandmarks[activeKey] = pt;
+          
+          onComplete(finalLandmarks);
       }
   };
 
   const handlePrev = () => {
+      saveCurrentPosition();
       if (currentIndex > 0) setActiveKey(keys[currentIndex - 1]);
   };
 

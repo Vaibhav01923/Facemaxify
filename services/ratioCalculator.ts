@@ -19,7 +19,7 @@ export const RATIO_CONFIGS = {
     // ===============================================
     canthalTilt: { name: "Lateral Canthal Tilt", ideal: 5.0, range: 2.0, decay: 0.27, unit: "°" },
     eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.0, range: 0.5, decay: 1.23, unit: "x" },
-    eyebrowLowSet: { name: "Eyebrow Low Setedness", ideal: 0.80, range: 0.1, decay: 1.40, unit: "x" },
+
     interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.90, range: 0.05, decay: 3.25, unit: "x" },
     mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.50, range: 0.1, decay: 4.90, unit: "x" },
     lipRatio: { name: "Lower Lip to Upper Lip Ratio", ideal: 1.618, range: 0.1, decay: 1.08, unit: "x" },
@@ -169,9 +169,7 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const avgEyeH = (leftEyeH + rightEyeH) / 2;
   add('eyeAspectRatio', math.ratio(avgEyeW, avgEyeH), ["leftEyeLateralCanthus", "leftEyeMedialCanthus", "leftEyeUpperEyelid", "leftEyeLowerEyelid"]);
 
-  // Eyebrow Low Setedness
-  const browToPupilAvg = (Math.abs(l.leftBrowInnerCorner.y - l.leftEyePupil.y) + Math.abs(l.rightBrowInnerCorner.y - l.rightEyePupil.y)) / 2;
-  add('eyebrowLowSet', math.ratio(browToPupilAvg, avgEyeH), ["leftBrowInnerCorner", "leftEyePupil", "rightBrowInnerCorner", "rightEyePupil"]);
+
 
   // Interpupillary-Mouth Width Ratio
   const ipd = Math.abs(l.rightEyePupil.x - l.leftEyePupil.x);

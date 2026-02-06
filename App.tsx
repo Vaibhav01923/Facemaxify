@@ -301,11 +301,45 @@ const AnalysisFlow: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+  const [isPaid, setIsPaid] = useState<boolean | null>(null);
+  const [checkingPayment, setCheckingPayment] = useState(false);
 
-  // Check if the current user is the owner
-  const isOwner =
-    user?.primaryEmailAddress?.emailAddress === "kandpal1221@gmail.com";
+  React.useEffect(() => {
+    async function checkPaymentStatus() {
+      if (!user?.primaryEmailAddress?.emailAddress) return;
+      
+      setCheckingPayment(true);
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("isPaid")
+          .eq("email", user.primaryEmailAddress.emailAddress)
+          .single();
+
+        if (data && data.isPaid) {
+          setIsPaid(true);
+        } else {
+          setIsPaid(false);
+        }
+      } catch (err) {
+        console.error("Failed to check payment status:", err);
+        setIsPaid(false); 
+      } finally {
+        setCheckingPayment(false);
+      }
+    }
+
+    if (user) {
+      checkPaymentStatus();
+    }
+  }, [user]);
+
+  // Check if the current user is the owner (bypass payment)
+  const isOwner = user?.primaryEmailAddress?.emailAddress === "kandpal1221@gmail.com";
+  
+  // Grant access if owner OR paid
+  const hasAccess = isOwner || isPaid;
 
   return (
     <Routes>
@@ -317,7 +351,13 @@ const App: React.FC = () => {
               <LandingPage />
             </SignedOut>
             <SignedIn>
-              {isOwner ? <AnalysisFlow /> : <WaitlistSuccess />}
+              {isLoaded && !checkingPayment ? (
+                  hasAccess ? <AnalysisFlow /> : <WaitlistSuccess />
+              ) : (
+                <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+                   <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
             </SignedIn>
           </>
         }
@@ -332,12 +372,23 @@ const WaitlistSuccess: React.FC = () => (
     <Navbar />
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 text-center animate-fadeIn text-white">
       <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-        <span className="text-4xl">🎉</span>
+        <span className="text-4xl">🔒</span>
       </div>
-      <h2 className="text-3xl font-bold mb-2">You're on the list!</h2>
-      <p className="text-slate-400 mb-8">
-        We'll notify you as soon as your free premium access is ready.
+      <h2 className="text-3xl font-bold mb-2">Access Required</h2>
+      <p className="text-slate-400 mb-8 max-w-md">
+        You need to purchase access to use this tool.
       </p>
+      <button 
+        onClick={() => {
+             // Redirect to checkout again if they claim they paid but it's not showing, or if they need to buy
+             // But actually, maybe simpler to just redirect to home or show purchase button again?
+             // For now let's just show a purchase button logic again or sign out
+             window.location.href = "/";
+        }}
+        className="px-6 py-3 bg-blue-600 rounded-lg font-semibold hover:bg-blue-500 transition-colors"
+      >
+        Go to Home
+      </button>
     </div>
   </>
 );

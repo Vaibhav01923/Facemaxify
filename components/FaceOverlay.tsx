@@ -195,25 +195,47 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         }
     }
 
-    // --- Chin to Philtrum Ratio ---
-    if (metricName === "Chin to Philtrum Ratio") {
-        const chin = getPt('chinBottom');
-        const lipLower = getPt('lowerLip');
-        const lipUpper = getPt('cupidsBow');
-        const nose = getPt('nasalBase');
+    // --- One Eye Apart Test (EYE SPACING) ---
+    if (metricName === "One Eye Apart Test") {
+        const lIn = getPt('leftEyeMedialCanthus');
+        const lOut = getPt('leftEyeLateralCanthus');
+        const rIn = getPt('rightEyeMedialCanthus');
+        const rOut = getPt('rightEyeLateralCanthus');
 
-        if (chin && lipLower && lipUpper && nose) {
-            const midX = nose.x; 
+        if (lIn && lOut && rIn && rOut) {
+            const avgEyeW = (Math.abs(lOut.x - lIn.x) + Math.abs(rOut.x - rIn.x)) / 2;
+            const gap = Math.abs(rIn.x - lIn.x);
+            const gapRatio = (gap / avgEyeW).toFixed(2);
+            const midY = (lIn.y + lOut.y + rIn.y + rOut.y) / 4;
+
             return (
                 <>
-                    <line x1={midX} y1={nose.y} x2={midX} y2={lipUpper.y} stroke="#22d3ee" strokeWidth="1.5" />
-                    <line x1={midX} y1={lipLower.y} x2={midX} y2={chin.y} stroke="#3b82f6" strokeWidth="1.5" />
-                    <text x={midX + 2} y={(nose.y + lipUpper.y)/2} fill="#22d3ee" fontSize="2.5" fontWeight="bold">Philtrum</text>
-                    <text x={midX + 2} y={(lipLower.y + chin.y)/2} fill="#3b82f6" fontSize="2.5" fontWeight="bold">Chin</text>
+                    {/* Left Eye Width */}
+                    <line x1={lOut.x} y1={lOut.y} x2={lIn.x} y2={lIn.y} stroke="white" strokeWidth="1.2" />
+                    <line x1={lOut.x} y1={lOut.y - 1.5} x2={lOut.x} y2={lOut.y + 1.5} stroke="white" strokeWidth="0.8" />
+                    <line x1={lIn.x} y1={lIn.y - 1.5} x2={lIn.x} y2={lIn.y + 1.5} stroke="white" strokeWidth="0.8" />
+
+                    {/* Gap (Intercanthal) */}
+                    <line x1={lIn.x} y1={midY} x2={rIn.x} y2={midY} stroke="#22d3ee" strokeWidth="1.5" />
+                    <line x1={lIn.x} y1={midY - 2} x2={lIn.x} y2={midY + 2} stroke="#22d3ee" strokeWidth="1" />
+                    <line x1={rIn.x} y1={midY - 2} x2={rIn.x} y2={midY + 2} stroke="#22d3ee" strokeWidth="1" />
+
+                    {/* Right Eye Width */}
+                    <line x1={rIn.x} y1={rIn.y} x2={rOut.x} y2={rOut.y} stroke="white" strokeWidth="1.2" />
+                    <line x1={rIn.x} y1={rIn.y - 1.5} x2={rIn.x} y2={rIn.y + 1.5} stroke="white" strokeWidth="0.8" />
+                    <line x1={rOut.x} y1={rOut.y - 1.5} x2={rOut.x} y2={rOut.y + 1.5} stroke="white" strokeWidth="0.8" />
+
+                    {/* Label for Gap */}
+                    <g transform={`translate(${(lIn.x + rIn.x) / 2}, ${midY + 4})`}>
+                        <rect x="-6" y="-2" width="12" height="4" rx="1" fill="rgba(0,0,0,0.6)" />
+                        <text x="0" y="1" fill="#22d3ee" fontSize="2.8" fontWeight="bold" textAnchor="middle">{gapRatio}x</text>
+                    </g>
                 </>
             );
         }
     }
+
+    // --- Chin to Philtrum Ratio ---
 
     // --- Width Comparisons ---
     if (["Bigonial Width", "Bitemporal Width", "Eye Separation Ratio"].includes(metricName || "")) {

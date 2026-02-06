@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SignUpButton, useUser } from "@clerk/clerk-react";
+import { SignUpButton, useUser, useClerk } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
 import {
   Scan,
@@ -20,6 +20,7 @@ function cn(...inputs: ClassValue[]) {
 
 export const LandingPage: React.FC = () => {
   const { isSignedIn, user } = useUser();
+  const { openSignIn } = useClerk();
   const [userCount, setUserCount] = useState<number | null>(null);
   console.log(user);
   useEffect(() => {
@@ -128,11 +129,15 @@ export const LandingPage: React.FC = () => {
           >
             <button
               onClick={() => {
-                window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+                if (!isSignedIn) {
+                  openSignIn();
+                } else {
+                  window.location.href = "/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c";
+                }
               }}
               className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"
             >
-              <span className="relative z-10">Purchase Now</span>
+              <span className="relative z-10">{isSignedIn ? "Purchase Now" : "Sign in to Purchase"}</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
           </motion.div>

@@ -1,16 +1,22 @@
 import React, { useState } from "react";
+import { useUser } from "@clerk/clerk-react";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { Dashboard as ResultsDashboard } from "./Dashboard";
 import { Navbar } from "./Navbar";
+import { Clock } from "lucide-react";
 import { FinalResult, FrontLandmarks, SideLandmarks, Point } from "../types";
 import {
   detectLandmarksInstant,
   initializeMediaPipe,
 } from "../services/mediaPipeService";
 import { standardizeImage } from "../utils/imageProcessing";
+import { saveScanResult } from "../services/supabase";
+import { AnalysisHistory } from "./AnalysisHistory";
 
 export const FacialAnalysis: React.FC = () => {
+  const { user } = useUser();
   const [step, setStep] = useState(0);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,13 +95,19 @@ export const FacialAnalysis: React.FC = () => {
   const handleSkipSidePhoto = () => {
     // Go directly to dashboard
     if (frontPhotoStandardized && frontLandmarks) {
-      setFinalResult({
+      const result: FinalResult = {
         frontPhotoUrl: frontPhotoStandardized,
         frontLandmarks: frontLandmarks as FrontLandmarks,
         gender: "unknown",
         race: "unknown",
-      });
+      };
+      setFinalResult(result);
       setStep(8);
+
+      // AUTO-SAVE
+      if (user?.id) {
+        saveScanResult(result, 0, user.id);
+      }
     }
   };
 
@@ -139,19 +151,55 @@ export const FacialAnalysis: React.FC = () => {
 
     // PHASE E: FINAL RENDERING
     if (frontPhotoStandardized && frontLandmarks) {
-      setFinalResult({
+      const result: FinalResult = {
         frontPhotoUrl: frontPhotoStandardized,
         frontLandmarks: frontLandmarks as FrontLandmarks,
         sidePhotoUrl: sidePhotoStandardized,
         sideLandmarks: editedLandmarks as SideLandmarks,
         gender: "unknown",
         race: "unknown",
-      });
+      };
+      setFinalResult(result);
       setStep(8);
+
+      // AUTO-SAVE
+      if (user?.id) {
+        saveScanResult(result, 0, user.id);
+      }
     }
   };
 
+  const loadFromHistory = (scan: any) => {
+    // Reconstruct FinalResult from DB scan
+    const historyResult: FinalResult = {
+      gender: scan.gender,
+      race: scan.race,
+      frontPhotoUrl: scan.front_photo_url,
+      sidePhotoUrl: scan.side_photo_url,
+      frontLandmarks: scan.front_landmarks,
+      sideLandmarks: scan.side_landmarks
+    };
+    setFinalResult(historyResult);
+    setStep(8);
+  };
+
   // RENDER BASED ON STEP
+  if (step === 9) {
+    return (
+      <div className="min-h-screen bg-[#050510] text-white">
+        <Navbar />
+        <div className="pt-24 px-6 max-w-4xl mx-auto">
+          <button 
+            onClick={() => setStep(0)}
+            className="mb-8 flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+          >
+            ← Back to Analysis
+          </button>
+          <AnalysisHistory onSelectScan={loadFromHistory} />
+        </div>
+      </div>
+    );
+  }
   if (step === 0) {
     // Upload Front Photo
     return (
@@ -170,8 +218,8 @@ export const FacialAnalysis: React.FC = () => {
               </div>
             )}
 
-            <label className="block w-full cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl transition-colors">
-              <span>{loading ? "Processing..." : "Upload Front Photo"}</span>
+            <label className="block w-full cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-4 text-center">
+              <span>{loading ? "Processing..." : "Get Started: Upload Front Photo"}</span>
               <input
                 type="file"
                 className="hidden"
@@ -184,6 +232,16 @@ export const FacialAnalysis: React.FC = () => {
                 }}
               />
             </label>
+
+            {user && (
+              <button 
+                onClick={() => setStep(9)}
+                className="mt-6 text-slate-400 hover:text-white transition-colors flex items-center gap-2 mx-auto justify-center group"
+              >
+                <Clock className="w-4 h-4 group-hover:text-indigo-400 transition-colors" />
+                <span className="text-sm font-medium">View Scan History</span>
+              </button>
+            )}
           </div>
         </div>
       </>

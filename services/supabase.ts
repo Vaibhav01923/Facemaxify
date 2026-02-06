@@ -41,31 +41,31 @@ export const uploadImage = async (
 
 export const saveScanResult = async (
   data: FinalResult,
-  overallScore: number
+  overallScore: number,
+  userId: string
 ) => {
   try {
     // 1. Upload Front Photo
-    const frontPath = `front_${Date.now()}.jpg`;
+    const frontPath = `front_${userId}_${Date.now()}.jpg`;
     const frontUrl = await uploadImage(data.frontPhotoUrl, frontPath);
 
     if (!frontUrl) throw new Error("Failed to upload front photo");
 
     // 2. Upload Side Photo (if exists)
-    let sideUrl = null;
+    let sidePath = null;
     if (data.sidePhotoUrl) {
-      const sidePath = `side_${Date.now()}.jpg`;
-      sideUrl = await uploadImage(data.sidePhotoUrl, sidePath);
+      sidePath = `side_${userId}_${Date.now()}.jpg`;
+      const sideUrl = await uploadImage(data.sidePhotoUrl, sidePath);
+      if (!sideUrl) console.warn("Failed to upload side photo");
     }
 
     // 3. Save to DB
     const { error } = await supabase.from("scans").insert({
+      user_id: userId,
       gender: data.gender,
       race: data.race,
-      front_photo_path: frontPath, // Storing path for reference, or could store full URL
-      side_photo_path: sideUrl ? `side_${Date.now()}.jpg` : null, // Fix: Use path, not URL to match schema expectation if we want consistency, but plan said path. Let's store URL for easier access or path. Plan said "path in storage".
-      // Actually, let's store the full public URL so we don't have to construct it later?
-      // Plan said: "front_photo_path (Text, path in storage)"
-      // Let's stick to storing the path as designed in the plan.
+      front_photo_path: frontPath,
+      side_photo_path: sidePath,
       front_landmarks: data.frontLandmarks,
       side_landmarks: data.sideLandmarks,
       overall_score: overallScore,
@@ -79,3 +79,35 @@ export const saveScanResult = async (
     return false;
   }
 };
+
+export const getScanHistory = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("scans")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    
+    // Convert relative paths to public URLs
+    const scansWithUrls = data.map((scan) => {
+      const frontUrl = supabase.storage.from("scans").getPublicUrl(scan.front_photo_path).data.publicUrl;
+      const sideUrl = scan.side_photo_path 
+        ? supabase.storage.from("scans").getPublicUrl(scan.side_photo_path).data.publicUrl
+        : null;
+      
+      return {
+        ...scan,
+        front_photo_url: frontUrl,
+        side_photo_url: sideUrl,
+      };
+    });
+
+    return scansWithUrls;
+  } catch (error) {
+    console.error("Fetch History Error:", error);
+    return [];
+  }
+};
+

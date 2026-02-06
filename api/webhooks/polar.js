@@ -56,21 +56,31 @@ export default async function handler(req, res) {
 
   if (eventType === "checkout.created" || eventType === "order.created") {
     const data = evt.data;
-    // Note: data.customer_email is common, but check Polar docs for specific event payload structure
-    const email = data.customer_email;
+    // Try both snake_case (standard webhook) and camelCase (SDK)
+    const email = data.customer_email || data.customerEmail;
+
+    console.log("Webhook Data:", JSON.stringify(data)); // Log data for debugging
 
     if (email) {
       console.log(`Updating payment status for: ${email}`);
-      const { error } = await supabase
+      const { data: user, error } = await supabase
         .from("users")
         .update({ isPaid: true }) 
-        .eq("email", email);
+        .eq("email", email)
+        .select(); // Select to confirm update
 
       if (error) {
         console.error("Supabase update error:", error);
         return res.status(500).send("Database update failed");
       }
-      console.log("Database updated successfully");
+      
+      if (user && user.length > 0) {
+        console.log("Database updated successfully:", user);
+      } else {
+        console.warn(`No user found with email: ${email}`);
+      }
+    } else {
+      console.error("No customer_email found in webhook data");
     }
   }
 

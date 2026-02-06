@@ -11,6 +11,7 @@ import {
   initializeMediaPipe,
 } from "./services/mediaPipeService";
 import { standardizeImage } from "./utils/imageProcessing";
+import { supabase } from "./services/supabase";
 
 /**
  * STEP-BY-STEP FLOW:

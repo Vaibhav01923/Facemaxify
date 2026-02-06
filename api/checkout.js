@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     }
 
     const result = await polar.checkouts.create({
-      productPriceId: products ? String(products) : undefined,
+      products: products ? [String(products)] : [],
       successUrl: process.env.POLAR_SUCCESS_URL || 'https://facemaxify.com/dashboard',
       customerId: customerId ? String(customerId) : undefined,
       customerExternalId: customerExternalId ? String(customerExternalId) : undefined,

@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar } from "./Navbar";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Clock } from "lucide-react";
+import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Clock, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { guides } from "../data/guidesData";
 

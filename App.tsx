@@ -81,11 +81,7 @@ const App: React.FC = () => {
               <LandingPage />
             </SignedOut>
             <SignedIn>
-              {hasAccess ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
-                <WaitlistSuccess />
-              )}
+              <Navigate to="/dashboard" replace />
             </SignedIn>
           </>
         }

@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
   const client = new DodoPayments({
     bearerToken: process.env.DODO_PAYMENTS_API_KEY,
-    environment: process.env.DODO_PAYMENTS_MODE || 'live', // 'live' or 'test_mode'
+    environment: process.env.DODO_PAYMENTS_MODE || 'live_mode', // 'live_mode' or 'test_mode'
     webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY // Secret Key
   });
 

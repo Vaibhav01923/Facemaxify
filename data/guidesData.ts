@@ -129,5 +129,40 @@ export const guides: Guide[] = [
         ]
       }
     ]
+  },
+  {
+    id: "heightmaxxing",
+    title: "Heightmaxxing Protocol",
+    description: "Advanced protocols for maximizing growth potential during critical development years (12-17).",
+    category: "Body",
+    readTime: "5 min read",
+    thumbnail: "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&q=80&w=800",
+    sections: [
+      {
+        title: "The 12-17 Growth Stack",
+        steps: [
+          {
+            title: "Peptide Protocol (The Core)",
+            content: "For maximizing IGF-1 levels (potentially exceeding 700ng/mL): Inject 3333.33-5000mcg of CJC-1295 DAC subQ before bed on Monday, Wednesday, and Saturday. This totals 10,000-15,000mcg (10-15mg) per week. This specific timing and dosage is designed to pulse growth hormone release effectively."
+          },
+          {
+            title: "MK-677 Synergist",
+            content: "Take 25mg of MK-677 orally every day before bed. MK-677 mimics ghrelin and stimulates the release of growth hormone without disturbing cortisol levels significantly. It works synergistically with CJC-1295 DAC."
+          },
+          {
+            title: "Huperzine A (Somatostatin Inhibitor)",
+            content: "Take 200mcg of Huperzine A 3 times per day (total 600mcg/day). Huperzine A inhibits somatostatin, a hormone that blocks growth hormone release, ensuring your body stays in a growth-permissive state."
+          },
+          {
+            title: "Insulin Sensitivity (CRITICAL)",
+            content: "WARNING: High growth hormone levels can reduce insulin sensitivity. You MUST use Berberine (500mg with high-carb meals) or similar glucose disposal agents to combat this, unless you want to risk becoming pre-diabetic. Monitor your blood glucose levels regularly."
+          },
+          {
+            title: "Disclaimer & Research",
+            content: "This is suitable for ages 12-17 or late bloomers. However, these are potent compounds. You MUST do your own independent research on every single compound mentioned before starting. Understanding the mechanism of action and potential side effects is your responsibility."
+          }
+        ]
+      }
+    ]
   }
 ];

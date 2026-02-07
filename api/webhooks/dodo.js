@@ -19,12 +19,22 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.DODO_PAYMENTS_API_KEY;
   const webhookKey = process.env.DODO_PAYMENTS_WEBHOOK_KEY;
-  const mode = process.env.DODO_PAYMENTS_MODE || 'live_mode';
+  
+  let mode = process.env.DODO_PAYMENTS_MODE;
+  // Auto-detect mode if key follows standard naming convention
+  if (apiKey?.startsWith('sk_test_')) {
+    mode = 'test_mode';
+  } else if (apiKey?.startsWith('sk_live_')) {
+    mode = 'live_mode';
+  } else if (!mode) {
+    mode = 'test_mode'; // Default to Test Mode for safety/debugging
+  }
 
   console.log("----- WEBHOOK INIT -----");
-  console.log("Mode:", mode);
+  console.log("Mode (Auto-detected):", mode);
   console.log("API Key Exists:", !!apiKey);
   console.log("Webhook Key Exists:", !!webhookKey);
+  if (apiKey) console.log("Key Prefix:", apiKey.substring(0, 8));
   if (webhookKey) console.log("Webhook Key First 4:", webhookKey.substring(0, 4));
   console.log("------------------------");
 

@@ -393,32 +393,38 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
          });
     }
 
-    // --- Jaw Slope (Visualized top-gonion -> bottom-gonion -> chin-side) ---
+    // --- Jaw Slope (Cheek -> Top Gonion -> Side Chin) ---
     if (metricName === "Jaw Slope") {
-        const lTop = getPt('leftTopGonion');
-        const lBot = getPt('leftBottomGonion');
+        const lCheek = getPt('leftCheek');
+        const lTop = getPt('leftTopGonion'); // Vertex
         const lChin = getPt('chinLeft');
         
-        const rTop = getPt('rightTopGonion');
-        const rBot = getPt('rightBottomGonion');
+        const rCheek = getPt('rightCheek');
+        const rTop = getPt('rightTopGonion'); // Vertex
         const rChin = getPt('chinRight');
 
-        if (lTop && lBot && lChin && rTop && rBot && rChin) {
+        if (lCheek && lTop && lChin && rCheek && rTop && rChin) {
              return (
                 <>
                     {/* Left Side */}
-                    <line x1={lTop.x} y1={lTop.y} x2={lBot.x} y2={lBot.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
-                    <line x1={lBot.x} y1={lBot.y} x2={lChin.x} y2={lChin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
-                    <circle cx={lTop.x} cy={lTop.y} r="1" fill="#22d3ee" />
-                    <circle cx={lBot.x} cy={lBot.y} r="1" fill="#22d3ee" />
-                    <circle cx={lChin.x} cy={lChin.y} r="1" fill="#22d3ee" />
+                    <line x1={lCheek.x} y1={lCheek.y} x2={lTop.x} y2={lTop.y} stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
+                    <line x1={lTop.x} y1={lTop.y} x2={lChin.x} y2={lChin.y} stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
+                    <circle cx={lCheek.x} cy={lCheek.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={lTop.x} cy={lTop.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    <circle cx={lChin.x} cy={lChin.y} r="0.8" fill="#22d3ee" />
+                    
+                    {/* Angle Arc Left */}
+                    <text x={lTop.x - 4} y={lTop.y} fill="white" fontSize="2.5" fontWeight="bold">Angle</text>
 
                     {/* Right Side */}
-                    <line x1={rTop.x} y1={rTop.y} x2={rBot.x} y2={rBot.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
-                    <line x1={rBot.x} y1={rBot.y} x2={rChin.x} y2={rChin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
-                    <circle cx={rTop.x} cy={rTop.y} r="1" fill="#22d3ee" />
-                    <circle cx={rBot.x} cy={rBot.y} r="1" fill="#22d3ee" />
-                    <circle cx={rChin.x} cy={rChin.y} r="1" fill="#22d3ee" />
+                    <line x1={rCheek.x} y1={rCheek.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
+                    <line x1={rTop.x} y1={rTop.y} x2={rChin.x} y2={rChin.y} stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
+                    <circle cx={rCheek.x} cy={rCheek.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={rTop.x} cy={rTop.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    <circle cx={rChin.x} cy={rChin.y} r="0.8" fill="#22d3ee" />
+
+                    {/* Angle Arc Right */}
+                    <text x={rTop.x + 4} y={rTop.y} fill="white" fontSize="2.5" fontWeight="bold">Angle</text>
                 </>
              );
         }

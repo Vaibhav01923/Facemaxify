@@ -257,11 +257,11 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const vertex = intersection || l.chinBottom;
   add('jawFrontalAngle', math.angle(l.leftBottomGonion, vertex, l.rightBottomGonion), ["leftBottomGonion", "chinLeft", "chinRight", "rightBottomGonion"]);
 
-  // Jaw Slope (New Definition: Angle between Top Gonion -> Bottom Gonion -> Side Chin)
-  // Vertex is Bottom Gonion (V)
-  const leftSlope = math.angle(l.leftTopGonion, l.leftBottomGonion, l.chinLeft);
-  const rightSlope = math.angle(l.rightTopGonion, l.rightBottomGonion, l.chinRight);
-  add('jawSlope', (leftSlope + rightSlope) / 2, ["leftTopGonion", "leftBottomGonion", "chinLeft", "rightTopGonion", "rightBottomGonion", "chinRight"]);
+  // Jaw Slope (Updated Definition: Angle between Cheek -> Top Gonion -> Side Chin)
+  // Vertex is Top Gonion
+  const leftSlope = math.angle(l.leftCheek, l.leftTopGonion, l.chinLeft);
+  const rightSlope = math.angle(l.rightCheek, l.rightTopGonion, l.chinRight);
+  add('jawSlope', (leftSlope + rightSlope) / 2, ["leftCheek", "leftTopGonion", "chinLeft", "rightCheek", "rightTopGonion", "chinRight"]);
 
   // Chin to Philtrum
   const chinH = Math.abs(l.chinBottom.y - l.lowerLip.y);

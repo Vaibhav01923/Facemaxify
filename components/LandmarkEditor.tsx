@@ -89,10 +89,11 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   }, [imgDim]);
 
   const startNudge = (dx: number, dy: number) => {
+      stopNudge(); // 🔑 HARD RESET (important)
+
       nudge(dx, dy); // Initial move
-      // Delay before continuous
+
       nudgeTimeout.current = setTimeout(() => {
-          if (nudgeInterval.current) return; 
           nudgeInterval.current = setInterval(() => nudge(dx, dy), 50);
       }, 300);
   };
@@ -111,7 +112,8 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.repeat) return;
+      // Removed e.repeat check to allow native repeat if interval hasn't started, 
+      // but startNudge resets everything so it's safe.
       if (e.key === 'ArrowUp') startNudge(0, -1);
       if (e.key === 'ArrowDown') startNudge(0, 1);
       if (e.key === 'ArrowLeft') startNudge(-1, 0);
@@ -124,11 +126,19 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
        }
     };
 
+    const stop = () => stopNudge();
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    // Safety nets for focus loss
+    window.addEventListener('blur', stop);
+    document.addEventListener('visibilitychange', stop);
+    
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', stop);
+      document.removeEventListener('visibilitychange', stop);
       stopNudge();
     };
   }, [nudge]);

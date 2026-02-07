@@ -53,111 +53,73 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   const activeLabel = definition ? definition.name : activeKey;
   const activeInstruction = definition ? definition.howToFind : "Adjust point location";
 
-  // --- ARROW KEY & NUDGE LOGIC ---
-  const nudgeInterval = useRef<any>(null);
-  const nudgeTimeout = useRef<any>(null);
+  // --- ARROW KEY & NUDGE LOGIC (DETERMINISTIC) ---
+  const STOP_EVENT = (e: any) => {
+      e.preventDefault();
+      e.stopPropagation();
+  };
 
-  const nudge = useCallback((dx: number, dy: number) => {
-      const currentK = transformRef.current.k;
-      // Slower movement when zoomed in
-      const speed = Math.max(0.5, 4 / currentK);
+  const nudgeStep = useCallback((dx: number, dy: number) => {
+      if (!imgDim.w || !imgDim.h) return;
+
+      // 2px precision
+      const STEP_PX = 2; 
       
       const key = activeKeyRef.current;
+      
+      // Convert pixel movement → normalized (0–1000)
+      // Landmarks are 0-1000
+      const stepX = (STEP_PX / imgDim.w) * 1000;
+      const stepY = (STEP_PX / imgDim.h) * 1000;
+
+      // Also account for zoom? If we want visual pixel steps...
+      // The user asked for "2px in image space", so zoom doesn't affect the size of the step in the image
+      // Correct.
+      
+      // Speed multiplier for holding shift? Maybe later.
+      
       setLandmarks(prev => {
         const pt = prev[key];
         return {
           ...prev,
           [key]: {
-            x: Math.max(0, Math.min(1000, pt.x + dx * speed)),
-            y: Math.max(0, Math.min(1000, pt.y + dy * speed))
+            x: Math.max(0, Math.min(1000, pt.x + dx * stepX)),
+            y: Math.max(0, Math.min(1000, pt.y + dy * stepY)),
           }
         };
       });
 
-      // VISUAL FEEDBACK: Pan the image inversely so it looks like the crosshair moved
-      // When landmark moves +dx, pan image -dx (in pixel space)
-      if (imgDim.w > 0 && imgDim.h > 0) {
-          const pixelDx = (dx * speed / 1000) * imgDim.w * currentK;
-          const pixelDy = (dy * speed / 1000) * imgDim.h * currentK;
-          
-          setTransform(prev => ({
-              ...prev,
-              x: prev.x - pixelDx,
-              y: prev.y - pixelDy
-          }));
-      }
+      // Visual feedback pan (inverse pan)
+      const k = transformRef.current.k;
+      setTransform(prev => ({
+        ...prev,
+        x: prev.x - dx * STEP_PX * k, 
+        y: prev.y - dy * STEP_PX * k
+      }));
   }, [imgDim]);
 
-  const startNudge = (dx: number, dy: number, source: 'keyboard' | 'button') => {
-      stopNudge(); // 🔑 HARD RESET (important)
-
-      nudge(dx, dy); // Initial move
-
-      // 🚫 NEVER allow delayed interval for mobile keyboard
-      // Keyboards on mobile are unreliable with keyup
-      const isMobileKeyboard = typeof window !== 'undefined' && 
-          ('ontouchstart' in window || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
-
-      if (source === 'keyboard' && isMobileKeyboard) {
-          return;
-      }
-
-      // ✅ Allowed for desktop keyboard & buttons
-      nudgeTimeout.current = setTimeout(() => {
-          nudgeInterval.current = setInterval(() => nudge(dx, dy), 50);
-      }, 300);
-  };
-
-  const stopNudge = () => {
-      // Clear both timeout and interval
-      if (nudgeTimeout.current) {
-          clearTimeout(nudgeTimeout.current);
-          nudgeTimeout.current = null;
-      }
-      if (nudgeInterval.current) {
-          clearInterval(nudgeInterval.current);
-          nudgeInterval.current = null;
-      }
-  };
-
   useEffect(() => {
-    const stop = () => stopNudge();
-
     const handleKeyDown = (e: KeyboardEvent) => {
       // Map keys to direction vectors
-      let dx = 0, dy = 0;
-      if (e.key === 'ArrowUp') dy = -1;
-      else if (e.key === 'ArrowDown') dy = 1;
-      else if (e.key === 'ArrowLeft') dx = -1;
-      else if (e.key === 'ArrowRight') dx = 1;
-      else return; // Ignore other keys
+      const map: Record<string, [number, number]> = {
+        ArrowUp: [0, -1],
+        ArrowDown: [0, 1],
+        ArrowLeft: [-1, 0],
+        ArrowRight: [1, 0],
+      };
 
-      // Call startNudge with source='keyboard'
-      // The function itself handles mobile logic safely
-      startNudge(dx, dy, 'keyboard');
-    };
+      if (!(e.key in map)) return;
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-           stopNudge();
-       }
+      e.preventDefault(); 
+      // e.repeat is handled naturally by the OS firing repeated keydown events
+
+      const [dx, dy] = map[e.key];
+      nudgeStep(dx, dy); // 🔥 ONE press = ONE move
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    
-    // Safety nets always active
-    window.addEventListener('blur', stop);
-    document.addEventListener('visibilitychange', stop);
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('blur', stop);
-      document.removeEventListener('visibilitychange', stop);
-      stopNudge();
-    };
-  }, [nudge]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [nudgeStep]);
 
   // Helper to clamp translation
   const getClampedTransform = (tx: number, ty: number, k: number, w: number, h: number, containerW: number, containerH: number) => {
@@ -284,11 +246,8 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
     return { x, y };
   }, [transform, imgDim]);
 
-  // Stop nudging when switching points (CRITICAL FIX)
-  useEffect(() => {
-    stopNudge();
-  }, [activeKey]);
-
+  // No need to stop nudge on activeKey change anymore since there are no intervals
+  
   const saveCurrentPosition = () => {
     const pt = getCenterPoint();
     if (pt) {
@@ -300,7 +259,6 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   };
 
   const handleNext = () => {
-      stopNudge(); // Safety stop
       saveCurrentPosition();
       if (currentIndex < keys.length - 1) {
           setActiveKey(keys[currentIndex + 1]);
@@ -316,7 +274,6 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   };
 
   const handlePrev = () => {
-      stopNudge(); // Safety stop
       saveCurrentPosition();
       if (currentIndex > 0) setActiveKey(keys[currentIndex - 1]);
   };
@@ -331,13 +288,19 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
           if (dir === 'down') dy = 1;
           if (dir === 'left') dx = -1;
           if (dir === 'right') dx = 1;
+          
+          // Simple, deterministic handlers
+          // ONE press = ONE move
+          const handler = (e: any) => {
+              if (e.cancelable) e.preventDefault();
+              e.stopPropagation();
+              nudgeStep(dx, dy);
+          };
+
           return {
-              onMouseDown: (e: any) => { e.preventDefault(); e.stopPropagation(); startNudge(dx, dy, 'button'); },
-              onMouseUp: stopNudge,
-              onMouseLeave: stopNudge,
-              onTouchStart: (e: any) => { e.preventDefault(); e.stopPropagation(); startNudge(dx, dy, 'button'); },
-              onTouchCancel: stopNudge,  // Critical for mobile - stops nudging if touch is interrupted
-              onContextMenu: (e: any) => e.preventDefault() // Prevent long-press menu
+              onMouseDown: handler,
+              onTouchStart: handler,
+              onContextMenu: (e: any) => e.preventDefault()
           };
       };
 

@@ -309,7 +309,7 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-900 text-white overflow-hidden select-none">
+    <div className="flex flex-col h-full bg-slate-900 text-white overflow-hidden select-none">
       {/* Top Bar */}
       <div className="flex-none p-4 bg-slate-800 border-b border-slate-700 z-20 shadow-lg">
         <div className="flex justify-between items-center mb-4">

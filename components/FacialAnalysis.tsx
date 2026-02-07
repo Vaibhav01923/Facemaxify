@@ -3,7 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { Dashboard as ResultsDashboard } from "./Dashboard";
 import { Navbar } from "./Navbar";
-import { Clock } from "lucide-react";
+import { Clock, Menu, X } from "lucide-react";
 import { FinalResult, FrontLandmarks, Point } from "../types";
 import {
   detectLandmarksInstant,
@@ -17,6 +17,7 @@ import { AnalysisHistory } from "./AnalysisHistory";
 export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
   const { user } = useUser();
   const [step, setStep] = useState(0);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -131,6 +132,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     setSelectedScanId(scan.id);
     setFinalResult(historyResult);
     setStep(8);
+    setSidebarOpen(false); // Close sidebar on mobile selection
   };
 
   const startNewAnalysis = () => {
@@ -139,6 +141,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     setFrontPhotoRaw(null);
     setFrontPhotoStandardized(null);
     setFrontLandmarks(null);
+    setSidebarOpen(false); // Close sidebar
   };
 
   // If we are still determining if history exists, show a basic loader
@@ -152,17 +155,53 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
 
   // WRAP EVERYTHING IN A SIDEBAR LAYOUT IF USER IS LOGGED IN
   return (
-    <div className="flex h-screen bg-[#050510] overflow-hidden">
+    <div className="flex h-screen bg-[#050510] overflow-hidden relative">
+      {/* Mobile Sidebar Overlay & Drawer */}
       {user && (
-        <AnalysisHistory 
-          onSelectScan={loadFromHistory} 
-          onNewScan={startNewAnalysis}
-          selectedScanId={selectedScanId || undefined} 
-        />
+        <>
+          {/* Backdrop */}
+          {isSidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 md:hidden animate-fadeIn"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          
+          {/* Sidebar */}
+          <div className={`
+            fixed inset-y-0 left-0 z-50 w-80 bg-[#0A0A0F] transform transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:block
+            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          `}>
+             <div className="absolute top-4 right-4 md:hidden z-10">
+               <button onClick={() => setSidebarOpen(false)} className="p-2 text-slate-400 hover:text-white">
+                 <X className="w-6 h-6" />
+               </button>
+             </div>
+             <AnalysisHistory 
+              onSelectScan={loadFromHistory} 
+              onNewScan={startNewAnalysis}
+              selectedScanId={selectedScanId || undefined} 
+            />
+          </div>
+        </>
       )}
       
-      <div className="flex-1 flex flex-col min-w-0 bg-[#050510]">
-        <div className="flex-1 overflow-y-auto relative">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#050510] relative z-0">
+        {/* Mobile Header Toggle */}
+        {user && (
+          <div className="md:hidden p-4 flex items-center justify-between border-b border-white/5 bg-[#050510]/80 backdrop-blur-md sticky top-0 z-40">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 -ml-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <span className="font-bold text-white text-sm tracking-tight">Facemaxify</span>
+            <div className="w-10" /> {/* Spacer for balance */}
+          </div>
+        )}
+
+        <div className={`flex-1 relative custom-scrollbar ${step === 4 ? 'overflow-hidden' : 'overflow-y-auto'}`}>
           {/* Main Content Area */}
           {step === 0 && (
             <div className="flex flex-col items-center justify-center p-8 min-h-full">
@@ -215,7 +254,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
 
           {/* Loading Overlay for internal transitions */}
           {loading && step !== 0 && (
-             <div className="absolute inset-0 bg-[#050510]/60 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="absolute inset-0 bg-[#050510]/60 backdrop-blur-sm flex items-center justify-center z-50">
               <div className="text-center">
                  <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                  <p className="text-slate-400 font-bold tracking-wide">Refining Analysis...</p>

@@ -142,24 +142,28 @@ export const guides: Guide[] = [
         title: "The 12-17 Growth Stack",
         steps: [
           {
-            title: "Peptide Protocol (The Core)",
-            content: "For maximizing IGF-1 levels (potentially exceeding 700ng/mL): Inject 3333.33-5000mcg of CJC-1295 DAC subQ before bed on Monday, Wednesday, and Saturday. This totals 10,000-15,000mcg (10-15mg) per week. This specific timing and dosage is designed to pulse growth hormone release effectively."
+            title: "Peptide Protocol: CJC-1295 DAC",
+            content: "Inject 3333.33-5000mcg of CJC-1295 DAC subQ before bed. This specific peptide is designed to pulse growth hormone release effectively over a long period."
+          },
+          {
+            title: "Injection Schedule (10-15mg/week)",
+            content: "Inject only on Monday, Wednesday, and Saturday. This totals 10,000-15,000mcg (10-15mg) per week. Discontinue immediately if you experience side effects."
           },
           {
             title: "MK-677 Synergist",
-            content: "Take 25mg of MK-677 orally every day before bed. MK-677 mimics ghrelin and stimulates the release of growth hormone without disturbing cortisol levels significantly. It works synergistically with CJC-1295 DAC."
+            content: "Take 25mg of MK-677 orally every day before bed. MK-677 mimics ghrelin and stimulates growth hormone release without significantly disturbing cortisol. It works synergistically with CJC-1295 DAC."
           },
           {
-            title: "Huperzine A (Somatostatin Inhibitor)",
-            content: "Take 200mcg of Huperzine A 3 times per day (total 600mcg/day). Huperzine A inhibits somatostatin, a hormone that blocks growth hormone release, ensuring your body stays in a growth-permissive state."
+            title: "Huperzine A (Important)",
+            content: "Take 200mcg of Huperzine A 3 times per day (total 600mcg/day). This inhibits somatostatin, the hormone that blocks growth hormone release, keeping your body in a growth-permissive state."
           },
           {
-            title: "Insulin Sensitivity (CRITICAL)",
-            content: "WARNING: High growth hormone levels can reduce insulin sensitivity. You MUST use Berberine (500mg with high-carb meals) or similar glucose disposal agents to combat this, unless you want to risk becoming pre-diabetic. Monitor your blood glucose levels regularly."
+            title: "CRITICAL: Insulin Sensitivity",
+            content: "WARNING: High growth hormone levels reduce insulin sensitivity. You MUST use Berberine (500mg with high-carb meals) or similar glucose disposal agents to combat this. Ignoring this can risk pre-diabetes. Monitor your blood glucose levels regularly."
           },
           {
-            title: "Disclaimer & Research",
-            content: "This is suitable for ages 12-17 or late bloomers. However, these are potent compounds. You MUST do your own independent research on every single compound mentioned before starting. Understanding the mechanism of action and potential side effects is your responsibility."
+            title: "Disclaimer",
+            content: "This protocol is powerful but carries risks. You MUST do your own independent research on every single compound mentioned before starting. Understanding the mechanism of action and potential side effects is your sole responsibility."
           }
         ]
       }

@@ -303,7 +303,8 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
               onMouseUp: stopNudge,
               onMouseLeave: stopNudge,
               onTouchStart: (e: any) => { e.preventDefault(); e.stopPropagation(); startNudge(dx, dy); },
-              onTouchEnd: stopNudge
+              onTouchEnd: stopNudge,
+              onTouchCancel: stopNudge  // Critical for mobile - stops nudging if touch is interrupted
           };
       };
 

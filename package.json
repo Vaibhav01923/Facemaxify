@@ -17,6 +17,7 @@
     "@polar-sh/sdk": "^0.42.5",
     "@supabase/supabase-js": "^2.90.1",
     "clsx": "^2.1.1",
+    "dodopayments": "^2.19.0",
     "framer-motion": "^12.25.0",
     "lucide-react": "^0.562.0",
     "mini-svg-data-uri": "^1.4.4",

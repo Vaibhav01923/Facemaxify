@@ -69,7 +69,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
           <p className="relative z-10 text-[11px] sm:text-xs font-black text-white uppercase tracking-widest flex items-center justify-center gap-3">
             <span className="opacity-70">✨ Unlock 10+ Premium Facial Ratios & Guides</span>
             <button 
-              onClick={() => window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`}
+              onClick={() => window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`}
               className="bg-white text-indigo-600 px-3 py-1 rounded-full hover:scale-105 transition-transform"
             >
               Purchase Now

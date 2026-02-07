@@ -403,7 +403,22 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         const rTop = getPt('rightTopGonion'); // Vertex
         const rChin = getPt('chinRight');
 
+        // Helper to find point on line at specific distance
+        const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
+             const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+             const t = dist / (len || 1);
+             return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
+        };
+
         if (lCheek && lTop && lChin && rCheek && rTop && rChin) {
+             // Calculate Arc Points Left
+             const lA = ptOnLine(lTop, lCheek, 4);
+             const lB = ptOnLine(lTop, lChin, 4);
+             
+             // Calculate Arc Points Right
+             const rA = ptOnLine(rTop, rCheek, 4);
+             const rB = ptOnLine(rTop, rChin, 4);
+
              return (
                 <>
                     {/* Left Side */}
@@ -413,8 +428,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <circle cx={lTop.x} cy={lTop.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
                     <circle cx={lChin.x} cy={lChin.y} r="0.8" fill="#22d3ee" />
                     
-                    {/* Angle Arc Left */}
-                    <text x={lTop.x - 4} y={lTop.y} fill="white" fontSize="2.5" fontWeight="bold">Angle</text>
+                    {/* Angle Arc Left (Q control point approximate) */}
+                    <path d={`M ${lA.x} ${lA.y} Q ${lTop.x - 2} ${lTop.y} ${lB.x} ${lB.y}`} stroke="white" strokeWidth="1" fill="none" />
+                    <text x={lTop.x - 5} y={lTop.y} fill="white" fontSize="2.5" fontWeight="bold">Angle</text>
 
                     {/* Right Side */}
                     <line x1={rCheek.x} y1={rCheek.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
@@ -424,7 +440,8 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <circle cx={rChin.x} cy={rChin.y} r="0.8" fill="#22d3ee" />
 
                     {/* Angle Arc Right */}
-                    <text x={rTop.x + 4} y={rTop.y} fill="white" fontSize="2.5" fontWeight="bold">Angle</text>
+                    <path d={`M ${rA.x} ${rA.y} Q ${rTop.x + 2} ${rTop.y} ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1" fill="none" />
+                    <text x={rTop.x + 5} y={rTop.y} fill="white" fontSize="2.5" fontWeight="bold">Angle</text>
                 </>
              );
         }

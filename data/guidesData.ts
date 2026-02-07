@@ -209,6 +209,4 @@ export const guides: Guide[] = [
       }
     ]
   }
-    ]
-  }
 ];

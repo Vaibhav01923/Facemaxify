@@ -413,8 +413,8 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
                  </span>
             </div>
 
-            {/* Nudge Controls (Mobile Dial) */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50">
+            {/* Nudge Controls (Mobile Dial) - Moved up on mobile for better accessibility */}
+            <div className="absolute bottom-28 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50 touch-none">
                <NudgeButton dir="up" label="Move Up" />
                <div className="flex gap-12">
                    <NudgeButton dir="left" label="Move Left" />

@@ -36,7 +36,7 @@ export const RATIO_CONFIGS = {
     cheekboneHeight: { name: "Cheekbone Height", ideal: 75.0, range: 5.0, decay: 0.23, unit: "%" },
     bigonialWidth: { name: "Bigonial Width", ideal: 89.0, range: 5.0, decay: 0.03, unit: "%" },
     jawFrontalAngle: { name: "Jaw Frontal Angle", ideal: 90.0, range: 5.0, decay: 0.03, unit: "°" },
-    jawSlope: { name: "Jaw Slope", ideal: 125.0, range: 10.0, decay: 0.04, unit: "°" },
+    jawSlope: { name: "Jaw Slope", ideal: 141.25, range: 1.25, decay: 0.05, unit: "°" },
     chinPhiltrum: { name: "Chin to Philtrum Ratio", ideal: 2.0, range: 0.1, decay: 1.70, unit: "x" },
     deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 0, range: 2.0, decay: 0.17, unit: "°" },
 
@@ -241,6 +241,12 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const leftAnchor = { x: (l.leftCheek.x + 2 * l.leftTopGonion.x) / 3, y: (l.leftCheek.y + 2 * l.leftTopGonion.y) / 3 };
   const rightAnchor = { x: (l.rightCheek.x + 2 * l.rightTopGonion.x) / 3, y: (l.rightCheek.y + 2 * l.rightTopGonion.y) / 3 };
   add('jawFrontalAngle', math.angle(leftAnchor, l.chinBottom, rightAnchor), ["leftCheek", "leftTopGonion", "chinBottom", "rightCheek", "rightTopGonion"]);
+
+  // Jaw Slope (New Definition: Angle between Top Gonion -> Bottom Gonion -> Side Chin)
+  // Vertex is Bottom Gonion (V)
+  const leftSlope = math.angle(l.leftTopGonion, l.leftBottomGonion, l.chinLeft);
+  const rightSlope = math.angle(l.rightTopGonion, l.rightBottomGonion, l.chinRight);
+  add('jawSlope', (leftSlope + rightSlope) / 2, ["leftTopGonion", "leftBottomGonion", "chinLeft", "rightTopGonion", "rightBottomGonion", "chinRight"]);
 
   // Chin to Philtrum
   const chinH = Math.abs(l.chinBottom.y - l.lowerLip.y);

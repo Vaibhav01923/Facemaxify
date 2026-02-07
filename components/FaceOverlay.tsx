@@ -391,6 +391,37 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
          });
     }
 
+    // --- Jaw Slope (Visualized top-gonion -> bottom-gonion -> chin-side) ---
+    if (metricName === "Jaw Slope") {
+        const lTop = getPt('leftTopGonion');
+        const lBot = getPt('leftBottomGonion');
+        const lChin = getPt('chinLeft');
+        
+        const rTop = getPt('rightTopGonion');
+        const rBot = getPt('rightBottomGonion');
+        const rChin = getPt('chinRight');
+
+        if (lTop && lBot && lChin && rTop && rBot && rChin) {
+             return (
+                <>
+                    {/* Left Side */}
+                    <line x1={lTop.x} y1={lTop.y} x2={lBot.x} y2={lBot.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    <line x1={lBot.x} y1={lBot.y} x2={lChin.x} y2={lChin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx={lTop.x} cy={lTop.y} r="1" fill="#22d3ee" />
+                    <circle cx={lBot.x} cy={lBot.y} r="1" fill="#22d3ee" />
+                    <circle cx={lChin.x} cy={lChin.y} r="1" fill="#22d3ee" />
+
+                    {/* Right Side */}
+                    <line x1={rTop.x} y1={rTop.y} x2={rBot.x} y2={rBot.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    <line x1={rBot.x} y1={rBot.y} x2={rChin.x} y2={rChin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx={rTop.x} cy={rTop.y} r="1" fill="#22d3ee" />
+                    <circle cx={rBot.x} cy={rBot.y} r="1" fill="#22d3ee" />
+                    <circle cx={rChin.x} cy={rChin.y} r="1" fill="#22d3ee" />
+                </>
+             );
+        }
+    }
+
     return null;
   };
 

@@ -284,6 +284,11 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
     return { x, y };
   }, [transform, imgDim]);
 
+  // Stop nudging when switching points (CRITICAL FIX)
+  useEffect(() => {
+    stopNudge();
+  }, [activeKey]);
+
   const saveCurrentPosition = () => {
     const pt = getCenterPoint();
     if (pt) {
@@ -295,6 +300,7 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   };
 
   const handleNext = () => {
+      stopNudge(); // Safety stop
       saveCurrentPosition();
       if (currentIndex < keys.length - 1) {
           setActiveKey(keys[currentIndex + 1]);
@@ -310,6 +316,7 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   };
 
   const handlePrev = () => {
+      stopNudge(); // Safety stop
       saveCurrentPosition();
       if (currentIndex > 0) setActiveKey(keys[currentIndex - 1]);
   };

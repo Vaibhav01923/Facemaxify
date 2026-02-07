@@ -72,7 +72,20 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
           }
         };
       });
-  }, []);
+
+      // VISUAL FEEDBACK: Pan the image inversely so it looks like the crosshair moved
+      // When landmark moves +dx, pan image -dx (in pixel space)
+      if (imgDim.w > 0 && imgDim.h > 0) {
+          const pixelDx = (dx * speed / 1000) * imgDim.w * currentK;
+          const pixelDy = (dy * speed / 1000) * imgDim.h * currentK;
+          
+          setTransform(prev => ({
+              ...prev,
+              x: prev.x - pixelDx,
+              y: prev.y - pixelDy
+          }));
+      }
+  }, [imgDim]);
 
   const startNudge = (dx: number, dy: number) => {
       nudge(dx, dy); // Initial move

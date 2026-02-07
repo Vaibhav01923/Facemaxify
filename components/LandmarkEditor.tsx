@@ -111,21 +111,6 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   };
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Removed e.repeat check to allow native repeat if interval hasn't started, 
-      // but startNudge resets everything so it's safe.
-      if (e.key === 'ArrowUp') startNudge(0, -1);
-      if (e.key === 'ArrowDown') startNudge(0, 1);
-      if (e.key === 'ArrowLeft') startNudge(-1, 0);
-      if (e.key === 'ArrowRight') startNudge(1, 0);
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-           stopNudge();
-       }
-    };
-
     const stop = () => stopNudge();
 
     // SIMPLE MOBILE CHECK (User Agent fallback + Touch Points)

@@ -128,9 +128,42 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
 
     const stop = () => stopNudge();
 
+    // SIMPLE MOBILE CHECK (User Agent fallback + Touch Points)
+    // This covers most scenarios where a virtual keyboard is likely used
+    const isMobile = typeof navigator !== 'undefined' && (
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints && navigator.maxTouchPoints > 1)
+    );
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Map keys to direction vectors
+      let dx = 0, dy = 0;
+      if (e.key === 'ArrowUp') dy = -1;
+      else if (e.key === 'ArrowDown') dy = 1;
+      else if (e.key === 'ArrowLeft') dx = -1;
+      else if (e.key === 'ArrowRight') dx = 1;
+      else return; // Ignore other keys
+
+      if (isMobile) {
+        // 📱 MOBILE: Single step only (Virtual keyboards often miss keyup)
+        nudge(dx, dy);
+      } else {
+        // 🖥 DESKTOP: Hold-to-move allowed
+        startNudge(dx, dy);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+       // Only stop nudge on desktop (mobile doesn't start continuous move)
+       if (!isMobile && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+           stopNudge();
+       }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    // Safety nets for focus loss
+    
+    // Safety nets always active
     window.addEventListener('blur', stop);
     document.addEventListener('visibilitychange', stop);
     

@@ -388,10 +388,6 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 </>
             );
 
-                    {/* Angle Arc at Vertex */}
-                    <text x={vertex.x} y={vertex.y + 6} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
-                </>
-            );
         }
     }
 
@@ -426,41 +422,43 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
              return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
         };
 
-        if (lCheek && lTop && lChin && rCheek && rTop && rChin) {
-             // Calculate Arc Points (Distance 10% of viewbox for visibility)
-             const lA = ptOnLine(lTop, lCheek, 8);
-             const lB = ptOnLine(lTop, lChin, 8);
+        const validL = lCheek && lTop && lChin;
+        const validR = rCheek && rTop && rChin;
+
+        if (validL || validR) {
+             const lA = validL ? ptOnLine(lTop!, lCheek!, 8) : {x:0,y:0};
+             const lB = validL ? ptOnLine(lTop!, lChin!, 8) : {x:0,y:0};
              
-             const rA = ptOnLine(rTop, rCheek, 8);
-             const rB = ptOnLine(rTop, rChin, 8);
+             const rA = validR ? ptOnLine(rTop!, rCheek!, 8) : {x:0,y:0};
+             const rB = validR ? ptOnLine(rTop!, rChin!, 8) : {x:0,y:0};
 
              return (
                 <>
-                    {/* Left Side Lines */}
-                    <line x1={lCheek.x} y1={lCheek.y} x2={lTop.x} y2={lTop.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1={lTop.x} y1={lTop.y} x2={lChin.x} y2={lChin.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    
-                    {/* Left Points */}
-                    <circle cx={lCheek.x} cy={lCheek.y} r="1" fill="#22d3ee" />
-                    <circle cx={lTop.x} cy={lTop.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
-                    <circle cx={lChin.x} cy={lChin.y} r="1" fill="#22d3ee" />
-                    
-                    {/* Left Angle Arc (White) */}
-                    <path d={`M ${lA.x} ${lA.y} Q ${lTop.x} ${lTop.y} ${lB.x} ${lB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
-                    <text x={lTop.x - 6} y={lTop.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
+                    {/* Left Side */}
+                    {validL && (
+                        <>
+                            <line x1={lCheek!.x} y1={lCheek!.y} x2={lTop!.x} y2={lTop!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1={lTop!.x} y1={lTop!.y} x2={lChin!.x} y2={lChin!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                            <circle cx={lCheek!.x} cy={lCheek!.y} r="1" fill="#22d3ee" />
+                            <circle cx={lTop!.x} cy={lTop!.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                            <circle cx={lChin!.x} cy={lChin!.y} r="1" fill="#22d3ee" />
+                            <path d={`M ${lA.x} ${lA.y} Q ${lTop!.x} ${lTop!.y} ${lB.x} ${lB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                            <text x={lTop!.x - 6} y={lTop!.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
+                        </>
+                    )}
 
-                    {/* Right Side Lines */}
-                    <line x1={rCheek.x} y1={rCheek.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1={rTop.x} y1={rTop.y} x2={rChin.x} y2={rChin.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    
-                    {/* Right Points */}
-                    <circle cx={rCheek.x} cy={rCheek.y} r="1" fill="#22d3ee" />
-                    <circle cx={rTop.x} cy={rTop.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
-                    <circle cx={rChin.x} cy={rChin.y} r="1" fill="#22d3ee" />
-
-                    {/* Right Angle Arc (White) */}
-                    <path d={`M ${rA.x} ${rA.y} Q ${rTop.x} ${rTop.y} ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
-                    <text x={rTop.x + 6} y={rTop.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
+                    {/* Right Side */}
+                    {validR && (
+                        <>
+                            <line x1={rCheek!.x} y1={rCheek!.y} x2={rTop!.x} y2={rTop!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1={rTop!.x} y1={rTop!.y} x2={rChin!.x} y2={rChin!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                            <circle cx={rCheek!.x} cy={rCheek!.y} r="1" fill="#22d3ee" />
+                            <circle cx={rTop!.x} cy={rTop!.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                            <circle cx={rChin!.x} cy={rChin!.y} r="1" fill="#22d3ee" />
+                            <path d={`M ${rA.x} ${rA.y} Q ${rTop!.x} ${rTop!.y} ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                            <text x={rTop!.x + 6} y={rTop!.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
+                        </>
+                    )}
                 </>
              );
         }

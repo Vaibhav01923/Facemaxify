@@ -1,14 +1,28 @@
 import DodoPayments from 'dodopayments';
 
-const client = new DodoPayments({
-  bearerToken: process.env.DODO_PAYMENTS_API_KEY || '',
-  environment: process.env.DODO_PAYMENTS_MODE || 'live_mode', // 'live_mode' or 'test_mode'
-});
-
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const apiKey = process.env.DODO_PAYMENTS_API_KEY;
+  const mode = process.env.DODO_PAYMENTS_MODE || 'live_mode';
+
+  console.log("----- CHECKOUT INIT -----");
+  console.log("Mode:", mode);
+  console.log("API Key Exists:", !!apiKey);
+  if (apiKey) console.log("Key Length:", apiKey.length);
+  console.log("-------------------------");
+
+  if (!apiKey) {
+    console.error("CRITICAL: DODO_PAYMENTS_API_KEY is missing.");
+    return res.status(500).json({ error: 'Internal Server Error: Payment configuration missing.' });
+  }
+
+  const client = new DodoPayments({
+    bearerToken: apiKey.trim(),
+    environment: mode,
+  });
 
   try {
     const { 

@@ -17,10 +17,25 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  const apiKey = process.env.DODO_PAYMENTS_API_KEY;
+  const webhookKey = process.env.DODO_PAYMENTS_WEBHOOK_KEY;
+  const mode = process.env.DODO_PAYMENTS_MODE || 'live_mode';
+
+  console.log("----- WEBHOOK INIT -----");
+  console.log("Mode:", mode);
+  console.log("API Key Exists:", !!apiKey);
+  console.log("Webhook Key Exists:", !!webhookKey);
+  if (webhookKey) console.log("Webhook Key First 4:", webhookKey.substring(0, 4));
+  console.log("------------------------");
+
+  if (!apiKey || !webhookKey) {
+    console.error("CRITICAL: DODO_PAYMENTS_API_KEY or DODO_PAYMENTS_WEBHOOK_KEY is missing.");
+    return res.status(500).json({ error: "Internal Server Error: Webhook configuration missing." });
+  }
+
   const client = new DodoPayments({
-    bearerToken: process.env.DODO_PAYMENTS_API_KEY,
-    environment: process.env.DODO_PAYMENTS_MODE || 'live_mode', // 'live_mode' or 'test_mode'
-    webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY // Secret Key
+    bearerToken: apiKey.trim(),
+    environment: mode,
   });
 
   // Get raw body
@@ -28,7 +43,7 @@ export default async function handler(req, res) {
 
   let event;
   try {
-    event = client.webhooks.unwrap(rawBody, req.headers, process.env.DODO_PAYMENTS_WEBHOOK_KEY);
+    event = client.webhooks.unwrap(rawBody, req.headers, webhookKey.trim());
   } catch (err) {
     console.error("Webhook verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);

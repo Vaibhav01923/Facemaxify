@@ -27,7 +27,7 @@ export default async function handler(req, res) {
   } else if (apiKey?.startsWith('sk_live_')) {
     mode = 'live_mode';
   } else if (!mode) {
-    mode = 'test_mode'; // Default to Test Mode for safety/debugging
+    mode = 'live_mode'; // Default to Live Mode
   }
 
   console.log("----- WEBHOOK INIT -----");

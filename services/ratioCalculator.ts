@@ -103,6 +103,17 @@ const math = {
         const num = Math.abs((b.y - a.y) * p.x - (b.x - a.x) * p.y + b.x * a.y - b.y * a.x);
         const den = Math.sqrt(Math.pow(b.y - a.y, 2) + Math.pow(b.x - a.x, 2));
         return math.ratio(num, den);
+    },
+    // Intersection of two lines defined by (p1, p2) and (p3, p4)
+    intersect: (p1: Point, p2: Point, p3: Point, p4: Point): Point | null => {
+        const det = (p2.x - p1.x) * (p4.y - p3.y) - (p4.x - p3.x) * (p2.y - p1.y);
+        if (det === 0) return null; // Parallel lines
+        const lambda = ((p4.y - p3.y) * (p4.x - p1.x) + (p3.x - p4.x) * (p4.y - p1.y)) / det;
+        const gamma = ((p1.y - p2.y) * (p4.x - p1.x) + (p2.x - p1.x) * (p4.y - p1.y)) / det;
+        return {
+            x: p1.x + lambda * (p2.x - p1.x),
+            y: p1.y + lambda * (p2.y - p1.y)
+        };
     }
 };
 
@@ -237,10 +248,14 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const jawWidth = Math.abs(l.rightBottomGonion.x - l.leftBottomGonion.x);
   add('bigonialWidth', math.ratio(jawWidth, cheekWidth) * 100, ["leftBottomGonion", "rightBottomGonion", "leftCheek", "rightCheek"]);
 
-  // Jaw Frontal Angle
-  const leftAnchor = { x: (l.leftCheek.x + 2 * l.leftTopGonion.x) / 3, y: (l.leftCheek.y + 2 * l.leftTopGonion.y) / 3 };
-  const rightAnchor = { x: (l.rightCheek.x + 2 * l.rightTopGonion.x) / 3, y: (l.rightCheek.y + 2 * l.rightTopGonion.y) / 3 };
-  add('jawFrontalAngle', math.angle(leftAnchor, l.chinBottom, rightAnchor), ["leftCheek", "leftTopGonion", "chinBottom", "rightCheek", "rightTopGonion"]);
+  // Jaw Frontal Angle (Intersection of jaw tangents)
+  // Line 1: Left Bottom Gonion -> Chin Left
+  // Line 2: Right Bottom Gonion -> Chin Right
+  // Vertex = Intersection
+  const intersection = math.intersect(l.leftBottomGonion, l.chinLeft, l.rightBottomGonion, l.chinRight);
+  // If no intersection or bizarre, fallback to chinBottom
+  const vertex = intersection || l.chinBottom;
+  add('jawFrontalAngle', math.angle(l.leftBottomGonion, vertex, l.rightBottomGonion), ["leftBottomGonion", "chinLeft", "chinRight", "rightBottomGonion"]);
 
   // Jaw Slope (New Definition: Angle between Top Gonion -> Bottom Gonion -> Side Chin)
   // Vertex is Bottom Gonion (V)

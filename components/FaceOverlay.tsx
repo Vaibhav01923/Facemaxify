@@ -341,37 +341,39 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         }
     }
 
-    // --- Jaw Frontal Angle (Visualized with Anchors) ---
+    // --- Jaw Frontal Angle (Intersection Visual) ---
     if (metricName === "Jaw Frontal Angle") {
-        const lCheek = getPt('leftCheek');
-        const rCheek = getPt('rightCheek');
-        const lGonion = getPt('leftTopGonion');
-        const rGonion = getPt('rightTopGonion');
-        const chin = getPt('chinBottom');
+        const lBot = getPt('leftBottomGonion');
+        const lChin = getPt('chinLeft');
+        const rBot = getPt('rightBottomGonion');
+        const rChin = getPt('chinRight');
 
-        if (lCheek && rCheek && lGonion && rGonion && chin) {
-            // Calculate Anchors (Weighted Average)
-            const lAnchor = { x: (lCheek.x + 2 * lGonion.x) / 3, y: (lCheek.y + 2 * lGonion.y) / 3 };
-            const rAnchor = { x: (rCheek.x + 2 * rGonion.x) / 3, y: (rCheek.y + 2 * rGonion.y) / 3 };
+        if (lBot && lChin && rBot && rChin) {
+            // Calculate Intersection (in visual coordinates)
+            const det = (lChin.x - lBot.x) * (rChin.y - rBot.y) - (rChin.x - rBot.x) * (lChin.y - lBot.y);
+            let vertex = { x: (lChin.x + rChin.x) / 2, y: (lChin.y + rChin.y) / 2 }; // fallback
+
+            if (det !== 0) {
+                const lambda = ((rChin.y - rBot.y) * (rChin.x - lBot.x) + (rBot.x - rChin.x) * (rChin.y - lBot.y)) / det;
+                vertex = {
+                    x: lBot.x + lambda * (lChin.x - lBot.x),
+                    y: lBot.y + lambda * (lChin.y - lBot.y)
+                };
+            }
 
             return (
                 <>
-                    {/* Jawline Segments */}
-                    <line x1={lAnchor.x} y1={lAnchor.y} x2={chin.x} y2={chin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
-                    <line x1={rAnchor.x} y1={rAnchor.y} x2={chin.x} y2={chin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    {/* Jawline Extensions to Vertex */}
+                    <line x1={lBot.x} y1={lBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
+                    <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
 
-                    {/* Anchors Markers */}
-                    <circle cx={lAnchor.x} cy={lAnchor.y} r="1.2" fill="#22d3ee" stroke="black" strokeWidth="0.5" />
-                    <circle cx={rAnchor.x} cy={rAnchor.y} r="1.2" fill="#22d3ee" stroke="black" strokeWidth="0.5" />
-                    <circle cx={chin.x} cy={chin.y} r="1.5" fill="#22d3ee" stroke="black" strokeWidth="0.5" />
+                    {/* Key Points */}
+                    <circle cx={lBot.x} cy={lBot.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={rBot.x} cy={rBot.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={vertex.x} cy={vertex.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
 
-                    {/* Construction Lines (Optional - Dotted to show origin) */}
-                    <line x1={lCheek.x} y1={lCheek.y} x2={lGonion.x} y2={lGonion.y} stroke="white" strokeWidth="0.8" strokeDasharray="2,2" opacity="0.5" />
-                    <line x1={rCheek.x} y1={rCheek.y} x2={rGonion.x} y2={rGonion.y} stroke="white" strokeWidth="0.8" strokeDasharray="2,2" opacity="0.5" />
-
-                    {/* Angle Arc at Chin */}
-                    <path d={`M ${chin.x - 4} ${chin.y - 6} Q ${chin.x} ${chin.y - 8} ${chin.x + 4} ${chin.y - 6}`} stroke="white" strokeWidth="1.2" fill="none" opacity="0.8" />
-                    <text x={chin.x} y={chin.y - 10} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
+                    {/* Angle Arc at Vertex */}
+                    <text x={vertex.x} y={vertex.y + 6} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
                 </>
             );
         }

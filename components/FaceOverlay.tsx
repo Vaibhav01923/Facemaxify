@@ -364,8 +364,8 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             return (
                 <>
                     {/* Jawline Extensions to Vertex */}
-                    <line x1={lBot.x} y1={lBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="2.5" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
-                    <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="2.5" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+                    <line x1={lBot.x} y1={lBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
 
                     {/* Key Points */}
                     <circle cx={lBot.x} cy={lBot.y} r="0.8" fill="#22d3ee" />
@@ -421,8 +421,8 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
              return (
                 <>
                     {/* Left Side Lines */}
-                    <line x1={lCheek.x} y1={lCheek.y} x2={lTop.x} y2={lTop.y} stroke="#22d3ee" strokeWidth="2.5" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
-                    <line x1={lTop.x} y1={lTop.y} x2={lChin.x} y2={lChin.y} stroke="#22d3ee" strokeWidth="2.5" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+                    <line x1={lCheek.x} y1={lCheek.y} x2={lTop.x} y2={lTop.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1={lTop.x} y1={lTop.y} x2={lChin.x} y2={lChin.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
                     
                     {/* Left Points */}
                     <circle cx={lCheek.x} cy={lCheek.y} r="1" fill="#22d3ee" />
@@ -430,12 +430,12 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <circle cx={lChin.x} cy={lChin.y} r="1" fill="#22d3ee" />
                     
                     {/* Left Angle Arc (White) */}
-                    <path d={`M ${lA.x} ${lA.y} Q ${lTop.x} ${lTop.y} ${lB.x} ${lB.y}`} stroke="white" strokeWidth="2" strokeOpacity="1" vectorEffect="non-scaling-stroke" fill="none" />
+                    <path d={`M ${lA.x} ${lA.y} Q ${lTop.x} ${lTop.y} ${lB.x} ${lB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
                     <text x={lTop.x - 6} y={lTop.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
 
                     {/* Right Side Lines */}
-                    <line x1={rCheek.x} y1={rCheek.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="2.5" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
-                    <line x1={rTop.x} y1={rTop.y} x2={rChin.x} y2={rChin.y} stroke="#22d3ee" strokeWidth="2.5" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+                    <line x1={rCheek.x} y1={rCheek.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1={rTop.x} y1={rTop.y} x2={rChin.x} y2={rChin.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
                     
                     {/* Right Points */}
                     <circle cx={rCheek.x} cy={rCheek.y} r="1" fill="#22d3ee" />
@@ -443,7 +443,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <circle cx={rChin.x} cy={rChin.y} r="1" fill="#22d3ee" />
 
                     {/* Right Angle Arc (White) */}
-                    <path d={`M ${rA.x} ${rA.y} Q ${rTop.x} ${rTop.y} ${rB.x} ${rB.y}`} stroke="white" strokeWidth="2" strokeOpacity="1" vectorEffect="non-scaling-stroke" fill="none" />
+                    <path d={`M ${rA.x} ${rA.y} Q ${rTop.x} ${rTop.y} ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
                     <text x={rTop.x + 6} y={rTop.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
                 </>
              );
@@ -461,19 +461,19 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             return (
                 <>
                     {/* Line AB (Top Gonions) */}
-                    <line x1={lTop.x} y1={lTop.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="3" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+                    <line x1={lTop.x} y1={lTop.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
                     <text x={(lTop.x + rTop.x) / 2} y={lTop.y - 4} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Upper Jaw Width</text>
                     <circle cx={lTop.x} cy={lTop.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
                     <circle cx={rTop.x} cy={rTop.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
 
                     {/* Line CD (Neck) */}
-                    <line x1={lNeck.x} y1={lNeck.y} x2={rNeck.x} y2={rNeck.y} stroke="#22d3ee" strokeWidth="3" strokeOpacity="1" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+                    <line x1={lNeck.x} y1={lNeck.y} x2={rNeck.x} y2={rNeck.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
                     <text x={(lNeck.x + rNeck.x) / 2} y={lNeck.y + 8} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Neck Width</text>
                     <circle cx={lNeck.x} cy={lNeck.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
                     <circle cx={rNeck.x} cy={rNeck.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
                     
                     {/* Dotted Connection (Visual Comparison) */}
-                    <line x1={(lTop.x + rTop.x) / 2} y1={lTop.y} x2={(lNeck.x + rNeck.x) / 2} y2={lNeck.y} stroke="white" strokeWidth="2" strokeOpacity="0.8" vectorEffect="non-scaling-stroke" strokeDasharray="4,4" />
+                    <line x1={(lTop.x + rTop.x) / 2} y1={lTop.y} x2={(lNeck.x + rNeck.x) / 2} y2={lNeck.y} stroke="white" strokeWidth="1" strokeDasharray="2,2" opacity="0.6" />
                 </>
             );
         }

@@ -88,11 +88,21 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
       }
   }, [imgDim]);
 
-  const startNudge = (dx: number, dy: number) => {
+  const startNudge = (dx: number, dy: number, source: 'keyboard' | 'button') => {
       stopNudge(); // 🔑 HARD RESET (important)
 
       nudge(dx, dy); // Initial move
 
+      // 🚫 NEVER allow delayed interval for mobile keyboard
+      // Keyboards on mobile are unreliable with keyup
+      const isMobileKeyboard = typeof window !== 'undefined' && 
+          ('ontouchstart' in window || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+
+      if (source === 'keyboard' && isMobileKeyboard) {
+          return;
+      }
+
+      // ✅ Allowed for desktop keyboard & buttons
       nudgeTimeout.current = setTimeout(() => {
           nudgeInterval.current = setInterval(() => nudge(dx, dy), 50);
       }, 300);
@@ -113,13 +123,6 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   useEffect(() => {
     const stop = () => stopNudge();
 
-    // SIMPLE MOBILE CHECK (User Agent fallback + Touch Points)
-    // This covers most scenarios where a virtual keyboard is likely used
-    const isMobile = typeof navigator !== 'undefined' && (
-      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-      (navigator.maxTouchPoints && navigator.maxTouchPoints > 1)
-    );
-
     const handleKeyDown = (e: KeyboardEvent) => {
       // Map keys to direction vectors
       let dx = 0, dy = 0;
@@ -129,18 +132,13 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
       else if (e.key === 'ArrowRight') dx = 1;
       else return; // Ignore other keys
 
-      if (isMobile) {
-        // 📱 MOBILE: Single step only (Virtual keyboards often miss keyup)
-        nudge(dx, dy);
-      } else {
-        // 🖥 DESKTOP: Hold-to-move allowed
-        startNudge(dx, dy);
-      }
+      // Call startNudge with source='keyboard'
+      // The function itself handles mobile logic safely
+      startNudge(dx, dy, 'keyboard');
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-       // Only stop nudge on desktop (mobile doesn't start continuous move)
-       if (!isMobile && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
            stopNudge();
        }
     };
@@ -327,10 +325,10 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
           if (dir === 'left') dx = -1;
           if (dir === 'right') dx = 1;
           return {
-              onMouseDown: (e: any) => { e.preventDefault(); e.stopPropagation(); startNudge(dx, dy); },
+              onMouseDown: (e: any) => { e.preventDefault(); e.stopPropagation(); startNudge(dx, dy, 'button'); },
               onMouseUp: stopNudge,
               onMouseLeave: stopNudge,
-              onTouchStart: (e: any) => { e.preventDefault(); e.stopPropagation(); startNudge(dx, dy); },
+              onTouchStart: (e: any) => { e.preventDefault(); e.stopPropagation(); startNudge(dx, dy, 'button'); },
               onTouchCancel: stopNudge,  // Critical for mobile - stops nudging if touch is interrupted
               onContextMenu: (e: any) => e.preventDefault() // Prevent long-press menu
           };

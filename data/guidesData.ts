@@ -143,23 +143,23 @@ export const guides: Guide[] = [
         steps: [
           {
             title: "Peptide Protocol: CJC-1295 DAC",
-            content: "Inject 3333.33-5000mcg of CJC-1295 DAC subQ before bed. This specific peptide is designed to pulse growth hormone release effectively over a long period."
+            content: "Inject 3333.33-5000mcg of CJC-1295 DAC subQ before bed.\n\nThis specific peptide is designed to pulse growth hormone release effectively over a long period. It provides a steady, elevated baseline of GH."
           },
           {
             title: "Injection Schedule (10-15mg/week)",
-            content: "Inject only on Monday, Wednesday, and Saturday. This totals 10,000-15,000mcg (10-15mg) per week. Discontinue immediately if you experience side effects."
+            content: "Inject ONLY on:\n• Monday\n• Wednesday\n• Saturday\n\nTotal: 10,000-15,000mcg (10-15mg) per week.\n\nDiscontinue immediately if you experience side effects like water retention or carpal tunnel symptoms."
           },
           {
             title: "MK-677 Synergist",
-            content: "Take 25mg of MK-677 orally every day before bed. MK-677 mimics ghrelin and stimulates growth hormone release without significantly disturbing cortisol. It works synergistically with CJC-1295 DAC."
+            content: "• Dosage: 25mg orally\n• Timing: Every day before bed\n\nMK-677 mimics ghrelin and stimulates growth hormone release without significantly disturbing cortisol. It works synergistically with CJC-1295 DAC to amplify the pulses."
           },
           {
             title: "Huperzine A (Important)",
-            content: "Take 200mcg of Huperzine A 3 times per day (total 600mcg/day). This inhibits somatostatin, the hormone that blocks growth hormone release, keeping your body in a growth-permissive state."
+            content: "• Dosage: 200mcg taken 3x per day\n• Total: 600mcg/day\n\nThis inhibits somatostatin, the hormone that blocks growth hormone release. Think of it as removing the brake while the peptides press the gas."
           },
           {
             title: "CRITICAL: Insulin Sensitivity",
-            content: "WARNING: High growth hormone levels reduce insulin sensitivity. You MUST use Berberine (500mg with high-carb meals) or similar glucose disposal agents to combat this. Ignoring this can risk pre-diabetes. Monitor your blood glucose levels regularly."
+            content: "⚠️ WARNING: High growth hormone levels reduce insulin sensitivity.\n\nYou MUST use Berberine (500mg with high-carb meals) or similar glucose disposal agents to combat this.\n\nIgnoring this can risk pre-diabetes. Monitor your blood glucose levels regularly."
           },
           {
             title: "Disclaimer",
@@ -167,6 +167,48 @@ export const guides: Guide[] = [
           }
         ]
       }
+    ]
+  },
+  {
+    id: "fraudmaxxing",
+    title: "Fraudmaxxing (Height Boosting)",
+    description: "Closed growth plates? No problem. Instant height gains through footwear, posture, and optical illusions.",
+    category: "Style",
+    readTime: "4 min read",
+    thumbnail: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=800",
+    sections: [
+      {
+        title: "Footwear & Insoles",
+        steps: [
+          {
+            title: "Height Increasing Insoles",
+            content: "The easiest way to gain 1-2 inches instantly. Use silicone internal heel lifts inside high-top shoes (like Air Force 1s or Boots). Avoid using them in low-top shoes as your heel will slip out.\n\n• Start with 1 inch to get used to the mechanics.\n• Ensure your shoes are sized up (half or full size) to accommodate the insert."
+          },
+          {
+            title: "Thick-Soled Footwear",
+            content: "Wear shoes with naturally thick soles. Examples:\n\n• Nike Air Max / Air Force 1 (~1.2 - 1.5 inches)\n• Boots (Dr. Martens, Timberlands) (~1.5+ inches)\n• Alexander McQueen Oversized Sneakers (~1.8 inches)\n\nCombine these with a modest insole for substantial gains that look completely natural."
+          }
+        ]
+      },
+      {
+        title: "Optical Illusions & Posture",
+        steps: [
+          {
+            title: "Monochromatic Outfits",
+            content: "Wearing one color (all black or all dark tones) creates an unbroken vertical line, making you appear taller and slimmer. Contrast cuts your body in half visually."
+          },
+          {
+            title: "Posture Maxxing",
+            content: "Most people lose 1-1.5 inches purely due to anterior pelvic tilt and rounded shoulders.\n\n• Keep your core tight.\n• Pull your shoulders back and down.\n• Imagine a string pulling the top of your head to the ceiling.\n\nThis is not 'fake' height; it is your actual skeletal potential being utilized."
+          },
+          {
+            title: "Hair Volume",
+            content: "A hairstyle with vertical volume (quiff, pompadour, or textured crop) adds 1+ inch to your perceived height. Avoid flat styles if height is a priority."
+          }
+        ]
+      }
+    ]
+  }
     ]
   }
 ];

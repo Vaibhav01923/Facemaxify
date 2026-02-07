@@ -117,7 +117,7 @@ export const GuideDetail: React.FC = () => {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                               <div className="space-y-4">
-                                <p className="text-slate-400 leading-relaxed">
+                                <p className="text-slate-400 leading-relaxed whitespace-pre-wrap">
                                   {step.content}
                                 </p>
                               </div>

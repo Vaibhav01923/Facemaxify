@@ -55,6 +55,7 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
 
   // --- ARROW KEY & NUDGE LOGIC ---
   const nudgeInterval = useRef<any>(null);
+  const nudgeTimeout = useRef<any>(null);
 
   const nudge = useCallback((dx: number, dy: number) => {
       const currentK = transformRef.current.k;
@@ -90,13 +91,18 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   const startNudge = (dx: number, dy: number) => {
       nudge(dx, dy); // Initial move
       // Delay before continuous
-      setTimeout(() => {
+      nudgeTimeout.current = setTimeout(() => {
           if (nudgeInterval.current) return; 
           nudgeInterval.current = setInterval(() => nudge(dx, dy), 50);
       }, 300);
   };
 
   const stopNudge = () => {
+      // Clear both timeout and interval
+      if (nudgeTimeout.current) {
+          clearTimeout(nudgeTimeout.current);
+          nudgeTimeout.current = null;
+      }
       if (nudgeInterval.current) {
           clearInterval(nudgeInterval.current);
           nudgeInterval.current = null;

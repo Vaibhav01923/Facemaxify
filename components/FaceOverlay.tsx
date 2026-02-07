@@ -361,6 +361,16 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 };
             }
 
+            // Helper to find point on line at specific distance
+            const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
+                 const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+                 const t = dist / (len || 1);
+                 return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
+            };
+
+            const pA = ptOnLine(vertex, lBot, 8);
+            const pB = ptOnLine(vertex, rBot, 8);
+
             return (
                 <>
                     {/* Jawline Extensions to Vertex */}
@@ -371,6 +381,12 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <circle cx={lBot.x} cy={lBot.y} r="0.8" fill="#22d3ee" />
                     <circle cx={rBot.x} cy={rBot.y} r="0.8" fill="#22d3ee" />
                     <circle cx={vertex.x} cy={vertex.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+
+                    {/* Angle Arc at Vertex */}
+                    <path d={`M ${pA.x} ${pA.y} Q ${vertex.x} ${vertex.y} ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                    <text x={vertex.x} y={vertex.y + 6} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
+                </>
+            );
 
                     {/* Angle Arc at Vertex */}
                     <text x={vertex.x} y={vertex.y + 6} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>

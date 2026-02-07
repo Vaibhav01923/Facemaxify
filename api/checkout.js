@@ -38,8 +38,8 @@ export default async function handler(req, res) {
 
     const productId = products || process.env.DODO_PAYMENTS_PRODUCT_ID;
 
-    // Create a one-time payment link/session
-    const payment = await client.payments.create({
+    // Create a one-time payment link/session using Checkout Sessions (Recommended)
+    const session = await client.checkoutSessions.create({
       product_cart: [
         {
           product_id: productId,
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     });
 
     // Redirect the user to the checkout URL
-    return res.redirect(payment.payment_link);
+    return res.redirect(session.checkout_url);
   } catch (error) {
     console.error('Checkout Error:', error);
     return res.status(500).json({ error: 'Failed to initiate checkout', details: error.message });

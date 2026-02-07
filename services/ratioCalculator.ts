@@ -37,6 +37,7 @@ export const RATIO_CONFIGS = {
     bigonialWidth: { name: "Bigonial Width", ideal: 89.0, range: 5.0, decay: 0.03, unit: "%" },
     jawFrontalAngle: { name: "Jaw Frontal Angle", ideal: 90.0, range: 5.0, decay: 0.03, unit: "°" },
     jawSlope: { name: "Jaw Slope", ideal: 141.25, range: 1.25, decay: 0.05, unit: "°" },
+    neckWidth: { name: "Neck Width", ideal: 95.0, range: 3.0, decay: 0.024, unit: "%" },
     chinPhiltrum: { name: "Chin to Philtrum Ratio", ideal: 2.0, range: 0.1, decay: 1.70, unit: "x" },
     deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 0, range: 2.0, decay: 0.17, unit: "°" },
 
@@ -267,6 +268,14 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const chinH = Math.abs(l.chinBottom.y - l.lowerLip.y);
   const philtrumH = Math.abs(l.cupidsBow.y - l.nasalBase.y);
   add('chinPhiltrum', math.ratio(chinH, philtrumH), ["chinBottom", "lowerLip", "cupidsBow", "nasalBase"]);
+
+  // Neck Width Ratio
+  // AB = Distance between Upper Jaw Corners (Top Gonions)
+  // CD = Distance between Neck Points
+  // Ratio = CD / AB * 100
+  const distAB = math.distance(l.leftTopGonion, l.rightTopGonion);
+  const distCD = math.distance(l.neckLeft, l.neckRight);
+  add('neckWidth', math.ratio(distCD, distAB) * 100, ["neckLeft", "neckRight", "leftTopGonion", "rightTopGonion"]);
 
   // Eyebrow Tilt
   const leftBrowTilt = calculateTilt(l.leftBrowInnerCorner, l.leftBrowArch);

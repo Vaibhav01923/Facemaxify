@@ -341,6 +341,42 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         }
     }
 
+    // --- Jaw Frontal Angle (Visualized with Anchors) ---
+    if (metricName === "Jaw Frontal Angle") {
+        const lCheek = getPt('leftCheek');
+        const rCheek = getPt('rightCheek');
+        const lGonion = getPt('leftTopGonion');
+        const rGonion = getPt('rightTopGonion');
+        const chin = getPt('chinBottom');
+
+        if (lCheek && rCheek && lGonion && rGonion && chin) {
+            // Calculate Anchors (Weighted Average)
+            const lAnchor = { x: (lCheek.x + 2 * lGonion.x) / 3, y: (lCheek.y + 2 * lGonion.y) / 3 };
+            const rAnchor = { x: (rCheek.x + 2 * rGonion.x) / 3, y: (rCheek.y + 2 * rGonion.y) / 3 };
+
+            return (
+                <>
+                    {/* Jawline Segments */}
+                    <line x1={lAnchor.x} y1={lAnchor.y} x2={chin.x} y2={chin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    <line x1={rAnchor.x} y1={rAnchor.y} x2={chin.x} y2={chin.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+
+                    {/* Anchors Markers */}
+                    <circle cx={lAnchor.x} cy={lAnchor.y} r="1.2" fill="#22d3ee" stroke="black" strokeWidth="0.5" />
+                    <circle cx={rAnchor.x} cy={rAnchor.y} r="1.2" fill="#22d3ee" stroke="black" strokeWidth="0.5" />
+                    <circle cx={chin.x} cy={chin.y} r="1.5" fill="#22d3ee" stroke="black" strokeWidth="0.5" />
+
+                    {/* Construction Lines (Optional - Dotted to show origin) */}
+                    <line x1={lCheek.x} y1={lCheek.y} x2={lGonion.x} y2={lGonion.y} stroke="white" strokeWidth="0.8" strokeDasharray="2,2" opacity="0.5" />
+                    <line x1={rCheek.x} y1={rCheek.y} x2={rGonion.x} y2={rGonion.y} stroke="white" strokeWidth="0.8" strokeDasharray="2,2" opacity="0.5" />
+
+                    {/* Angle Arc at Chin */}
+                    <path d={`M ${chin.x - 4} ${chin.y - 6} Q ${chin.x} ${chin.y - 8} ${chin.x + 4} ${chin.y - 6}`} stroke="white" strokeWidth="1.2" fill="none" opacity="0.8" />
+                    <text x={chin.x} y={chin.y - 10} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
+                </>
+            );
+        }
+    }
+
     // Fallback: Simple Connection
     if (highlightedLandmarks.length === 2) {
         const p1 = getPt(highlightedLandmarks[0]);

@@ -464,7 +464,12 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <g filter="url(#glow)">{renderLines()}</g>
+        {/* Conditionally apply glow. Complex geometric metrics (Jaw Slope/Angle) are rendered without filter for maximum clarity on mobile */}
+        { ["Jaw Slope", "Jaw Frontal Angle"].includes(metricName || "") ? (
+             <g>{renderLines()}</g>
+        ) : (
+             <g filter="url(#glow)">{renderLines()}</g>
+        )}
       </svg>
     </div>
   );

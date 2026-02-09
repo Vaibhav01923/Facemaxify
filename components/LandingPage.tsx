@@ -96,42 +96,19 @@ export const LandingPage: React.FC = () => {
         animate="show"
         className="relative z-10 flex flex-col justify-center items-center min-h-[80vh] px-6 text-center"
       >
-        {/* Badge */}
-        <motion.div variants={item} className="mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-xs font-medium text-slate-300 tracking-wide uppercase">
-              50% Off for First 50 Users
-            </span>
-          </div>
-        </motion.div>
-
         {/* Hero Text */}
         <motion.h1
           variants={item}
-          className="text-6xl sm:text-8xl font-bold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-slate-500"
+          className="text-6xl sm:text-8xl font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-slate-500"
         >
           Facemaxify
         </motion.h1>
 
         <motion.p
           variants={item}
-          className="text-lg sm:text-xl text-slate-400 mb-12 max-w-xl mx-auto leading-relaxed font-light"
+          className="text-lg sm:text-2xl text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed font-medium"
         >
-          The next generation of facial aesthetics analysis.{" "}
-          <br className="hidden sm:block" />
-          Join the exclusive waitlist for early access.
-          <br />
-          <span className="font-bold text-white">
-            Completely Free for first 10 users in the waitlist!
-          </span>
-          <br />
-          <span className="font-semibold text-indigo-300">
-            First 50 users get it at half the price when we launch.
-          </span>
+          Facial Analysis and guides without BS and cope
         </motion.p>
 
         {/* CTAs */}
@@ -176,44 +153,13 @@ export const LandingPage: React.FC = () => {
               }}
               className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
             >
-              <span className="relative z-10">Free Facial Analysis</span>
+              <span className="relative z-10">Free analysis</span>
               <Scan className="w-4 h-4" />
             </button>
           </motion.div>
         </motion.div>
 
-        {/* Minimal Social Proof */}
-        <motion.div
-          variants={item}
-          className="mt-16 flex items-center gap-4 text-sm text-slate-500 font-medium"
-        >
-          <div className="flex -space-x-2">
-            {[...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full border border-slate-900 bg-slate-800 flex items-center justify-center text-[10px] text-slate-400 overflow-hidden"
-              >
-                <div
-                  className={`w-full h-full bg-gradient-to-br ${
-                    [
-                      "from-purple-500 to-indigo-500",
-                      "from-blue-500 to-cyan-500",
-                      "from-emerald-500 to-teal-500",
-                      "from-amber-500 to-orange-500",
-                    ][i]
-                  } opacity-50`}
-                ></div>
-              </div>
-            ))}
-          </div>
-          <span>
-            Joined by{" "}
-            <span className="text-white font-semibold">
-              {userCount !== null ? userCount.toLocaleString() : "..."}
-            </span>{" "}
-            users
-          </span>
-        </motion.div>
+
 
         {/* Scroll Indicator */}
         <motion.div

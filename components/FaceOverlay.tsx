@@ -361,18 +361,6 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 };
             }
 
-            // Recalculate Angle for Display
-            const calculateAngle = (p1: {x:number,y:number}, p2: {x:number,y:number}, p3: {x:number,y:number}) => {
-                const v1 = { x: p1.x - p2.x, y: p1.y - p2.y };
-                const v2 = { x: p3.x - p2.x, y: p3.y - p2.y };
-                const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
-                const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
-                const dot = v1.x * v2.x + v1.y * v2.y;
-                return Math.acos(Math.max(-1, Math.min(1, dot / (mag1 * mag2)))) * (180 / Math.PI);
-            };
-
-            const angleVal = calculateAngle(lBot, vertex, rBot).toFixed(1);
-
             // Helper to find point on line at specific distance
             const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
                  const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
@@ -380,23 +368,31 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                  return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
             };
 
-            const pA = ptOnLine(vertex, lBot, 10);
-            const pB = ptOnLine(vertex, rBot, 10);
+            const pA = ptOnLine(vertex, lBot, 8);
+            const pB = ptOnLine(vertex, rBot, 8);
 
+            // Calculate Arc Params using simple svg arc
+            // We want an arc centered at vertex with radius 8
+            // Start at pA, End at pB
+            // Since angles are < 180, large-arc-flag is 0
+            // Sweep-flag depends on direction. Usually 1 for clockwise (pA to pB around vertex if vertex is bottom).
+            // Let's assume standard orientation where Left is pA and Right is pB.
+            
             return (
                 <>
                     {/* Jawline Extensions to Vertex */}
-                    <line x1={lBot.x} y1={lBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4,2" />
-                    <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4,2" />
+                    <line x1={lBot.x} y1={lBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
 
                     {/* Key Points */}
-                    <circle cx={lBot.x} cy={lBot.y} r="0.6" fill="#22d3ee" />
-                    <circle cx={rBot.x} cy={rBot.y} r="0.6" fill="#22d3ee" />
-                    <circle cx={vertex.x} cy={vertex.y} r="0.8" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    <circle cx={lBot.x} cy={lBot.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={rBot.x} cy={rBot.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={vertex.x} cy={vertex.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
 
-                    {/* Angle Arc at Vertex */}
-                    <path d={`M ${pA.x} ${pA.y} Q ${vertex.x} ${vertex.y} ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1" fill="none" />
-                    <text x={vertex.x} y={vertex.y + 8} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">{angleVal}°</text>
+                    {/* Angle Arc at Vertex (Proper Circular Arc) */}
+                    {/* A rx ry x-axis-rotation large-arc-flag sweep-flag x y */}
+                    <path d={`M ${pA.x} ${pA.y} A 8 8 0 0 1 ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                    <text x={vertex.x} y={vertex.y + 6} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
                 </>
             );
 
@@ -454,7 +450,11 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                             <circle cx={lCheek!.x} cy={lCheek!.y} r="1" fill="#22d3ee" />
                             <circle cx={lTop!.x} cy={lTop!.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
                             <circle cx={lChin!.x} cy={lChin!.y} r="1" fill="#22d3ee" />
-                            <path d={`M ${lA.x} ${lA.y} Q ${lTop!.x} ${lTop!.y} ${lB.x} ${lB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                            
+                            {/* Arc for Left Side (Top Vertex) - Likely Concave Down (< 180) */}
+                            {/* lA (Cheek - Top), lB (Chin - Bottom). Vertex Middle. */}
+                            {/* Clockwise from Top to Bottom? Yes. */}
+                            <path d={`M ${lA.x} ${lA.y} A 8 8 0 0 1 ${lB.x} ${lB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
                             <text x={lTop!.x - 6} y={lTop!.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
                         </>
                     )}
@@ -467,7 +467,11 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                             <circle cx={rCheek!.x} cy={rCheek!.y} r="1" fill="#22d3ee" />
                             <circle cx={rTop!.x} cy={rTop!.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
                             <circle cx={rChin!.x} cy={rChin!.y} r="1" fill="#22d3ee" />
-                            <path d={`M ${rA.x} ${rA.y} Q ${rTop!.x} ${rTop!.y} ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                            
+                            {/* Arc for Right Side (Top Vertex) */}
+                            {/* rA (Cheek - Top), rB (Chin - Bottom). Vertex Middle. */}
+                            {/* Clockwise from Top to Bottom? Yes. */}
+                            <path d={`M ${rA.x} ${rA.y} A 8 8 0 0 1 ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
                             <text x={rTop!.x + 6} y={rTop!.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
                         </>
                     )}

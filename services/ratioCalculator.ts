@@ -32,7 +32,7 @@ export const RATIO_CONFIGS = {
     lowerThirdProp: { name: "Lower Third Proportion", ideal: 32.7, range: 1.0, decay: 0.44, unit: "%" },
     faceWidthHeight: { name: "Face Width to Height Ratio", ideal: 2.0, range: 0.1, decay: 2.60, unit: "x" },
     totalFacialWidthHeight: { name: "Total Facial Width to Height Ratio", ideal: 1.35, range: 0.03, decay: 8.71, unit: "x" },
-    midfaceRatio: { name: "Midface Ratio", ideal: 1.0, range: 0.05, decay: 11.0, unit: "x" },
+    midfaceRatio: { name: "Midface Ratio", ideal: 1.0, range: 0.05, decay: 12.1, unit: "x" },
     cheekboneHeight: { name: "Cheekbone Height", ideal: 75.0, range: 5.0, decay: 0.23, unit: "%" },
     bigonialWidth: { name: "Bigonial Width", ideal: 89.0, range: 5.0, decay: 0.03, unit: "%" },
     jawFrontalAngle: { name: "Jaw Frontal Angle", ideal: 90.0, range: 5.0, decay: 0.122, unit: "°" },

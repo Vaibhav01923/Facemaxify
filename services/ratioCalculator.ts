@@ -23,7 +23,7 @@ export const RATIO_CONFIGS = {
     interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.85, range: 0.02, decay: 3.90, unit: "x" },
     mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.55, range: 0.1, decay: 6.37, unit: "x" },
     lipRatio: { name: "Lower Lip to Upper Lip Ratio", ideal: 1.57, range: 0.1, decay: 1.08, unit: "x" },
-    mouthCorner: { name: "Mouth Corner Position", ideal: 0.91, range: 0.03, decay: 0.36, unit: "mm" },
+    mouthCorner: { name: "", ideal: 0, range: 0, decay: 0, unit: "" }, // REMOVED
     cupidsBowDepth: { name: "Cupid's Bow Depth", ideal: 3.0, range: 1.0, decay: 0.25, unit: "mm" },
     noseTipPos: { name: "Nose Tip Position", ideal: 0.0, range: 1.0, decay: 0.53, unit: "mm" },
     intercanthalNasal: { name: "Intercanthal-Nasal Width Ratio", ideal: 1.015, range: 0.035, decay: 0.46, unit: "x" },
@@ -198,10 +198,7 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const upperLipH = Math.abs(l.mouthMiddle.y - l.cupidsBow.y);
   add('lipRatio', math.ratio(lowerLipH, upperLipH), ["lowerLip", "mouthMiddle", "cupidsBow"]);
 
-  // Mouth Corner Position
-  const mouthCenterY = l.mouthMiddle.y;
-  const mouthCornersY = (l.mouthLeft.y + l.mouthRight.y) / 2;
-  add('mouthCorner', (mouthCenterY - mouthCornersY) * mmScale, ["mouthMiddle", "mouthLeft", "mouthRight"]);
+
 
   // Cupid's Bow Depth
   const cupidsBowDepth = Math.abs(l.cupidsBow.y - l.innerCupidsBow.y) * mmScale;

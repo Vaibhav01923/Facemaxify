@@ -378,6 +378,19 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             // Sweep-flag depends on direction. Usually 1 for clockwise (pA to pB around vertex if vertex is bottom).
             // Let's assume standard orientation where Left is pA and Right is pB.
             
+            // Calculate Angle Value for Display
+            // Vector V->L and V->R
+            const v1 = { x: lBot.x - vertex.x, y: lBot.y - vertex.y };
+            const v2 = { x: rBot.x - vertex.x, y: rBot.y - vertex.y };
+            const dot = v1.x * v2.x + v1.y * v2.y;
+            const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+            const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+            let angleVal = 0;
+            if (mag1 * mag2 !== 0) {
+               const cosine = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
+               angleVal = Math.acos(cosine) * (180 / Math.PI);
+            }
+            
             return (
                 <>
                     {/* Jawline Extensions to Vertex */}
@@ -392,7 +405,12 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     {/* Angle Arc at Vertex (Proper Circular Arc) */}
                     {/* A rx ry x-axis-rotation large-arc-flag sweep-flag x y */}
                     <path d={`M ${pA.x} ${pA.y} A 8 8 0 0 1 ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
-                    <text x={vertex.x} y={vertex.y + 6} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
+                    
+                    {/* Display Angle Value */}
+                    <g transform={`translate(${vertex.x}, ${vertex.y + 6})`}>
+                         <rect x="-8" y="-3" width="16" height="6" rx="2" fill="rgba(0,0,0,0.7)" />
+                         <text x="0" y="1.5" fill="#22d3ee" fontSize="3.5" fontWeight="bold" textAnchor="middle">{angleVal.toFixed(1)}°</text>
+                    </g>
                 </>
             );
 

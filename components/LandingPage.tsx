@@ -114,8 +114,29 @@ export const LandingPage: React.FC = () => {
         {/* CTAs */}
         <motion.div 
           variants={item}
-          className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-lg"
+          className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-2xl"
         >
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full sm:w-auto"
+          >
+            <button
+              onClick={() => {
+                if (!isSignedIn) {
+                  localStorage.setItem("pendingAction", "dashboard");
+                  openSignIn();
+                } else {
+                  window.location.href = "/dashboard";
+                }
+              }}
+              className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
+            >
+              <span className="relative z-10">Free analysis</span>
+              <Scan className="w-4 h-4" />
+            </button>
+          </motion.div>
+
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -144,17 +165,12 @@ export const LandingPage: React.FC = () => {
           >
             <button
               onClick={() => {
-                if (!isSignedIn) {
-                  localStorage.setItem("pendingAction", "dashboard");
-                  openSignIn();
-                } else {
-                  window.location.href = "/dashboard";
-                }
+                document.getElementById("value-prop")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
+              className="group relative w-full sm:w-auto px-8 py-4 bg-slate-800/50 text-white border border-slate-700 rounded-full font-semibold text-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 backdrop-blur-md hover:border-indigo-500/50"
             >
-              <span className="relative z-10">Free analysis</span>
-              <Scan className="w-4 h-4" />
+              <span className="relative z-10">Why Us?</span>
+              <TrendingUp className="w-4 h-4 text-indigo-400" />
             </button>
           </motion.div>
         </motion.div>
@@ -194,6 +210,154 @@ export const LandingPage: React.FC = () => {
         </motion.div>
       </motion.main>
 
+      {/* Value Proposition Section */}
+      <section
+        id="value-prop"
+        className="relative z-10 py-24 px-6 min-h-[90vh] flex flex-col items-center justify-center overflow-hidden"
+      >
+        {/* Background Gradients */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-950/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/5 blur-[100px] rounded-full pointer-events-none"></div>
+
+        <div className="max-w-6xl mx-auto w-full relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl sm:text-7xl font-black mb-6 tracking-tighter leading-[1.1]">
+              Why <span className="text-emerald-400 inline-block transform hover:scale-105 transition-transform duration-300 cursor-default shadow-emerald-500/20 drop-shadow-lg">Us?</span>
+            </h2>
+            
+            <p className="text-xl sm:text-3xl text-slate-300 font-light max-w-4xl mx-auto leading-relaxed">
+              We're offering this at a 
+              <span className="text-white font-bold mx-2 relative inline-block">
+                <span className="absolute inset-0 bg-indigo-500/20 skew-x-[-10deg] rounded-sm transform scale-110"></span>
+                <span className="relative z-10">dirt cheap price</span>
+              </span> 
+              because we're just getting started.
+            </p>
+          </motion.div>
+
+          {/* Bento Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            {/* Left Card: No BS */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="md:col-span-5 bg-gradient-to-br from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:bg-indigo-500/30 transition-colors">
+                  <Shield className="w-6 h-6 text-indigo-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">Real, No-BS Guides</h3>
+                <p className="text-slate-400 leading-relaxed font-light">
+                  Our library is growing. We are committed to updating the quality and quantity of our guides weekly with <span className="text-slate-200 font-medium">actionable, no-cope protocols</span>.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Right Card: No AI Slop */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="md:col-span-7 bg-gradient-to-bl from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-bl from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                 <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors">
+                  <Activity className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">NOT "AI Slop"</h3>
+                <p className="text-slate-400 leading-relaxed font-light">
+                  This isn't a black box. We use <span className="text-white font-bold bg-white/5 px-2 py-0.5 rounded">actual mathematical metrics</span> calculated for your face.
+                  <br className="my-2"/>
+                  You can verify every metric and ratio visually by simply hovering over the results. Transparancy is key.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Bottom: The Offer (Ticket Style) */}
+            <motion.div 
+              whileHover={{ scale: 1.005 }}
+              className="md:col-span-12 relative overflow-hidden group"
+            >
+              {/* Ticket Container */}
+              <div className="bg-slate-900 border border-indigo-500/30 rounded-3xl p-1 relative overflow-hidden shadow-2xl shadow-indigo-500/20">
+                {/* Glowing Border Animation */}
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-20 animate-gradient-xy"></div>
+                
+                <div className="bg-slate-950/90 backdrop-blur-xl rounded-[20px] p-8 sm:p-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/5">
+                  {/* Left Side: Text */}
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-4">
+                      Limited Time Launch Offer
+                    </div>
+                    <h3 className="text-3xl sm:text-5xl font-black text-white mb-2 tracking-tight">
+                      Full Access Pass
+                    </h3>
+                    <p className="text-slate-400 text-lg">
+                      Unlock the facial rating tool for life.
+                    </p>
+                  </div>
+
+                  {/* Middle: Divider (Dashed Line) */}
+                  <div className="hidden md:block w-px h-32 border-l-2 border-dashed border-slate-700 mx-4 relative">
+                    <div className="absolute -top-14 -left-3 w-6 h-6 bg-slate-950 rounded-full"></div>
+                    <div className="absolute -bottom-14 -left-3 w-6 h-6 bg-slate-950 rounded-full"></div>
+                  </div>
+
+                  {/* Right Side: Price & Code */}
+                  <div className="flex flex-col items-center gap-4 min-w-[280px]">
+                    <div className="text-center">
+                       <span className="text-slate-500 line-through text-lg font-bold mr-2">$10</span>
+                       <span className="text-5xl sm:text-6xl font-black text-white tracking-tighter shadow-indigo-500/50 drop-shadow-lg">$5</span>
+                    </div>
+
+                    <div 
+                      onClick={() => {
+                        navigator.clipboard.writeText("EPSTEIN");
+                        // Simple visual feedback could be added here if we had a toast lib
+                        // For now we can change text momentarily or just rely on user knowing it copied
+                        const el = document.getElementById("code-text");
+                        if(el) {
+                           const original = el.innerText;
+                           el.innerText = "COPIED!";
+                           setTimeout(() => el.innerText = original, 1000);
+                        }
+                      }}
+                      className="w-full bg-indigo-500/10 border border-indigo-500/30 border-dashed rounded-lg p-3 flex flex-col items-center gap-1 group/code cursor-pointer transition-colors hover:bg-indigo-500/20 active:scale-95 select-none"
+                    >
+                      <span className="text-[10px] text-indigo-300 uppercase tracking-widest font-bold">Use Code (Click to Copy)</span>
+                      <span id="code-text" className="text-2xl font-mono font-bold text-white tracking-widest group-hover/code:text-indigo-200 transition-colors">EPSTEIN</span>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                       if (!isSignedIn) {
+                          localStorage.setItem("pendingAction", "purchase");
+                          openSignIn();
+                        } else {
+                          window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+                        }
+                      }}
+                      className="w-full py-4 bg-white hover:bg-indigo-50 text-black rounded-xl font-bold text-lg transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2 group/btn mt-2"
+                    >
+                      Get Access <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                    <p className="text-xs text-slate-500 font-medium">One-time payment • Lifetime access</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
+      </section>
+
       {/* Proof Section */}
       <section
         id="proof-section"
@@ -213,9 +377,7 @@ export const LandingPage: React.FC = () => {
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-lg text-balance">
               We use the exact same advanced computer vision frameworks that our
-              competitors use ! We don't Lie to our customers, a manual rating
-              by an expert will always be better, but If you want to use AI,
-              then{" "}
+              competitors use ! {" "}
               <span className="text-white font-extrabold">don't overpay</span>{" "}
               for it !
             </p>

@@ -21,7 +21,7 @@ export const RATIO_CONFIGS = {
     eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.0, range: 0.5, decay: 1.23, unit: "x" },
 
     interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.85, range: 0.02, decay: 3.25, unit: "x" },
-    mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.55, range: 0.1, decay: 4.90, unit: "x" },
+    mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.55, range: 0.1, decay: 6.37, unit: "x" },
     lipRatio: { name: "Lower Lip to Upper Lip Ratio", ideal: 1.57, range: 0.1, decay: 1.08, unit: "x" },
     mouthCorner: { name: "Mouth Corner Position", ideal: 0.91, range: 0.03, decay: 0.36, unit: "mm" },
     cupidsBowDepth: { name: "Cupid's Bow Depth", ideal: 3.0, range: 1.0, decay: 0.25, unit: "mm" },
@@ -31,7 +31,7 @@ export const RATIO_CONFIGS = {
     lowerThird: { name: "Lower Third", ideal: 33.3, range: 1.0, decay: 0.07, unit: "%" },
     lowerThirdProp: { name: "Lower Third Proportion", ideal: 32.7, range: 1.0, decay: 0.44, unit: "%" },
     faceWidthHeight: { name: "Face Width to Height Ratio", ideal: 2.0, range: 0.1, decay: 2.60, unit: "x" },
-    totalFacialWidthHeight: { name: "Total Facial Width to Height Ratio", ideal: 1.35, range: 0.03, decay: 0.70, unit: "x" },
+    totalFacialWidthHeight: { name: "Total Facial Width to Height Ratio", ideal: 1.35, range: 0.03, decay: 8.71, unit: "x" },
     midfaceRatio: { name: "Midface Ratio", ideal: 1.0, range: 0.05, decay: 11.0, unit: "x" },
     cheekboneHeight: { name: "Cheekbone Height", ideal: 75.0, range: 5.0, decay: 0.23, unit: "%" },
     bigonialWidth: { name: "Bigonial Width", ideal: 89.0, range: 5.0, decay: 0.03, unit: "%" },

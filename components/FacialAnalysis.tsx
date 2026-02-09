@@ -180,7 +180,8 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
              <AnalysisHistory 
               onSelectScan={loadFromHistory} 
               onNewScan={startNewAnalysis}
-              selectedScanId={selectedScanId || undefined} 
+              selectedScanId={selectedScanId || undefined}
+              isPaid={isPaid} 
             />
           </div>
         </>

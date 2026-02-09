@@ -18,7 +18,7 @@ export const RATIO_CONFIGS = {
     // GROUP 1: CALCULATED
     // ===============================================
     canthalTilt: { name: "Lateral Canthal Tilt", ideal: 5.0, range: 2.0, decay: 0.35, unit: "°" },
-    eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.25, range: 0.25, decay: 0.685, unit: "x" },
+    eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.0, range: 0.5, decay: 1.23, unit: "x" },
 
     interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.90, range: 0.05, decay: 3.25, unit: "x" },
     mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.55, range: 0.1, decay: 4.90, unit: "x" },
@@ -26,7 +26,7 @@ export const RATIO_CONFIGS = {
     mouthCorner: { name: "Mouth Corner Position", ideal: 0.91, range: 0.03, decay: 0.36, unit: "mm" },
     cupidsBowDepth: { name: "Cupid's Bow Depth", ideal: 3.0, range: 1.0, decay: 0.25, unit: "mm" },
     noseTipPos: { name: "Nose Tip Position", ideal: 0.0, range: 1.0, decay: 0.53, unit: "mm" },
-    intercanthalNasal: { name: "Intercanthal-Nasal Width Ratio", ideal: 1.0, range: 0.05, decay: 0.46, unit: "x" },
+    intercanthalNasal: { name: "Intercanthal-Nasal Width Ratio", ideal: 1.015, range: 0.035, decay: 0.46, unit: "x" },
     middleThird: { name: "Middle Third", ideal: 33.3, range: 1.0, decay: 0.08, unit: "%" },
     lowerThird: { name: "Lower Third", ideal: 33.3, range: 1.0, decay: 0.07, unit: "%" },
     lowerThirdProp: { name: "Lower Third Proportion", ideal: 32.7, range: 1.0, decay: 0.44, unit: "%" },

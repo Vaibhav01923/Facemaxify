@@ -8,16 +8,18 @@ interface AnalysisHistoryProps {
   onSelectScan: (scan: any) => void;
   onNewScan: () => void;
   selectedScanId?: string;
+  isPaid: boolean;
 }
 
 export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({ 
   onSelectScan, 
   onNewScan,
-  selectedScanId 
+  selectedScanId,
+  isPaid
 }) => {
   const { user } = useUser();
   const [history, setHistory] = useState<any[]>([]);
-  const [isPaid, setIsPaid] = useState<boolean>(false);
+  // Removed local isPaid state to rely on prop
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,15 +28,9 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
       setLoading(true);
       
       try {
-        const [historyData, userData] = await Promise.all([
-          getScanHistory(user.id),
-          supabase.from("users").select("isPaid").eq("id", user.id).single()
-        ]);
-        
+        // Only fetch history, payment status comes from parent (App -> FacialAnalysis -> Here)
+        const historyData = await getScanHistory(user.id);
         setHistory(historyData);
-        if (userData.data) {
-          setIsPaid(userData.data.isPaid);
-        }
       } catch (err) {
         console.error("Fetch data error:", err);
       } finally {

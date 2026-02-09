@@ -17,10 +17,10 @@ export const RATIO_CONFIGS = {
     // ===============================================
     // GROUP 1: CALCULATED
     // ===============================================
-    canthalTilt: { name: "Lateral Canthal Tilt", ideal: 5.0, range: 2.0, decay: 0.35, unit: "°" },
+    canthalTilt: { name: "Lateral Canthal Tilt", ideal: 3.75, range: 1.25, decay: 0.35, unit: "°" },
     eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.0, range: 0.5, decay: 1.23, unit: "x" },
 
-    interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.90, range: 0.05, decay: 3.25, unit: "x" },
+    interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.85, range: 0.02, decay: 3.25, unit: "x" },
     mouthToNoseWidth: { name: "Mouth width to nose width ratio", ideal: 1.55, range: 0.1, decay: 4.90, unit: "x" },
     lipRatio: { name: "Lower Lip to Upper Lip Ratio", ideal: 1.57, range: 0.1, decay: 1.08, unit: "x" },
     mouthCorner: { name: "Mouth Corner Position", ideal: 0.91, range: 0.03, decay: 0.36, unit: "mm" },
@@ -39,7 +39,8 @@ export const RATIO_CONFIGS = {
     jawSlope: { name: "Jaw Slope", ideal: 141.25, range: 1.25, decay: 0.05, unit: "°" },
     neckWidth: { name: "Neck Width", ideal: 95.0, range: 3.0, decay: 0.024, unit: "%" },
     chinPhiltrum: { name: "Chin to Philtrum Ratio", ideal: 2.0, range: 0.1, decay: 1.70, unit: "x" },
-    deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 0, range: 2.0, decay: 0.17, unit: "°" },
+    deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 1.25, range: 1.25, decay: 0.17, unit: "°" },
+    ipsilateralAlarAngle: { name: "Ipsilateral Alar Angle", ideal: 89.5, range: 5.5, decay: 0.15, unit: "°" },
 
     // ===============================================
     // GROUP 2: ESTIMATED
@@ -256,7 +257,8 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const intersection = math.intersect(l.leftBottomGonion, l.chinLeft, l.rightBottomGonion, l.chinRight);
   // If no intersection or bizarre, fallback to chinBottom
   const vertex = intersection || l.chinBottom;
-  add('jawFrontalAngle', math.angle(l.leftBottomGonion, vertex, l.rightBottomGonion), ["leftBottomGonion", "chinLeft", "chinRight", "rightBottomGonion"]);
+  const jfa = math.angle(l.leftBottomGonion, vertex, l.rightBottomGonion);
+  add('jawFrontalAngle', jfa, ["leftBottomGonion", "chinLeft", "chinRight", "rightBottomGonion"]);
 
   // Jaw Slope (Updated Definition: Angle between Cheek -> Top Gonion -> Side Chin)
   // Vertex is Top Gonion
@@ -295,6 +297,15 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   // Nose Bridge
   const bridgeW = Math.abs(l.rightNoseBridge.x - l.leftNoseBridge.x);
   add('noseBridgeWidth', math.ratio(noseW, bridgeW), ["noseLeft", "noseRight", "leftNoseBridge", "rightNoseBridge"]);
+
+  // Ipsilateral Alar Angle (IAA)
+  // Angle between Lateral Canthi -> Nose Bottom -> Lateral Canthi
+  const iaa = math.angle(l.leftEyeLateralCanthus, l.noseBottom, l.rightEyeLateralCanthus);
+  add('ipsilateralAlarAngle', iaa, ["leftEyeLateralCanthus", "noseBottom", "rightEyeLateralCanthus"]);
+
+  // Deviation of IAA & JFA
+  const deviation = Math.abs(jfa - iaa);
+  add('deviationIAA_JFA', deviation, ["leftBottomGonion", "rightBottomGonion", "leftEyeLateralCanthus", "rightEyeLateralCanthus", "noseBottom", "chinLeft", "chinRight"]);
 
   return results;
 };

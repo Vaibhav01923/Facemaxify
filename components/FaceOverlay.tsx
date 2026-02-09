@@ -525,6 +525,86 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 </>
             );
         }
+    // --- Deviation of IAA & JFA ---
+    if (metricName === "Deviation of IAA & JFA") {
+         const lBot = getPt('leftBottomGonion');
+         const rBot = getPt('rightBottomGonion');
+         const lChin = getPt('chinLeft');
+         const rChin = getPt('chinRight');
+         
+         const lEye = getPt('leftEyeLateralCanthus');
+         const rEye = getPt('rightEyeLateralCanthus');
+         const nose = getPt('noseBottom');
+
+         if (lBot && rBot && lChin && rChin && lEye && rEye && nose) {
+             // --- JFA Visual (Cyan) ---
+             // Calculate Vertex
+             const det = (lChin.x - lBot.x) * (rChin.y - rBot.y) - (rChin.x - rBot.x) * (lChin.y - lBot.y);
+             let vertexJFA = { x: (lChin.x + rChin.x) / 2, y: (lChin.y + rChin.y) / 2 };
+             if (det !== 0) {
+                 const lambda = ((rChin.y - rBot.y) * (rChin.x - lBot.x) + (rBot.x - rChin.x) * (rChin.y - lBot.y)) / det;
+                 vertexJFA = { x: lBot.x + lambda * (lChin.x - lBot.x), y: lBot.y + lambda * (lChin.y - lBot.y) };
+             }
+
+             // JFA Arc
+             const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
+                  const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+                  const t = dist / (len || 1);
+                  return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
+             };
+             const pA_JFA = ptOnLine(vertexJFA, lBot, 8);
+             const pB_JFA = ptOnLine(vertexJFA, rBot, 8);
+
+             // Calculate JFA Angle
+             const v1 = { x: lBot.x - vertexJFA.x, y: lBot.y - vertexJFA.y };
+             const v2 = { x: rBot.x - vertexJFA.x, y: rBot.y - vertexJFA.y };
+             const dot = v1.x * v2.x + v1.y * v2.y;
+             const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+             const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+             let valJFA = 0;
+             if (mag1 * mag2 !== 0) valJFA = Math.acos(Math.max(-1, Math.min(1, dot / (mag1 * mag2)))) * (180 / Math.PI);
+
+
+             // --- IAA Visual (Purple/Pink to distinguish) ---
+             // Vertex is Nose
+             const pA_IAA = ptOnLine(nose, lEye, 8);
+             const pB_IAA = ptOnLine(nose, rEye, 8);
+
+             // Calculate IAA Angle
+             const v3 = { x: lEye.x - nose.x, y: lEye.y - nose.y };
+             const v4 = { x: rEye.x - nose.x, y: rEye.y - nose.y };
+             const dot2 = v3.x * v4.x + v3.y * v4.y;
+             const mag3 = Math.sqrt(v3.x * v3.x + v3.y * v3.y);
+             const mag4 = Math.sqrt(v4.x * v4.x + v4.y * v4.y);
+             let valIAA = 0;
+             if (mag3 * mag4 !== 0) valIAA = Math.acos(Math.max(-1, Math.min(1, dot2 / (mag3 * mag4)))) * (180 / Math.PI);
+
+             const deviation = Math.abs(valJFA - valIAA).toFixed(1);
+
+             return (
+                <>
+                    {/* JFA Visuals (Cyan) */}
+                    <line x1={lBot.x} y1={lBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="1.2" />
+                    <line x1={rBot.x} y1={rBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="1.2" />
+                    <path d={`M ${pA_JFA.x} ${pA_JFA.y} A 8 8 0 0 1 ${pB_JFA.x} ${pB_JFA.y}`} stroke="#22d3ee" strokeWidth="1.5" fill="none" />
+                    <text x={vertexJFA.x} y={vertexJFA.y + 6} fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{valJFA.toFixed(1)}°</text>
+
+                    {/* IAA Visuals (Pink/Purple) */}
+                    <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="1.2" />
+                    <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="1.2" />
+                    <path d={`M ${pA_IAA.x} ${pA_IAA.y} A 8 8 0 0 1 ${pB_IAA.x} ${pB_IAA.y}`} stroke="#d946ef" strokeWidth="1.5" fill="none" />
+                    <text x={nose.x} y={nose.y - 4} fill="#d946ef" fontSize="3" fontWeight="bold" textAnchor="middle">{valIAA.toFixed(1)}°</text>
+
+                    {/* Deviation Label (Center) */}
+                    <g transform={`translate(50, 50)`}>
+                         <rect x="-10" y="-4" width="20" height="8" rx="2" fill="rgba(0,0,0,0.8)" stroke="white" strokeWidth="0.5" />
+                         <text x="0" y="-1" fill="white" fontSize="2.5" textAnchor="middle">Deviation</text>
+                         <text x="0" y="2.5" fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{deviation}°</text>
+                    </g>
+                </>
+             );
+         }
+    }
     }
 
     return null;
@@ -542,7 +622,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
           </filter>
         </defs>
         {/* Conditionally apply glow. Complex geometric metrics (Jaw Slope/Angle/Neck Width) are rendered without filter for maximum clarity on mobile */}
-        { ["Jaw Slope", "Jaw Frontal Angle", "Neck Width"].includes(metricName || "") ? (
+        { ["Jaw Slope", "Jaw Frontal Angle", "Neck Width", "Deviation of IAA & JFA"].includes(metricName || "") ? (
              <g>{renderLines()}</g>
         ) : (
              <g filter="url(#glow)">{renderLines()}</g>

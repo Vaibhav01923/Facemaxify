@@ -40,7 +40,7 @@ export const RATIO_CONFIGS = {
     neckWidth: { name: "Neck Width", ideal: 95.0, range: 3.0, decay: 0.024, unit: "%" },
     chinPhiltrum: { name: "Chin to Philtrum Ratio", ideal: 2.0, range: 0.1, decay: 1.70, unit: "x" },
     deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 1.25, range: 1.25, decay: 0.17, unit: "°" },
-    ipsilateralAlarAngle: { name: "Ipsilateral Alar Angle", ideal: 89.5, range: 5.5, decay: 0.15, unit: "°" },
+    ipsilateralAlarAngle: { name: "Ipsilateral Alar Angle", ideal: 90.0, range: 3.0, decay: 0.15, unit: "°" },
 
     // ===============================================
     // GROUP 2: ESTIMATED

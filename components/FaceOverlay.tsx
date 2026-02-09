@@ -361,6 +361,18 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 };
             }
 
+            // Recalculate Angle for Display
+            const calculateAngle = (p1: {x:number,y:number}, p2: {x:number,y:number}, p3: {x:number,y:number}) => {
+                const v1 = { x: p1.x - p2.x, y: p1.y - p2.y };
+                const v2 = { x: p3.x - p2.x, y: p3.y - p2.y };
+                const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+                const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+                const dot = v1.x * v2.x + v1.y * v2.y;
+                return Math.acos(Math.max(-1, Math.min(1, dot / (mag1 * mag2)))) * (180 / Math.PI);
+            };
+
+            const angleVal = calculateAngle(lBot, vertex, rBot).toFixed(1);
+
             // Helper to find point on line at specific distance
             const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
                  const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
@@ -368,23 +380,23 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                  return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
             };
 
-            const pA = ptOnLine(vertex, lBot, 8);
-            const pB = ptOnLine(vertex, rBot, 8);
+            const pA = ptOnLine(vertex, lBot, 10);
+            const pB = ptOnLine(vertex, rBot, 10);
 
             return (
                 <>
                     {/* Jawline Extensions to Vertex */}
-                    <line x1={lBot.x} y1={lBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1={lBot.x} y1={lBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4,2" />
+                    <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4,2" />
 
                     {/* Key Points */}
-                    <circle cx={lBot.x} cy={lBot.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={rBot.x} cy={rBot.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={vertex.x} cy={vertex.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    <circle cx={lBot.x} cy={lBot.y} r="0.6" fill="#22d3ee" />
+                    <circle cx={rBot.x} cy={rBot.y} r="0.6" fill="#22d3ee" />
+                    <circle cx={vertex.x} cy={vertex.y} r="0.8" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
 
                     {/* Angle Arc at Vertex */}
-                    <path d={`M ${pA.x} ${pA.y} Q ${vertex.x} ${vertex.y} ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
-                    <text x={vertex.x} y={vertex.y + 6} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Angle</text>
+                    <path d={`M ${pA.x} ${pA.y} Q ${vertex.x} ${vertex.y} ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1" fill="none" />
+                    <text x={vertex.x} y={vertex.y + 8} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">{angleVal}°</text>
                 </>
             );
 

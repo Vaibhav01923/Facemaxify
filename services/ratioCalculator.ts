@@ -17,7 +17,7 @@ export const RATIO_CONFIGS = {
     // ======================================       =========
     // GROUP 1: CALCULATED
     // ===============================================
-    canthalTilt: { name: "Lateral Canthal Tilt", ideal: 3.75, range: 1.25, decay: 0.35, unit: "°" },
+    canthalTilt: { name: "Lateral Canthal Tilt", ideal: 7.5, range: 1.5, decay: 0.20, unit: "°" },
     eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.0, range: 0.5, decay: 1.23, unit: "x" },
 
     interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.85, range: 0.02, decay: 3.90, unit: "x" },
@@ -119,14 +119,31 @@ const math = {
     }
 };
 
-// Helper: Calculate absolute tilt angle relative to horizontal (0-90 degrees)
-const calculateTilt = (p1: Point, p2: Point) => {
-    // Sort by x to ensure vector points right
-    const [left, right] = p1.x < p2.x ? [p1, p2] : [p2, p1];
-    const dy = right.y - left.y;
-    const dx = right.x - left.x;
-    const theta = Math.atan2(dy, dx) * (180 / Math.PI);
-    return Math.abs(theta); 
+// Helper: Calculate tilt where UP (lateral > medial) is POSITIVE, DOWN is NEGATIVE
+// Medial is P1, Lateral is P2.
+const calculateTilt = (medial: Point, lateral: Point) => {
+    const dy = lateral.y - medial.y; // Y increases downwards. So if Lateral is higher (smaller Y), dy is negative.
+    // Wait, in screen coords: Y=0 is top.
+    // Ideally Inner (Medial) is at some Y. Lateral should be HIGHER (smaller Y).
+    // So if Lateral.y < Medial.y => Positive Tilt.
+    const dyValues = medial.y - lateral.y; // Positive if Lateral is Higher (smaller Y)
+    const dxValues = lateral.x - medial.x; // Assumes Lateral is to the right of Medial (for Right Eye)
+    
+    // We need to handle Left vs Right eye distinction or just assume input order.
+    // Let's assume input is (Medial, Lateral).
+    // For Right Eye: Lateral is > Medial.x (Right side).
+    // For Left Eye: Lateral is < Medial.x (Left side).
+    
+    // Instead, let's just use simple slope:
+    // We want "Outer Corner Higher than Inner Corner" = Positive.
+    // Inner (Medial) Y vs Outer (Lateral) Y.
+    // DeltaY = Medial.y - Lateral.y (Positive if Lateral is higher/up/smallerY).
+    // DeltaX = Math.abs(Lateral.x - Medial.x).
+    
+    const deltaY = medial.y - lateral.y;
+    const deltaX = Math.abs(lateral.x - medial.x);
+    const theta = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+    return theta;
 };
 
 // Scoring Function with Decay

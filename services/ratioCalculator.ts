@@ -29,7 +29,7 @@ export const RATIO_CONFIGS = {
     intercanthalNasal: { name: "Intercanthal-Nasal Width Ratio", ideal: 1.015, range: 0.035, decay: 0.46, unit: "x" },
     middleThird: { name: "Middle Third", ideal: 33.3, range: 1.0, decay: 0.08, unit: "%" },
     lowerThird: { name: "Lower Third", ideal: 33.3, range: 1.0, decay: 0.07, unit: "%" },
-    lowerThirdProp: { name: "Lower Third Proportion", ideal: 32.7, range: 1.0, decay: 0.44, unit: "%" },
+    lowerThirdProp: { name: "Lower Third Proportion", ideal: 33.7, range: 0.1, decay: 0.44, unit: "%" },
     faceWidthHeight: { name: "Face Width to Height Ratio", ideal: 2.0, range: 0.1, decay: 2.60, unit: "x" },
     totalFacialWidthHeight: { name: "Total Facial Width to Height Ratio", ideal: 1.35, range: 0.03, decay: 8.71, unit: "x" },
     midfaceRatio: { name: "Midface Ratio", ideal: 1.0, range: 0.05, decay: 11.0, unit: "x" },
@@ -214,7 +214,9 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   add('upperThird', (Math.abs(browMidY - l.hairline.y) / totalHeight) * 100, ["hairline", "leftBrowInnerCorner", "rightBrowInnerCorner"]);
   add('middleThird', (Math.abs(l.noseBottom.y - browMidY) / totalHeight) * 100, ["noseBottom", "leftBrowInnerCorner", "rightBrowInnerCorner"]);
   add('lowerThird', (Math.abs(l.chinBottom.y - l.noseBottom.y) / totalHeight) * 100, ["chinBottom", "noseBottom"]);
-  add('lowerThirdProp', (Math.abs(l.chinBottom.y - l.noseBottom.y) / totalHeight) * 100, ["chinBottom", "noseBottom"]);
+  const philtrumLength = Math.abs(l.cupidsBow.y - l.noseBottom.y);
+  const lowerThirdHeight = Math.abs(l.chinBottom.y - l.noseBottom.y);
+  add('lowerThirdProp', math.ratio(philtrumLength, lowerThirdHeight) * 100, ["cupidsBow", "noseBottom", "chinBottom"]);
 
   // Width/Height Ratios
   // Total Facial Height to Width (ideal 1.35) -> H/W

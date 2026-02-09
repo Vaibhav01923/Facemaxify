@@ -35,7 +35,7 @@ export const RATIO_CONFIGS = {
     midfaceRatio: { name: "Midface Ratio", ideal: 1.0, range: 0.05, decay: 11.0, unit: "x" },
     cheekboneHeight: { name: "Cheekbone Height", ideal: 75.0, range: 5.0, decay: 0.23, unit: "%" },
     bigonialWidth: { name: "Bigonial Width", ideal: 89.0, range: 5.0, decay: 0.03, unit: "%" },
-    jawFrontalAngle: { name: "Jaw Frontal Angle", ideal: 90.0, range: 5.0, decay: 0.03, unit: "°" },
+    jawFrontalAngle: { name: "Jaw Frontal Angle", ideal: 90.0, range: 5.0, decay: 0.122, unit: "°" },
     jawSlope: { name: "Jaw Slope", ideal: 141.25, range: 1.25, decay: 0.05, unit: "°" },
     neckWidth: { name: "Neck Width", ideal: 95.0, range: 3.0, decay: 0.024, unit: "%" },
     chinPhiltrum: { name: "Chin to Philtrum Ratio", ideal: 2.0, range: 0.1, decay: 1.70, unit: "x" },

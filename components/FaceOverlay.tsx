@@ -525,6 +525,55 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 </>
             );
         }
+    // --- Ipsilateral Alar Angle ---
+    if (metricName === "Ipsilateral Alar Angle") {
+         const lEye = getPt('leftEyeLateralCanthus');
+         const rEye = getPt('rightEyeLateralCanthus');
+         const nose = getPt('noseBottom');
+
+         if (lEye && rEye && nose) {
+             const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
+                  const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+                  const t = dist / (len || 1);
+                  return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
+             };
+             
+             // Points for Arc
+             const pA = ptOnLine(nose, lEye, 8);
+             const pB = ptOnLine(nose, rEye, 8);
+
+             // Calculate Angle
+             const v1 = { x: lEye.x - nose.x, y: lEye.y - nose.y };
+             const v2 = { x: rEye.x - nose.x, y: rEye.y - nose.y };
+             const dot = v1.x * v2.x + v1.y * v2.y;
+             const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+             const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+             let angleVal = 0;
+             if (mag1 * mag2 !== 0) {
+                 angleVal = Math.acos(Math.max(-1, Math.min(1, dot / (mag1 * mag2)))) * (180 / Math.PI);
+             }
+
+             return (
+                <>
+                    <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx={lEye.x} cy={lEye.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={rEye.x} cy={rEye.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={nose.x} cy={nose.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    
+                    {/* Arc */}
+                    <path d={`M ${pA.x} ${pA.y} A 8 8 0 0 1 ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                    
+                    {/* Angle Text */}
+                    <g transform={`translate(${nose.x}, ${nose.y - 6})`}>
+                         <rect x="-8" y="-3" width="16" height="6" rx="2" fill="rgba(0,0,0,0.7)" />
+                         <text x="0" y="1.5" fill="#22d3ee" fontSize="3.5" fontWeight="bold" textAnchor="middle">{angleVal.toFixed(1)}°</text>
+                    </g>
+                </>
+             );
+         }
+    }
+
     // --- Deviation of IAA & JFA ---
     if (metricName === "Deviation of IAA & JFA") {
          const lBot = getPt('leftBottomGonion');
@@ -622,7 +671,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
           </filter>
         </defs>
         {/* Conditionally apply glow. Complex geometric metrics (Jaw Slope/Angle/Neck Width) are rendered without filter for maximum clarity on mobile */}
-        { ["Jaw Slope", "Jaw Frontal Angle", "Neck Width", "Deviation of IAA & JFA"].includes(metricName || "") ? (
+        { ["Jaw Slope", "Jaw Frontal Angle", "Neck Width", "Deviation of IAA & JFA", "Ipsilateral Alar Angle"].includes(metricName || "") ? (
              <g>{renderLines()}</g>
         ) : (
              <g filter="url(#glow)">{renderLines()}</g>

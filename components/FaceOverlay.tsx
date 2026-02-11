@@ -467,26 +467,6 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         }
     }
 
-    // Fallback: Simple Connection
-    if (highlightedLandmarks.length === 2) {
-        const p1 = getPt(highlightedLandmarks[0]);
-        const p2 = getPt(highlightedLandmarks[1]);
-        if (!p1 || !p2) return null;
-        return (
-            <>
-                <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#3b82f6" strokeWidth="0.8" strokeLinecap="round" />
-                {renderInteractivePoint(highlightedLandmarks[0], p1.x, p1.y, "#3b82f6", 0.8)}
-                {renderInteractivePoint(highlightedLandmarks[1], p2.x, p2.y, "#3b82f6", 0.8)}
-            </>
-        );
-    } else if (highlightedLandmarks.length > 2) {
-         return highlightedLandmarks.map(key => {
-             const p = getPt(key);
-             if (!p) return null;
-             return renderInteractivePoint(key, p.x, p.y, "#3b82f6", 0.8);
-         });
-    }
-
     // --- Jaw Slope (Cheek -> Top Gonion -> Side Chin) ---
     if (metricName === "Jaw Slope") {
         const lCheek = getPt('leftCheek');
@@ -553,6 +533,28 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
              );
         }
     }
+
+    // Fallback: Simple Connection
+    if (highlightedLandmarks.length === 2) {
+        const p1 = getPt(highlightedLandmarks[0]);
+        const p2 = getPt(highlightedLandmarks[1]);
+        if (!p1 || !p2) return null;
+        return (
+            <>
+                <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#3b82f6" strokeWidth="0.8" strokeLinecap="round" />
+                {renderInteractivePoint(highlightedLandmarks[0], p1.x, p1.y, "#3b82f6", 0.8)}
+                {renderInteractivePoint(highlightedLandmarks[1], p2.x, p2.y, "#3b82f6", 0.8)}
+            </>
+        );
+    } else if (highlightedLandmarks.length > 2) {
+         return highlightedLandmarks.map(key => {
+             const p = getPt(key);
+             if (!p) return null;
+             return renderInteractivePoint(key, p.x, p.y, "#3b82f6", 0.8);
+         });
+    }
+
+    return null;
 
     // --- Neck Width (AB vs CD) ---
     if (metricName === "Neck Width") {

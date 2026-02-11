@@ -5,10 +5,11 @@ import { useUser } from "@clerk/clerk-react";
 interface RatioRowProps {
   metric: MetricResult;
   onHover: (metric: MetricResult | null) => void;
+  onClick?: (metric: MetricResult) => void;
   isLocked?: boolean;
 }
 
-export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, isLocked = false }) => {
+export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, isLocked = false }) => {
   const { user } = useUser();
   const getScoreColor = (score: number) => {
     if (score >= 9) return "text-green-500";
@@ -33,11 +34,12 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, isLocked = 
 
   return (
     <div 
-        className={`py-4 border-b border-slate-800/50 last:border-0 transition-all px-4 cursor-default group relative ${
-            isLocked ? "bg-slate-900/10" : "hover:bg-slate-900 border-l-2 border-l-transparent hover:border-l-indigo-500"
+        className={`py-4 border-b border-slate-800/50 last:border-0 transition-all px-4 group relative ${
+            isLocked ? "bg-slate-900/10" : "hover:bg-slate-900 border-l-2 border-l-transparent hover:border-l-indigo-500 cursor-pointer"
         }`}
         onMouseEnter={() => !isLocked && onHover(metric)}
         onMouseLeave={() => !isLocked && onHover(null)}
+        onClick={() => !isLocked && onClick?.(metric)}
     >
       {isLocked && (
         <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[2px] bg-slate-950/20">

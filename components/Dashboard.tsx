@@ -22,6 +22,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
+  const [pinnedMetric, setPinnedMetric] = useState<MetricResult | null>(null);
   const [localLandmarks, setLocalLandmarks] = useState<any>(null);
 
   useEffect(() => {
@@ -38,6 +39,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
               [key]: newPoint
           };
       });
+  };
+
+  const handleMetricClick = (metric: MetricResult) => {
+      // Toggle: if clicking the same metric, unpin it. Otherwise, pin the new one.
+      setPinnedMetric(prev => prev?.name === metric.name ? null : metric);
   };
 
   // Early return if no data provided
@@ -207,8 +213,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
                   <FaceOverlay
                     photoUrl={data.frontPhotoUrl}
                     landmarks={localLandmarks || data.frontLandmarks}
-                    highlightedLandmarks={hoveredMetric?.relatedLandmarks}
-                    metricName={hoveredMetric?.name}
+                    highlightedLandmarks={(pinnedMetric || hoveredMetric)?.relatedLandmarks}
+                    metricName={(pinnedMetric || hoveredMetric)?.name}
                     onUpdateLandmark={handleLandmarkUpdate}
                   />
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12 text-center">
@@ -218,18 +224,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
                   </div>
                 </div>
                 <div className="mt-3 px-2 pb-2">
-                  {hoveredMetric ? (
+                  {(pinnedMetric || hoveredMetric) ? (
                     <div className="text-center animate-fadeIn">
-                      <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider">
-                        {hoveredMetric.name}
+                      <p className="text-indigo-400 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                        {(pinnedMetric || hoveredMetric)!.name}
+                        {pinnedMetric && <span className="text-[8px] bg-indigo-500/20 px-1.5 py-0.5 rounded-full">PINNED</span>}
                       </p>
                       <p className="text-slate-500 text-xs">
-                        Score: {hoveredMetric.score}/10
+                        Score: {(pinnedMetric || hoveredMetric)!.score}/10
                       </p>
                     </div>
                   ) : (
                     <p className="text-center text-slate-600 text-xs">
-                      Hover over a trait to visualize
+                      Click a trait to pin visualization
                     </p>
                   )}
                 </div>
@@ -253,6 +260,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
                       key={idx}
                       metric={metric}
                       onHover={setHoveredMetric}
+                      onClick={handleMetricClick}
                       isLocked={!isPaid && !ALLOWED_FREE_METRICS.includes(metric.name)}
                     />
                   ))}

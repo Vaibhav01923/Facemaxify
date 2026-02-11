@@ -8,6 +8,7 @@ import {
 import { Button } from "./Button";
 import { RatioRow } from "./RatioRow";
 import { FaceOverlay } from "./FaceOverlay";
+import { LandmarkEditor } from "./LandmarkEditor";
 
 interface DashboardProps {
   data?: FinalResult;
@@ -24,6 +25,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
   const [pinnedMetric, setPinnedMetric] = useState<MetricResult | null>(null);
   const [localLandmarks, setLocalLandmarks] = useState<any>(null);
+  const [editorState, setEditorState] = useState<{
+    isOpen: boolean;
+    landmarkKey: string | null;
+  }>({ isOpen: false, landmarkKey: null });
 
   useEffect(() => {
     if (data?.frontLandmarks) {
@@ -44,6 +49,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
   const handleMetricClick = (metric: MetricResult) => {
       // Toggle: if clicking the same metric, unpin it. Otherwise, pin the new one.
       setPinnedMetric(prev => prev?.name === metric.name ? null : metric);
+  };
+
+  const handlePointClick = (landmarkKey: string) => {
+      setEditorState({ isOpen: true, landmarkKey });
+  };
+
+  const handleEditorComplete = (updatedLandmarks: any) => {
+      if (!editorState.landmarkKey) return;
+      // Merge the updated landmark back into the full landmark set
+      setLocalLandmarks((prev: any) => ({
+          ...prev,
+          [editorState.landmarkKey!]: updatedLandmarks[editorState.landmarkKey!]
+      }));
+      setEditorState({ isOpen: false, landmarkKey: null });
   };
 
   // Early return if no data provided
@@ -215,7 +234,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
                     landmarks={localLandmarks || data.frontLandmarks}
                     highlightedLandmarks={(pinnedMetric || hoveredMetric)?.relatedLandmarks}
                     metricName={(pinnedMetric || hoveredMetric)?.name}
-                    onUpdateLandmark={handleLandmarkUpdate}
+                    onPointClick={handlePointClick}
                   />
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12 text-center">
                     <h3 className="text-white font-bold tracking-wider text-sm uppercase">
@@ -270,6 +289,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
           </div>
         )}
       </main>
+
+      {/* Landmark Editor Overlay - Single Point Mode */}
+      {editorState.isOpen && editorState.landmarkKey && localLandmarks && (
+        <div className="fixed inset-0 z-50 bg-slate-950">
+          <LandmarkEditor
+            photoUrl={data.frontPhotoUrl}
+            initialLandmarks={{ [editorState.landmarkKey]: localLandmarks[editorState.landmarkKey] }}
+            faceBox={data.faceBox}
+            title="Adjust Landmark"
+            landmarkType="front"
+            onComplete={handleEditorComplete}
+          />
+        </div>
+      )}
     </div>
   );
 };

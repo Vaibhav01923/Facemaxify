@@ -7,7 +7,7 @@ interface FaceOverlayProps {
   landmarks: Record<string, Point>;
   highlightedLandmarks?: string[];
   metricName?: string;
-  onUpdateLandmark?: (key: string, point: Point) => void;
+  onPointClick?: (key: string) => void;
 }
 
 export const FaceOverlay: React.FC<FaceOverlayProps> = ({ 
@@ -15,11 +15,10 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
   landmarks, 
   highlightedLandmarks = [],
   metricName,
-  onUpdateLandmark
+  onPointClick
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const [draggingPt, setDraggingPt] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [overlayStyle, setOverlayStyle] = useState<React.CSSProperties>({
       position: 'absolute',
@@ -68,45 +67,18 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
     return { x: pt.x / 10, y: pt.y / 10 };
   };
 
-  const handleMouseDown = (key: string, e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDraggingPt(key);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-      if (!draggingPt || !onUpdateLandmark || !svgRef.current) return;
-      
-      const svg = svgRef.current;
-      const pt = svg.createSVGPoint();
-      pt.x = e.clientX;
-      pt.y = e.clientY;
-      
-      // Transform screen coordinate to SVG coordinate
-      const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse());
-      
-      // Convert 0-100 SVG coord back to 0-1000 landmark coord (x10)
-      if (svgP) {
-          onUpdateLandmark(draggingPt, { x: svgP.x * 10, y: svgP.y * 10 });
-      }
-  };
-
-  const handleMouseUp = () => {
-      setDraggingPt(null);
-  };
-
   const renderInteractivePoint = (key: string, cx: number, cy: number, fill: string = "#22d3ee", r: number = 0.8) => {
-      const isDragging = draggingPt === key;
       return (
           <circle 
             cx={cx} 
             cy={cy} 
-            r={isDragging ? r * 2 : r + 0.5} // Larger hit area and visual feedback
+            r={r + 0.5}
             fill={fill}
-            stroke={isDragging ? "white" : "none"}
-            strokeWidth={isDragging ? 0.5 : 0}
-            className="cursor-grab active:cursor-grabbing hover:opacity-80 transition-all pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(key, e)}
+            className="cursor-pointer hover:opacity-80 transition-all pointer-events-auto hover:stroke-white hover:stroke-1"
+            onClick={(e) => {
+                e.stopPropagation();
+                onPointClick?.(key);
+            }}
           />
       );
   };
@@ -762,9 +734,6 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         className="z-20" 
         viewBox="0 0 100 100" 
         preserveAspectRatio="none"
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
       >
         <defs>
           <filter id="glow">

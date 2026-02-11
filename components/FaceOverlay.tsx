@@ -467,6 +467,129 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         }
     }
 
+    // --- Ipsilateral Alar Angle (IAA) ---
+    if (metricName === "Ipsilateral Alar Angle") {
+        const lCanthus = getPt('leftEyeLateralCanthus');
+        const rCanthus = getPt('rightEyeLateralCanthus');
+        const noseBottom = getPt('noseBottom');
+
+        if (lCanthus && rCanthus && noseBottom) {
+            // Helper to find point on line at specific distance
+            const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
+                const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+                const t = dist / (len || 1);
+                return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
+            };
+
+            const pL = ptOnLine(noseBottom, lCanthus, 8);
+            const pR = ptOnLine(noseBottom, rCanthus, 8);
+
+            // Calculate angle
+            const v1 = { x: lCanthus.x - noseBottom.x, y: lCanthus.y - noseBottom.y };
+            const v2 = { x: rCanthus.x - noseBottom.x, y: rCanthus.y - noseBottom.y };
+            const dot = v1.x * v2.x + v1.y * v2.y;
+            const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+            const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+            let angleVal = 0;
+            if (mag1 * mag2 !== 0) {
+                const cosine = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
+                angleVal = Math.acos(cosine) * (180 / Math.PI);
+            }
+
+            return (
+                <>
+                    {/* Lines from lateral canthi to nose bottom */}
+                    <line x1={lCanthus.x} y1={lCanthus.y} x2={noseBottom.x} y2={noseBottom.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1={rCanthus.x} y1={rCanthus.y} x2={noseBottom.x} y2={noseBottom.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    
+                    {/* Arc at nose bottom vertex */}
+                    <path d={`M ${pL.x} ${pL.y} A 8 8 0 0 1 ${pR.x} ${pR.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                    
+                    {/* Angle value display */}
+                    <g transform={`translate(${noseBottom.x}, ${noseBottom.y + 6})`}>
+                        <rect x="-8" y="-3" width="16" height="6" rx="2" fill="rgba(0,0,0,0.7)" />
+                        <text x="0" y="1.5" fill="#22d3ee" fontSize="3.5" fontWeight="bold" textAnchor="middle">{angleVal.toFixed(1)}°</text>
+                    </g>
+
+                    {/* Interactive points */}
+                    {renderInteractivePoint('leftEyeLateralCanthus', lCanthus.x, lCanthus.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyeLateralCanthus', rCanthus.x, rCanthus.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('noseBottom', noseBottom.x, noseBottom.y, "#22d3ee", 0.8)}
+                </>
+            );
+        }
+    }
+
+    // --- Chin to Philtrum Ratio ---
+    if (metricName === "Chin to Philtrum") {
+        const chinBottom = getPt('chinBottom');
+        const lowerLip = getPt('lowerLip');
+        const innerCupid = getPt('innerCupidsBow');
+        const noseBottom = getPt('noseBottom');
+
+        if (chinBottom && lowerLip && innerCupid && noseBottom) {
+            const midX = (chinBottom.x + lowerLip.x) / 2;
+            const ratio = (Math.abs(chinBottom.y - lowerLip.y) / Math.abs(innerCupid.y - noseBottom.y)).toFixed(2);
+
+            return (
+                <>
+                    {/* Chin height (chinBottom to lowerLip) */}
+                    <line x1={midX} y1={chinBottom.y} x2={midX} y2={lowerLip.y} stroke="#22d3ee" strokeWidth="1.2" strokeLinecap="round" />
+                    <line x1={midX - 1.5} y1={chinBottom.y} x2={midX + 1.5} y2={chinBottom.y} stroke="#22d3ee" strokeWidth="0.8" />
+                    <line x1={midX - 1.5} y1={lowerLip.y} x2={midX + 1.5} y2={lowerLip.y} stroke="#22d3ee" strokeWidth="0.8" />
+
+                    {/* Philtrum height (innerCupidsBow to noseBottom) */}
+                    <line x1={midX + 5} y1={innerCupid.y} x2={midX + 5} y2={noseBottom.y} stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                    <line x1={midX + 3.5} y1={innerCupid.y} x2={midX + 6.5} y2={innerCupid.y} stroke="white" strokeWidth="0.8" />
+                    <line x1={midX + 3.5} y1={noseBottom.y} x2={midX + 6.5} y2={noseBottom.y} stroke="white" strokeWidth="0.8" />
+
+                    {/* Ratio display */}
+                    <g transform={`translate(${midX + 10}, ${(chinBottom.y + lowerLip.y) / 2})`}>
+                        <text x="0" y="1" fill="#22d3ee" fontSize="3" fontWeight="bold">{ratio}x</text>
+                    </g>
+
+                    {/* Interactive points */}
+                    {renderInteractivePoint('chinBottom', midX, chinBottom.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('lowerLip', midX, lowerLip.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('innerCupidsBow', midX + 5, innerCupid.y, "white", 0.8)}
+                    {renderInteractivePoint('noseBottom', midX + 5, noseBottom.y, "white", 0.8)}
+                </>
+            );
+        }
+    }
+
+    // --- Canthal Tilt ---
+    if (metricName === "Canthal Tilt") {
+        const lMedial = getPt('leftEyeMedialCanthus');
+        const lLateral = getPt('leftEyeLateralCanthus');
+        const rMedial = getPt('rightEyeMedialCanthus');
+        const rLateral = getPt('rightEyeLateralCanthus');
+
+        if (lMedial && lLateral && rMedial && rLateral) {
+            // Calculate tilts
+            const leftTilt = Math.atan2(lLateral.y - lMedial.y, lLateral.x - lMedial.x) * (180 / Math.PI);
+            const rightTilt = Math.atan2(rLateral.y - rMedial.y, rLateral.x - rMedial.x) * (180 / Math.PI);
+
+            return (
+                <>
+                    {/* Left eye tilt line */}
+                    <line x1={lMedial.x} y1={lMedial.y} x2={lLateral.x} y2={lLateral.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <text x={(lMedial.x + lLateral.x) / 2} y={lMedial.y - 3} fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{leftTilt.toFixed(1)}°</text>
+                    
+                    {/* Right eye tilt line */}
+                    <line x1={rMedial.x} y1={rMedial.y} x2={rLateral.x} y2={rLateral.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+                    <text x={(rMedial.x + rLateral.x) / 2} y={rMedial.y - 3} fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{rightTilt.toFixed(1)}°</text>
+
+                    {/* Interactive points */}
+                    {renderInteractivePoint('leftEyeMedialCanthus', lMedial.x, lMedial.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('leftEyeLateralCanthus', lLateral.x, lLateral.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyeMedialCanthus', rMedial.x, rMedial.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyeLateralCanthus', rLateral.x, rLateral.y, "#22d3ee", 0.8)}
+                </>
+            );
+        }
+    }
+
     // --- Jaw Slope (Cheek -> Top Gonion -> Side Chin) ---
     if (metricName === "Jaw Slope") {
         const lCheek = getPt('leftCheek');

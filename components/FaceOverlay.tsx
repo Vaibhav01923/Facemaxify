@@ -731,54 +731,6 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             );
         }
     }
-    // --- Ipsilateral Alar Angle ---
-    if (metricName === "Ipsilateral Alar Angle") {
-         const lEye = getPt('leftEyeLateralCanthus');
-         const rEye = getPt('rightEyeLateralCanthus');
-         const nose = getPt('noseBottom');
-
-         if (lEye && rEye && nose) {
-             const ptOnLine = (start: {x:number, y:number}, end: {x:number, y:number}, dist: number) => {
-                  const len = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
-                  const t = dist / (len || 1);
-                  return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
-             };
-             
-             // Points for Arc
-             const pA = ptOnLine(nose, lEye, 8);
-             const pB = ptOnLine(nose, rEye, 8);
-
-             // Calculate Angle
-             const v1 = { x: lEye.x - nose.x, y: lEye.y - nose.y };
-             const v2 = { x: rEye.x - nose.x, y: rEye.y - nose.y };
-             const dot = v1.x * v2.x + v1.y * v2.y;
-             const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
-             const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
-             let angleVal = 0;
-             if (mag1 * mag2 !== 0) {
-                 angleVal = Math.acos(Math.max(-1, Math.min(1, dot / (mag1 * mag2)))) * (180 / Math.PI);
-             }
-
-             return (
-                <>
-                    <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    {renderInteractivePoint('leftEyeLateralCanthus', lEye.x, lEye.y, "#22d3ee", 0.8)}
-                    {renderInteractivePoint('rightEyeLateralCanthus', rEye.x, rEye.y, "#22d3ee", 0.8)}
-                    {renderInteractivePoint('noseBottom', nose.x, nose.y, "#22d3ee", 1.2)}
-                    
-                    {/* Arc */}
-                    <path d={`M ${pA.x} ${pA.y} A 8 8 0 0 1 ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
-                    
-                    {/* Angle Text */}
-                    <g transform={`translate(${nose.x}, ${nose.y - 6})`}>
-                         <rect x="-8" y="-3" width="16" height="6" rx="2" fill="rgba(0,0,0,0.7)" />
-                         <text x="0" y="1.5" fill="#22d3ee" fontSize="3.5" fontWeight="bold" textAnchor="middle">{angleVal.toFixed(1)}°</text>
-                    </g>
-                </>
-             );
-         }
-    }
 
     // --- Deviation of IAA & JFA ---
     if (metricName === "Deviation of IAA & JFA") {
@@ -839,15 +791,15 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
              return (
                 <>
                     {/* JFA Visuals (Cyan) */}
-                    <line x1={lBot.x} y1={lBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="1.2" />
-                    <line x1={rBot.x} y1={rBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="1.2" />
-                    <path d={`M ${pA_JFA.x} ${pA_JFA.y} A 8 8 0 0 1 ${pB_JFA.x} ${pB_JFA.y}`} stroke="#22d3ee" strokeWidth="1.5" fill="none" />
+                    <line x1={lBot.x} y1={lBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="0.8" />
+                    <line x1={rBot.x} y1={rBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="0.8" />
+                    <path d={`M ${pA_JFA.x} ${pA_JFA.y} A 8 8 0 0 1 ${pB_JFA.x} ${pB_JFA.y}`} stroke="#22d3ee" strokeWidth="0.8" fill="none" />
                     <text x={vertexJFA.x} y={vertexJFA.y + 6} fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{valJFA.toFixed(1)}°</text>
 
                     {/* IAA Visuals (Pink/Purple) */}
-                    <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="1.2" />
-                    <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="1.2" />
-                    <path d={`M ${pA_IAA.x} ${pA_IAA.y} A 8 8 0 0 1 ${pB_IAA.x} ${pB_IAA.y}`} stroke="#d946ef" strokeWidth="1.5" fill="none" />
+                    <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="0.8" />
+                    <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="0.8" />
+                    <path d={`M ${pA_IAA.x} ${pA_IAA.y} A 8 8 0 0 1 ${pB_IAA.x} ${pB_IAA.y}`} stroke="#d946ef" strokeWidth="0.8" fill="none" />
                     <text x={nose.x} y={nose.y - 4} fill="#d946ef" fontSize="3" fontWeight="bold" textAnchor="middle">{valIAA.toFixed(1)}°</text>
 
                     {/* Deviation Label (Center) */}
@@ -858,17 +810,17 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     </g>
 
                     {/* Interactive Points */}
-                    {renderInteractivePoint('leftBottomGonion', lBot.x, lBot.y, "#22d3ee", 0.8)}
-                    {renderInteractivePoint('rightBottomGonion', rBot.x, rBot.y, "#22d3ee", 0.8)}
-                    {renderInteractivePoint('chinLeft', lChin.x, lChin.y, "#22d3ee", 0.8)}
-                    {renderInteractivePoint('chinRight', rChin.x, rChin.y, "#22d3ee", 0.8)}
-                    {renderInteractivePoint('leftEyeLateralCanthus', lEye.x, lEye.y, "#d946ef", 0.8)}
-                    {renderInteractivePoint('rightEyeLateralCanthus', rEye.x, rEye.y, "#d946ef", 0.8)}
-                    {renderInteractivePoint('noseBottom', nose.x, nose.y, "#d946ef", 0.8)}
+                    {renderInteractivePoint('leftBottomGonion', lBot.x, lBot.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('rightBottomGonion', rBot.x, rBot.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('chinLeft', lChin.x, lChin.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('chinRight', rChin.x, rChin.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('leftEyeLateralCanthus', lEye.x, lEye.y, "#d946ef", 0.5)}
+                    {renderInteractivePoint('rightEyeLateralCanthus', rEye.x, rEye.y, "#d946ef", 0.5)}
+                    {renderInteractivePoint('noseBottom', nose.x, nose.y, "#d946ef", 0.5)}
                 </>
              );
     }
-    }
+
 
     return null;
   };

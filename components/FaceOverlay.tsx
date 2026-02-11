@@ -609,6 +609,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 </>
             );
         }
+    }
     // --- Ipsilateral Alar Angle ---
     if (metricName === "Ipsilateral Alar Angle") {
          const lEye = getPt('leftEyeLateralCanthus');
@@ -780,4 +781,4 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
       </svg>
     </div>
   );
-}};
+};

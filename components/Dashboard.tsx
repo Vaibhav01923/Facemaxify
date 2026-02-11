@@ -22,6 +22,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
+  const [localLandmarks, setLocalLandmarks] = useState<any>(null);
+
+  useEffect(() => {
+    if (data?.frontLandmarks) {
+        setLocalLandmarks(data.frontLandmarks);
+    }
+  }, [data?.frontLandmarks]);
+
+  const handleLandmarkUpdate = (key: string, newPoint: {x: number, y: number}) => {
+      setLocalLandmarks((prev: any) => {
+          if (!prev) return prev;
+          return {
+              ...prev,
+              [key]: newPoint
+          };
+      });
+  };
 
   // Early return if no data provided
   if (!data) {
@@ -44,9 +61,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
   }
 
   const frontMetrics = useMemo(() => {
-    const metrics = calculateFrontRatios(data.frontLandmarks);
+    if (!localLandmarks) return [];
+    const metrics = calculateFrontRatios(localLandmarks);
     return metrics.sort((a, b) => a.score - b.score);
-  }, [data.frontLandmarks]);
+  }, [localLandmarks]);
 
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;
@@ -188,9 +206,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
                 <div className="aspect-[3/4] relative rounded-xl overflow-hidden bg-black">
                   <FaceOverlay
                     photoUrl={data.frontPhotoUrl}
-                    landmarks={data.frontLandmarks}
+                    landmarks={localLandmarks || data.frontLandmarks}
                     highlightedLandmarks={hoveredMetric?.relatedLandmarks}
                     metricName={hoveredMetric?.name}
+                    onUpdateLandmark={handleLandmarkUpdate}
                   />
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12 text-center">
                     <h3 className="text-white font-bold tracking-wider text-sm uppercase">

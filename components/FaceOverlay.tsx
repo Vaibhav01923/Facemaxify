@@ -7,16 +7,20 @@ interface FaceOverlayProps {
   landmarks: Record<string, Point>;
   highlightedLandmarks?: string[];
   metricName?: string;
+  onUpdateLandmark?: (key: string, point: Point) => void;
 }
 
 export const FaceOverlay: React.FC<FaceOverlayProps> = ({ 
   photoUrl, 
   landmarks, 
   highlightedLandmarks = [],
-  metricName
+  metricName,
+  onUpdateLandmark
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const [draggingPt, setDraggingPt] = useState<string | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const [overlayStyle, setOverlayStyle] = useState<React.CSSProperties>({
       position: 'absolute',
       top: 0,
@@ -49,7 +53,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
           top: top,
           width: renderedW,
           height: renderedH,
-          pointerEvents: 'none'
+          // pointerEvents: 'none'
       });
   };
 
@@ -62,6 +66,49 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
     const pt = landmarks[key];
     if (!pt) return null;
     return { x: pt.x / 10, y: pt.y / 10 };
+  };
+
+  const handleMouseDown = (key: string, e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDraggingPt(key);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+      if (!draggingPt || !onUpdateLandmark || !svgRef.current) return;
+      
+      const svg = svgRef.current;
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      
+      // Transform screen coordinate to SVG coordinate
+      const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse());
+      
+      // Convert 0-100 SVG coord back to 0-1000 landmark coord (x10)
+      if (svgP) {
+          onUpdateLandmark(draggingPt, { x: svgP.x * 10, y: svgP.y * 10 });
+      }
+  };
+
+  const handleMouseUp = () => {
+      setDraggingPt(null);
+  };
+
+  const renderInteractivePoint = (key: string, cx: number, cy: number, fill: string = "#22d3ee", r: number = 0.8) => {
+      const isDragging = draggingPt === key;
+      return (
+          <circle 
+            cx={cx} 
+            cy={cy} 
+            r={isDragging ? r * 2 : r + 0.5} // Larger hit area and visual feedback
+            fill={fill}
+            stroke={isDragging ? "white" : "none"}
+            strokeWidth={isDragging ? 0.5 : 0}
+            className="cursor-grab active:cursor-grabbing hover:opacity-80 transition-all pointer-events-auto"
+            onMouseDown={(e) => handleMouseDown(key, e)}
+          />
+      );
   };
 
   const renderLines = () => {
@@ -86,9 +133,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <g transform={`translate(${middle.x}, ${(middle.y + lower.y) / 2})`}>
                        <text x="0" y="1" fill="#22d3ee" fontSize="2.5" fontWeight="bold" textAnchor="middle">{ratio}x</text>
                     </g>
-                    <circle cx={middle.x + offsetX} cy={upper.y} r="0.4" fill="white" />
-                    <circle cx={middle.x} cy={middle.y} r="0.4" fill="#22d3ee" />
-                    <circle cx={middle.x} cy={lower.y} r="0.4" fill="#22d3ee" />
+                    {renderInteractivePoint('cupidsBow', middle.x + offsetX, upper.y, "white", 0.4)}
+                    {renderInteractivePoint('mouthMiddle', middle.x, middle.y, "#22d3ee", 0.4)}
+                    {renderInteractivePoint('lowerLip', middle.x, lower.y, "#22d3ee", 0.4)}
                 </>
              );
         }
@@ -107,10 +154,10 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 <>
                     <line x1={lCheek.x} y1={lCheek.y} x2={rCheek.x} y2={rCheek.y} stroke="#22d3ee" strokeWidth="1.2" strokeLinecap="round" />
                     <line x1={midX} y1={hairline.y} x2={midX} y2={chin.y} stroke="#22d3ee" strokeWidth="1.2" strokeLinecap="round" />
-                    <circle cx={lCheek.x} cy={lCheek.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={rCheek.x} cy={rCheek.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={midX} cy={hairline.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={midX} cy={chin.y} r="0.8" fill="#22d3ee" />
+                    {renderInteractivePoint('leftCheek', lCheek.x, lCheek.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightCheek', rCheek.x, rCheek.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('hairline', midX, hairline.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('chinBottom', midX, chin.y, "#22d3ee", 0.8)}
                 </>
             );
         }
@@ -133,8 +180,12 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 <>
                     <line x1={lCheek.x} y1={lCheek.y} x2={rCheek.x} y2={rCheek.y} stroke="#22d3ee" strokeWidth="1.2" />
                     <line x1={midX} y1={browY} x2={midX} y2={mouth.y} stroke="#22d3ee" strokeWidth="1.2" />
-                    <circle cx={midX} cy={browY} r="0.8" fill="#22d3ee" />
-                    <circle cx={midX} cy={mouth.y} r="0.8" fill="#22d3ee" />
+                    <circle cx={midX} cy={browY} r="0.8" fill="#22d3ee" /> {/* Derived point */}
+                    <circle cx={midX} cy={mouth.y} r="0.8" fill="#22d3ee" /> {/* Derived point? Top and Bottom markers of Line. */}
+                    {/* Actually, user might want to edit the inputs: cheeks, brows, mouth */}
+                    {renderInteractivePoint('leftCheek', lCheek.x, lCheek.y, "#22d3ee00", 0.8)} {/* Hidden hit area? */}
+                    {renderInteractivePoint('rightCheek', rCheek.x, rCheek.y, "#22d3ee00", 0.8)}
+                    {/* The line is MidX. If we drag cheeks, MidX changes. */}
                 </>
             );
         }
@@ -187,8 +238,15 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <line x1={x - 12} y1={y1} x2={x + 12} y2={y1} stroke="white" strokeWidth="0.8" strokeDasharray="2,2" />
                     <line x1={x - 12} y1={y2} x2={x + 12} y2={y2} stroke="white" strokeWidth="0.8" strokeDasharray="2,2" />
                     <line x1={x} y1={y1} x2={x} y2={y2} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    <circle cx={x} cy={y1} r="0.8" fill="#22d3ee" />
-                    <circle cx={x} cy={y2} r="0.8" fill="#22d3ee" />
+                    {/* Render active points. Need to identify which keys were used. */}
+                    {metricName.includes("Top") && renderInteractivePoint('hairline', x, y1, "#22d3ee", 0.8)}
+                    {metricName.includes("Top") && renderInteractivePoint('leftBrowInnerCorner', x, y2, "#22d3ee", 0.8)}
+                    
+                    {metricName === "Middle Third" && renderInteractivePoint('leftBrowInnerCorner', x, y1, "#22d3ee", 0.8)}
+                    {metricName === "Middle Third" && renderInteractivePoint('noseBottom', x, y2, "#22d3ee", 0.8)}
+
+                    {metricName.includes("Lower") && renderInteractivePoint('noseBottom', x, y1, "#22d3ee", 0.8)}
+                    {metricName.includes("Lower") && renderInteractivePoint('chinBottom', x, y2, "#22d3ee", 0.8)}
                 </>
              );
         }
@@ -229,6 +287,10 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                         <rect x="-6" y="-2" width="12" height="4" rx="1" fill="rgba(0,0,0,0.6)" />
                         <text x="0" y="1" fill="#22d3ee" fontSize="2.8" fontWeight="bold" textAnchor="middle">{gapRatio}x</text>
                     </g>
+                    {renderInteractivePoint('leftEyeMedialCanthus', lIn.x, lIn.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('leftEyeLateralCanthus', lOut.x, lOut.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyeMedialCanthus', rIn.x, rIn.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyeLateralCanthus', rOut.x, rOut.y, "#22d3ee", 0.8)}
                 </>
             );
         }
@@ -261,6 +323,15 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <text x={rCheek.x + 2} y={rCheek.y} fill="#3b82f6" fontSize="2.5" opacity="0.8">Cheek</text>
                     <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#22d3ee" strokeWidth="1.5" />
                     <text x={p2.x + 2} y={p2.y} fill="#22d3ee" fontSize="2.5" fontWeight="bold">{label}</text>
+                    
+                    {renderInteractivePoint('leftCheek', lCheek.x, lCheek.y, "#3b82f6", 0.8)}
+                    {renderInteractivePoint('rightCheek', rCheek.x, rCheek.y, "#3b82f6", 0.8)}
+                    
+                    {metricName === "Bigonial Width" && renderInteractivePoint('leftBottomGonion', p1.x, p1.y, "#22d3ee", 0.8)}
+                    {metricName === "Bigonial Width" && renderInteractivePoint('rightBottomGonion', p2.x, p2.y, "#22d3ee", 0.8)}
+                    
+                    {metricName === "Eye Separation Ratio" && renderInteractivePoint('leftEyePupil', p1.x, p1.y, "#22d3ee", 0.8)}
+                    {metricName === "Eye Separation Ratio" && renderInteractivePoint('rightEyePupil', p2.x, p2.y, "#22d3ee", 0.8)}
                 </>
             );
         }
@@ -279,6 +350,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <line x1={lPupil.x} y1={lPupil.y} x2={rPupil.x} y2={rPupil.y} stroke="#22d3ee" strokeWidth="1.2" strokeLinecap="round" />
                     <line x1={midX} y1={midY} x2={midX} y2={lip.y} stroke="#22d3ee" strokeWidth="1.2" strokeLinecap="round" />
                     <circle cx={midX} cy={midY} r="0.6" fill="#22d3ee" />
+                    {renderInteractivePoint('leftEyePupil', lPupil.x, lPupil.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyePupil', rPupil.x, rPupil.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('cupidsBow', lip.x, lip.y, "#22d3ee", 0.8)}
                 </>
             );
         }
@@ -333,8 +407,11 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     </g>
 
                     {/* Checkmarks on Cheeks */}
-                    <circle cx={lCheek.x} cy={lCheek.y} r="0.8" fill="#22d3ee" opacity="0.6"/>
-                    <circle cx={rCheek.x} cy={rCheek.y} r="0.8" fill="#22d3ee" opacity="0.6"/>
+                    {renderInteractivePoint('leftCheek', lCheek.x, lCheek.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightCheek', rCheek.x, rCheek.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('leftEyePupil', lPupil.x, lPupil.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyePupil', rPupil.x, rPupil.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('mouthMiddle', mouth.x, mouth.y, "#22d3ee", 0.8)}
                 </>
             );
         }
@@ -397,9 +474,11 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <line x1={rBot.x} y1={rBot.y} x2={vertex.x} y2={vertex.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
 
                     {/* Key Points */}
-                    <circle cx={lBot.x} cy={lBot.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={rBot.x} cy={rBot.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={vertex.x} cy={vertex.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    {renderInteractivePoint('leftBottomGonion', lBot.x, lBot.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightBottomGonion', rBot.x, rBot.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('chinLeft', lChin.x, lChin.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('chinRight', rChin.x, rChin.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('vertex', vertex.x, vertex.y, "#22d3ee", 1.2)} {/* Derived? */}
 
                     {/* Angle Arc at Vertex (Proper Circular Arc) */}
                     {/* A rx ry x-axis-rotation large-arc-flag sweep-flag x y */}
@@ -421,12 +500,18 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         const p1 = getPt(highlightedLandmarks[0]);
         const p2 = getPt(highlightedLandmarks[1]);
         if (!p1 || !p2) return null;
-        return <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#3b82f6" strokeWidth="0.8" strokeLinecap="round" />;
+        return (
+            <>
+                <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#3b82f6" strokeWidth="0.8" strokeLinecap="round" />
+                {renderInteractivePoint(highlightedLandmarks[0], p1.x, p1.y, "#3b82f6", 0.8)}
+                {renderInteractivePoint(highlightedLandmarks[1], p2.x, p2.y, "#3b82f6", 0.8)}
+            </>
+        );
     } else if (highlightedLandmarks.length > 2) {
          return highlightedLandmarks.map(key => {
              const p = getPt(key);
              if (!p) return null;
-             return <circle key={key} cx={p.x} cy={p.y} r="0.6" fill="#3b82f6" />;
+             return renderInteractivePoint(key, p.x, p.y, "#3b82f6", 0.8);
          });
     }
 
@@ -464,9 +549,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                         <>
                             <line x1={lCheek!.x} y1={lCheek!.y} x2={lTop!.x} y2={lTop!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
                             <line x1={lTop!.x} y1={lTop!.y} x2={lChin!.x} y2={lChin!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                            <circle cx={lCheek!.x} cy={lCheek!.y} r="1" fill="#22d3ee" />
-                            <circle cx={lTop!.x} cy={lTop!.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
-                            <circle cx={lChin!.x} cy={lChin!.y} r="1" fill="#22d3ee" />
+                            {renderInteractivePoint('leftCheek', lCheek!.x, lCheek!.y, "#22d3ee", 0.8)}
+                            {renderInteractivePoint('leftTopGonion', lTop!.x, lTop!.y, "#22d3ee", 0.8)}
+                            {renderInteractivePoint('chinLeft', lChin!.x, lChin!.y, "#22d3ee", 0.8)}
                             
                             {/* Arc for Left Side (Top Vertex) - Likely Concave Down (< 180) */}
                             {/* lA (Cheek - Top), lB (Chin - Bottom). Vertex Middle. */}
@@ -481,9 +566,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                         <>
                             <line x1={rCheek!.x} y1={rCheek!.y} x2={rTop!.x} y2={rTop!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
                             <line x1={rTop!.x} y1={rTop!.y} x2={rChin!.x} y2={rChin!.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                            <circle cx={rCheek!.x} cy={rCheek!.y} r="1" fill="#22d3ee" />
-                            <circle cx={rTop!.x} cy={rTop!.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
-                            <circle cx={rChin!.x} cy={rChin!.y} r="1" fill="#22d3ee" />
+                            {renderInteractivePoint('rightCheek', rCheek!.x, rCheek!.y, "#22d3ee", 0.8)}
+                            {renderInteractivePoint('rightTopGonion', rTop!.x, rTop!.y, "#22d3ee", 0.8)}
+                            {renderInteractivePoint('chinRight', rChin!.x, rChin!.y, "#22d3ee", 0.8)}
                             
                             {/* Arc for Right Side (Top Vertex) */}
                             {/* rA (Cheek - Top), rB (Chin - Bottom). Vertex Middle. */}
@@ -510,14 +595,14 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     {/* Line AB (Top Gonions) */}
                     <line x1={lTop.x} y1={lTop.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
                     <text x={(lTop.x + rTop.x) / 2} y={lTop.y - 4} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Upper Jaw Width</text>
-                    <circle cx={lTop.x} cy={lTop.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
-                    <circle cx={rTop.x} cy={rTop.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    {renderInteractivePoint('leftTopGonion', lTop.x, lTop.y, "#22d3ee", 1.5)}
+                    {renderInteractivePoint('rightTopGonion', rTop.x, rTop.y, "#22d3ee", 1.5)}
 
                     {/* Line CD (Neck) */}
                     <line x1={lNeck.x} y1={lNeck.y} x2={rNeck.x} y2={rNeck.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
                     <text x={(lNeck.x + rNeck.x) / 2} y={lNeck.y + 8} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Neck Width</text>
-                    <circle cx={lNeck.x} cy={lNeck.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
-                    <circle cx={rNeck.x} cy={rNeck.y} r="1.5" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    {renderInteractivePoint('neckLeft', lNeck.x, lNeck.y, "#22d3ee", 1.5)}
+                    {renderInteractivePoint('neckRight', rNeck.x, rNeck.y, "#22d3ee", 1.5)}
                     
                     {/* Dotted Connection (Visual Comparison) */}
                     <line x1={(lTop.x + rTop.x) / 2} y1={lTop.y} x2={(lNeck.x + rNeck.x) / 2} y2={lNeck.y} stroke="white" strokeWidth="1" strokeDasharray="2,2" opacity="0.6" />
@@ -556,9 +641,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 <>
                     <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
                     <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
-                    <circle cx={lEye.x} cy={lEye.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={rEye.x} cy={rEye.y} r="0.8" fill="#22d3ee" />
-                    <circle cx={nose.x} cy={nose.y} r="1.2" fill="#22d3ee" stroke="white" strokeWidth="0.5" />
+                    {renderInteractivePoint('leftEyeLateralCanthus', lEye.x, lEye.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightEyeLateralCanthus', rEye.x, rEye.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('noseBottom', nose.x, nose.y, "#22d3ee", 1.2)}
                     
                     {/* Arc */}
                     <path d={`M ${pA.x} ${pA.y} A 8 8 0 0 1 ${pB.x} ${pB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
@@ -649,9 +734,17 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                          <text x="0" y="-1" fill="white" fontSize="2.5" textAnchor="middle">Deviation</text>
                          <text x="0" y="2.5" fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{deviation}°</text>
                     </g>
+
+                    {/* Interactive Points */}
+                    {renderInteractivePoint('leftBottomGonion', lBot.x, lBot.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightBottomGonion', rBot.x, rBot.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('chinLeft', lChin.x, lChin.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('chinRight', rChin.x, rChin.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('leftEyeLateralCanthus', lEye.x, lEye.y, "#d946ef", 0.8)}
+                    {renderInteractivePoint('rightEyeLateralCanthus', rEye.x, rEye.y, "#d946ef", 0.8)}
+                    {renderInteractivePoint('noseBottom', nose.x, nose.y, "#d946ef", 0.8)}
                 </>
              );
-         }
     }
     }
 
@@ -661,8 +754,17 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
   return (
     <div ref={containerRef} className="relative w-full h-full rounded-xl overflow-hidden bg-slate-900 shadow-inner group">
       <div className="absolute inset-0 bg-center bg-cover opacity-30 blur-xl scale-110" style={{ backgroundImage: `url(${photoUrl})` }}></div>
-      <img ref={imgRef} src={photoUrl} className="relative w-full h-full object-contain z-10" alt="Analysis Subject" onLoad={updateOverlayPosition} />
-      <svg style={overlayStyle} className="z-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <img ref={imgRef} src={photoUrl} className="relative w-full h-full object-contain z-10 pointer-events-none" alt="Analysis Subject" onLoad={updateOverlayPosition} />
+      <svg 
+        ref={svgRef}
+        style={overlayStyle} 
+        className="z-20" 
+        viewBox="0 0 100 100" 
+        preserveAspectRatio="none"
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
         <defs>
           <filter id="glow">
             <feGaussianBlur stdDeviation="0.6" result="coloredBlur"/>

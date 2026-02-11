@@ -494,6 +494,34 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
              const rA = validR ? ptOnLine(rTop!, rCheek!, 8) : {x:0,y:0};
              const rB = validR ? ptOnLine(rTop!, rChin!, 8) : {x:0,y:0};
 
+             // Calculate angle values
+             let leftAngle = 0;
+             let rightAngle = 0;
+
+             if (validL) {
+                 const v1 = { x: lCheek!.x - lTop!.x, y: lCheek!.y - lTop!.y };
+                 const v2 = { x: lChin!.x - lTop!.x, y: lChin!.y - lTop!.y };
+                 const dot = v1.x * v2.x + v1.y * v2.y;
+                 const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+                 const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+                 if (mag1 * mag2 !== 0) {
+                    const cosine = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
+                    leftAngle = Math.acos(cosine) * (180 / Math.PI);
+                 }
+             }
+
+             if (validR) {
+                 const v1 = { x: rCheek!.x - rTop!.x, y: rCheek!.y - rTop!.y };
+                 const v2 = { x: rChin!.x - rTop!.x, y: rChin!.y - rTop!.y };
+                 const dot = v1.x * v2.x + v1.y * v2.y;
+                 const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+                 const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+                 if (mag1 * mag2 !== 0) {
+                    const cosine = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
+                    rightAngle = Math.acos(cosine) * (180 / Math.PI);
+                 }
+             }
+
              return (
                 <>
                     {/* Left Side */}
@@ -505,11 +533,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                             {renderInteractivePoint('leftTopGonion', lTop!.x, lTop!.y, "#22d3ee", 0.8)}
                             {renderInteractivePoint('chinLeft', lChin!.x, lChin!.y, "#22d3ee", 0.8)}
                             
-                            {/* Arc for Left Side (Top Vertex) - Likely Concave Down (< 180) */}
-                            {/* lA (Cheek - Top), lB (Chin - Bottom). Vertex Middle. */}
-                            {/* Clockwise from Top to Bottom? Yes. */}
+                            {/* Arc for Left Side */}
                             <path d={`M ${lA.x} ${lA.y} A 8 8 0 0 1 ${lB.x} ${lB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
-                            <text x={lTop!.x - 6} y={lTop!.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
+                            <text x={lTop!.x - 8} y={lTop!.y} fill="white" fontSize="3" fontWeight="bold">{leftAngle.toFixed(1)}°</text>
                         </>
                     )}
 
@@ -522,11 +548,9 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                             {renderInteractivePoint('rightTopGonion', rTop!.x, rTop!.y, "#22d3ee", 0.8)}
                             {renderInteractivePoint('chinRight', rChin!.x, rChin!.y, "#22d3ee", 0.8)}
                             
-                            {/* Arc for Right Side (Top Vertex) */}
-                            {/* rA (Cheek - Top), rB (Chin - Bottom). Vertex Middle. */}
-                            {/* Clockwise from Top to Bottom? Yes. */}
-                            <path d={`M ${rA.x} ${rA.y} A 8 8 0 0 1 ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
-                            <text x={rTop!.x + 6} y={rTop!.y} fill="white" fontSize="3" fontWeight="bold">Angle</text>
+                            {/* Arc for Right Side - sweep-flag 0 for acute angle */}
+                            <path d={`M ${rA.x} ${rA.y} A 8 8 0 0 0 ${rB.x} ${rB.y}`} stroke="white" strokeWidth="1.5" fill="none" />
+                            <text x={rTop!.x + 8} y={rTop!.y} fill="white" fontSize="3" fontWeight="bold">{rightAngle.toFixed(1)}°</text>
                         </>
                     )}
                 </>

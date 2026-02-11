@@ -589,6 +589,38 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             );
         }
     }
+    
+    // --- Eyebrow Tilt ---
+    if (metricName === "Eyebrow Tilt") {
+        const lInner = getPt('leftBrowInnerCorner');
+        const lArch = getPt('leftBrowArch');
+        const rInner = getPt('rightBrowInnerCorner');
+        const rArch = getPt('rightBrowArch');
+
+        if (lInner && lArch && rInner && rArch) {
+            // Calculate tilts (absolute angle relative to horizontal)
+            const leftTilt = Math.abs(Math.atan2(lArch.y - lInner.y, lArch.x - lInner.x) * (180 / Math.PI));
+            const rightTilt = Math.abs(Math.atan2(rArch.y - rInner.y, rArch.x - rInner.x) * (180 / Math.PI));
+
+            return (
+                <>
+                    {/* Left Brow Tilt */}
+                    <line x1={lInner.x} y1={lInner.y} x2={lArch.x} y2={lArch.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" />
+                    <text x={(lInner.x + lArch.x) / 2} y={lInner.y - 3} fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{leftTilt.toFixed(1)}°</text>
+                    
+                    {/* Right Brow Tilt */}
+                    <line x1={rInner.x} y1={rInner.y} x2={rArch.x} y2={rArch.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" />
+                    <text x={(rInner.x + rArch.x) / 2} y={rInner.y - 3} fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{rightTilt.toFixed(1)}°</text>
+
+                    {/* Interactive points */}
+                    {renderInteractivePoint('leftBrowInnerCorner', lInner.x, lInner.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('leftBrowArch', lArch.x, lArch.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('rightBrowInnerCorner', rInner.x, rInner.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('rightBrowArch', rArch.x, rArch.y, "#22d3ee", 0.5)}
+                </>
+            );
+        }
+    }
 
     // --- Jaw Slope (Cheek -> Top Gonion -> Side Chin) ---
     if (metricName === "Jaw Slope") {

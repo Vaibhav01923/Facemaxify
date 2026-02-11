@@ -622,6 +622,48 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
         }
     }
 
+    // --- Brow Length to Face Width ---
+    if (metricName === "Brow Length to Face Width") {
+        const lHead = getPt('leftBrowHead');
+        const lTail = getPt('leftBrowTail');
+        const rHead = getPt('rightBrowHead');
+        const rTail = getPt('rightBrowTail');
+        const lCheek = getPt('leftCheek');
+        const rCheek = getPt('rightCheek');
+
+        if (lHead && lTail && rHead && rTail && lCheek && rCheek) {
+            const totalBrowL = Math.sqrt(Math.pow(lTail.x - lHead.x, 2) + Math.pow(lTail.y - lHead.y, 2)) + 
+                               Math.sqrt(Math.pow(rTail.x - rHead.x, 2) + Math.pow(rTail.y - rHead.y, 2));
+            const faceW = Math.sqrt(Math.pow(rCheek.x - lCheek.x, 2) + Math.pow(rCheek.y - lCheek.y, 2));
+            const ratio = (totalBrowL / faceW).toFixed(2);
+
+            return (
+                <>
+                    {/* Brow Lengths */}
+                    <line x1={lHead.x} y1={lHead.y} x2={lTail.x} y2={lTail.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" />
+                    <line x1={rHead.x} y1={rHead.y} x2={rTail.x} y2={rTail.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" />
+                    
+                    {/* Face Width (Dotted for context) */}
+                    <line x1={lCheek.x} y1={lCheek.y} x2={rCheek.x} y2={rCheek.y} stroke="white" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.6" />
+                    
+                    {/* Ratio Label */}
+                    <g transform={`translate(${(lHead.x + rHead.x) / 2}, ${lHead.y - 6})`}>
+                         <rect x="-8" y="-3" width="16" height="6" rx="2" fill="rgba(0,0,0,0.7)" />
+                         <text x="0" y="1.5" fill="#22d3ee" fontSize="3.5" fontWeight="bold" textAnchor="middle">{ratio}x</text>
+                    </g>
+
+                    {/* Interactive points */}
+                    {renderInteractivePoint('leftBrowHead', lHead.x, lHead.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('leftBrowTail', lTail.x, lTail.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('rightBrowHead', rHead.x, rHead.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('rightBrowTail', rTail.x, rTail.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('leftCheek', lCheek.x, lCheek.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('rightCheek', rCheek.x, rCheek.y, "#22d3ee", 0.5)}
+                </>
+            );
+        }
+    }
+
     // --- Jaw Slope (Cheek -> Top Gonion -> Side Chin) ---
     if (metricName === "Jaw Slope") {
         const lCheek = getPt('leftCheek');

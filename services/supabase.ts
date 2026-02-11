@@ -98,3 +98,43 @@ export const getScanHistory = async (userId: string) => {
   }
 };
 
+export const deleteScan = async (scanId: string, userId: string): Promise<boolean> => {
+  try {
+    // 1. Get the scan to find the image path first
+    const { data: scan, error: fetchError } = await supabase
+      .from("scans")
+      .select("front_photo_path")
+      .eq("id", scanId)
+      .eq("user_id", userId)
+      .single();
+
+    if (fetchError || !scan) {
+      console.error("Scan not found for deletion");
+      return false;
+    }
+
+    // 2. Delete the image from storage
+    if (scan.front_photo_path) {
+      const { error: storageError } = await supabase.storage
+        .from("scans")
+        .remove([scan.front_photo_path]);
+      
+      if (storageError) console.warn("Failed to delete associated image:", storageError);
+    }
+
+    // 3. Delete the record from DB
+    const { error: deleteError } = await supabase
+      .from("scans")
+      .delete()
+      .eq("id", scanId)
+      .eq("user_id", userId);
+
+    if (deleteError) throw deleteError;
+
+    return true;
+  } catch (error) {
+    console.error("Delete Scan Error:", error);
+    return false;
+  }
+};
+

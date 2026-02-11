@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
-import { getScanHistory, supabase } from "../services/supabase";
+import { getScanHistory, deleteScan, supabase } from "../services/supabase";
 import { motion } from "framer-motion";
-import { Plus, MoreHorizontal, ArrowUpCircle, ChevronRight } from "lucide-react";
+import { Plus, MoreHorizontal, ArrowUpCircle, ChevronRight, Trash2 } from "lucide-react";
 
 interface AnalysisHistoryProps {
   onSelectScan: (scan: any) => void;
@@ -39,6 +39,27 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
     }
     fetchData();
   }, [user]);
+
+
+
+  const handleDelete = async (e: React.MouseEvent, scanId: string) => {
+    e.stopPropagation();
+    if (!user?.id) return;
+
+    if (window.confirm("Are you sure you want to delete this scan? This action cannot be undone.")) {
+      try {
+        const success = await deleteScan(scanId, user.id);
+        if (success) {
+          setHistory(prev => prev.filter(s => s.id !== scanId));
+          if (selectedScanId === scanId) {
+            onNewScan();
+          }
+        }
+      } catch (err) {
+        console.error("Failed to delete scan", err);
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -109,7 +130,7 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => onSelectScan(scan)}
-            className={`flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${
+            className={`flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all group ${
               selectedScanId === scan.id 
               ? "bg-white/5 border-l-4 border-indigo-500" 
               : "hover:bg-white/[0.02] border-l-4 border-transparent"
@@ -141,8 +162,18 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
                   ) : (
                     <span className="text-slate-600 blur-[4px] select-none text-sm">PRO</span>
                   )}
+
                 </div>
-                <ChevronRight className="w-4 h-4 text-slate-700" />
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={(e) => handleDelete(e, scan.id)}
+                    className="p-1.5 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                    title="Delete Scan"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                  <ChevronRight className="w-4 h-4 text-slate-700" />
+                </div>
               </div>
             </div>
           </motion.div>

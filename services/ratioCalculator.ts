@@ -35,12 +35,12 @@ export const RATIO_CONFIGS = {
     midfaceRatio: { name: "Midface Ratio", ideal: 1.0, range: 0.05, decay: 12.1, unit: "x" },
     cheekboneHeight: { name: "Cheekbone Height", ideal: 75.0, range: 5.0, decay: 0.23, unit: "%" },
     bigonialWidth: { name: "Bigonial Width", ideal: 89.0, range: 5.0, decay: 0.03, unit: "%" },
-    jawFrontalAngle: { name: "Jaw Frontal Angle", ideal: 90.0, range: 5.0, decay: 0.122, unit: "°" },
+    jawFrontalAngle: { name: "Jaw Frontal Angle", ideal: 89.5, range: 5.5, decay: 0.122, unit: "°" },
     jawSlope: { name: "Jaw Slope", ideal: 141.25, range: 1.25, decay: 0.05, unit: "°" },
     neckWidth: { name: "Neck Width", ideal: 95.0, range: 3.0, decay: 0.024, unit: "%" },
     chinPhiltrum: { name: "Chin to Philtrum Ratio", ideal: 2.025, range: 0.125, decay: 1.70, unit: "x" },
     deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 1.25, range: 1.25, decay: 0.17, unit: "°" },
-    ipsilateralAlarAngle: { name: "Ipsilateral Alar Angle", ideal: 90.0, range: 3.0, decay: 0.15, unit: "°" },
+    ipsilateralAlarAngle: { name: "Ipsilateral Alar Angle", ideal: 88.5, range: 4.5, decay: 0.15, unit: "°" },
 
     // ===============================================
     // GROUP 2: ESTIMATED
@@ -48,7 +48,7 @@ export const RATIO_CONFIGS = {
     eyebrowTilt: { name: "Eyebrow Tilt", ideal: 8.0, range: 3.0, decay: 0.2, unit: "°" },
     browLengthRatio: { name: "Brow Length to Face Width", ideal: 0.82, range: 0.05, decay: 4.0, unit: "x" },
     eyeSeparation: { name: "Eye Separation Ratio", ideal: 47.0, range: 1.0, decay: 0.23, unit: "%" },
-    oneEyeApart: { name: "One Eye Apart Test", ideal: 1.015, range: 0.035, decay: 11.89, unit: "x" },
+    oneEyeApart: { name: "One Eye Apart Test", ideal: 1.015, range: 0.035, decay: 6.0, unit: "x" },
     noseBridgeWidth: { name: "Nose Bridge to Nose Width", ideal: 2.0, range: 0.2, decay: 0.65, unit: "x" },
     nasalWH: { name: "Nasal W to H Ratio", ideal: 0.6, range: 0.05, decay: 0.2, unit: "x" },
     noseTipRotation: { name: "Nose Tip Rotation Angle", ideal: 95.0, range: 5.0, decay: 0.2, unit: "°" },
@@ -238,12 +238,16 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   const cheekWidth = Math.abs(l.rightCheek.x - l.leftCheek.x);
   add('totalFacialWidthHeight', math.ratio(totalHeight, cheekWidth), ["hairline", "chinBottom", "leftCheek", "rightCheek"]);
 
-  // Face Width to Height (ideal 2.0) -> fWHR -> Width / MidfaceHeight (Brow to Mouth/Lip)
-  const midfaceH_fwhr = Math.abs(l.mouthMiddle.y - browMidY);
-  add('faceWidthHeight', math.ratio(cheekWidth, midfaceH_fwhr), ["leftCheek", "rightCheek", "leftBrowInnerCorner", "mouthMiddle"]);
+  // Calculate pupilY for use in multiple calculations
+  const pupilY = (l.leftEyePupil.y + l.rightEyePupil.y) / 2;
+
+  // Face Width to Height (ideal 2.0) -> fWHR -> Width / MidfaceHeight (Eye/Nose midpoint to Upper Lip)
+  const noseBridgeMidY = (l.leftNoseBridge.y + l.rightNoseBridge.y) / 2;
+  const eyeNoseBridgeMidY = (pupilY + noseBridgeMidY) / 2;
+  const midfaceH_fwhr = Math.abs(l.innerCupidsBow.y - eyeNoseBridgeMidY);
+  add('faceWidthHeight', math.ratio(cheekWidth, midfaceH_fwhr), ["leftCheek", "rightCheek", "leftEyePupil", "rightEyePupil", "leftNoseBridge", "rightNoseBridge", "innerCupidsBow"]);
 
   // Midface Ratio (Ideal 1.0) -> IPD / Midface Height (Pupil to Mouth?)
-  const pupilY = (l.leftEyePupil.y + l.rightEyePupil.y) / 2;
   const midfaceH = Math.abs(l.cupidsBow.y - pupilY);
   add('midfaceRatio', math.ratio(ipd, midfaceH), ["leftEyePupil", "rightEyePupil", "cupidsBow"]);
 
@@ -282,8 +286,8 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
 
   // Chin to Philtrum
   const chinH = Math.abs(l.chinBottom.y - l.lowerLip.y);
-  const philtrumH = Math.abs(l.cupidsBow.y - l.nasalBase.y);
-  add('chinPhiltrum', math.ratio(chinH, philtrumH), ["chinBottom", "lowerLip", "cupidsBow", "nasalBase"]);
+  const philtrumH = Math.abs(l.innerCupidsBow.y - l.noseBottom.y);
+  add('chinPhiltrum', math.ratio(chinH, philtrumH), ["chinBottom", "lowerLip", "innerCupidsBow", "noseBottom"]);
 
   // Neck Width Ratio
   // AB = Distance between Upper Jaw Corners (Top Gonions)

@@ -313,7 +313,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
     if (metricName === "Midface Ratio") {
         const lPupil = getPt('leftEyePupil');
         const rPupil = getPt('rightEyePupil');
-        const lip = getPt('cupidsBow');
+        const lip = getPt('innerCupidsBow');
         if (lPupil && rPupil && lip) {
             const midX = (lPupil.x + rPupil.x) / 2;
             const midY = (lPupil.y + rPupil.y) / 2;
@@ -324,7 +324,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     <circle cx={midX} cy={midY} r="0.4" fill="#22d3ee" />
                     {renderInteractivePoint('leftEyePupil', lPupil.x, lPupil.y, "#22d3ee", 0.5)}
                     {renderInteractivePoint('rightEyePupil', rPupil.x, rPupil.y, "#22d3ee", 0.5)}
-                    {renderInteractivePoint('cupidsBow', lip.x, lip.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('innerCupidsBow', lip.x, lip.y, "#22d3ee", 0.5)}
                 </>
             );
         }
@@ -819,6 +819,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                     {renderInteractivePoint('noseBottom', nose.x, nose.y, "#d946ef", 0.5)}
                 </>
              );
+    }
     }
 
 

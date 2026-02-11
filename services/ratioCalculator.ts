@@ -248,8 +248,8 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   add('faceWidthHeight', math.ratio(cheekWidth, midfaceH_fwhr), ["leftCheek", "rightCheek", "leftEyePupil", "rightEyePupil", "leftNoseBridge", "rightNoseBridge", "innerCupidsBow"]);
 
   // Midface Ratio (Ideal 1.0) -> IPD / Midface Height (Pupil to Mouth?)
-  const midfaceH = Math.abs(l.cupidsBow.y - pupilY);
-  add('midfaceRatio', math.ratio(ipd, midfaceH), ["leftEyePupil", "rightEyePupil", "cupidsBow"]);
+  const midfaceH = Math.abs(l.innerCupidsBow.y - pupilY);
+  add('midfaceRatio', math.ratio(ipd, midfaceH), ["leftEyePupil", "rightEyePupil", "innerCupidsBow"]);
 
   // Cheekbone Height (Vertical Position Ratio)
   // High cheekbones = closer to eyes = larger distance from mouth.

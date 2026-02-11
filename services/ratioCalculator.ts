@@ -17,7 +17,7 @@ export const RATIO_CONFIGS = {
     // ======================================       =========
     // GROUP 1: CALCULATED
     // ===============================================
-    canthalTilt: { name: "Lateral Canthal Tilt", ideal: 8.3, range: 2.3, decay: 0.20, unit: "°" },
+    canthalTilt: { name: "Lateral Canthal Tilt", ideal: 8.25, range: 2.25, decay: 0.20, unit: "°" },
     eyeAspectRatio: { name: "Eye Aspect Ratio", ideal: 3.0, range: 0.5, decay: 1.23, unit: "x" },
 
     interpupillaryMouth: { name: "Interpupillary-Mouth Width Ratio", ideal: 0.85, range: 0.02, decay: 3.90, unit: "x" },

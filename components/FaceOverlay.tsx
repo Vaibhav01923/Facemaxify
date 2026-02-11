@@ -780,4 +780,4 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
       </svg>
     </div>
   );
-};
+}};

@@ -97,11 +97,11 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
              const offsetX = 5; 
              return (
                 <>
-                    <line x1={middle.x + offsetX} y1={upper.y} x2={middle.x + offsetX} y2={middle.y} stroke="white" strokeWidth="0.5" />
-                    <line x1={middle.x + offsetX - 1.5} y1={upper.y} x2={middle.x + offsetX + 1.5} y2={upper.y} stroke="white" strokeWidth="0.5" />
-                    <line x1={middle.x + offsetX - 1.5} y1={middle.y} x2={middle.x + offsetX + 1.5} y2={middle.y} stroke="white" strokeWidth="0.5" />
-                    <line x1={middle.x} y1={middle.y} x2={middle.x} y2={lower.y} stroke="#22d3ee" strokeWidth="0.5" />
-                    <line x1={middle.x - 1.5} y1={lower.y} x2={middle.x + 1.5} y2={lower.y} stroke="#22d3ee" strokeWidth="0.4" />
+                    <line x1={middle.x + offsetX} y1={upper.y} x2={middle.x + offsetX} y2={middle.y} stroke="white" strokeWidth="0.3" />
+                    <line x1={middle.x + offsetX - 1.5} y1={upper.y} x2={middle.x + offsetX + 1.5} y2={upper.y} stroke="white" strokeWidth="0.3" />
+                    <line x1={middle.x + offsetX - 1.5} y1={middle.y} x2={middle.x + offsetX + 1.5} y2={middle.y} stroke="white" strokeWidth="0.3" />
+                    <line x1={middle.x} y1={middle.y} x2={middle.x} y2={lower.y} stroke="#22d3ee" strokeWidth="0.3" />
+                    <line x1={middle.x - 1.5} y1={lower.y} x2={middle.x + 1.5} y2={lower.y} stroke="#22d3ee" strokeWidth="0.2" />
                     <g transform={`translate(${middle.x}, ${(middle.y + lower.y) / 2})`}>
                        <text x="0" y="1" fill="#22d3ee" fontSize="2.5" fontWeight="bold" textAnchor="middle">{ratio}x</text>
                     </g>

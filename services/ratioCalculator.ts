@@ -39,7 +39,7 @@ export const RATIO_CONFIGS = {
     jawSlope: { name: "Jaw Slope", ideal: 141.25, range: 1.25, decay: 0.05, unit: "°" },
     neckWidth: { name: "Neck Width", ideal: 95.0, range: 3.0, decay: 0.024, unit: "%" },
     chinPhiltrum: { name: "Chin to Philtrum Ratio", ideal: 2.025, range: 0.125, decay: 1.70, unit: "x" },
-    deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 1.25, range: 1.25, decay: 0.17, unit: "°" },
+    deviationIAA_JFA: { name: "Deviation of IAA & JFA", ideal: 1.0, range: 1.0, decay: 0.17, unit: "°" },
     ipsilateralAlarAngle: { name: "Ipsilateral Alar Angle", ideal: 88.5, range: 4.5, decay: 0.15, unit: "°" },
 
     // ===============================================

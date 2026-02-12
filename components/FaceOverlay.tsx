@@ -865,15 +865,15 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
              return (
                 <>
                     {/* JFA Visuals (Cyan) */}
-                    <line x1={lBot.x} y1={lBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="0.8" />
-                    <line x1={rBot.x} y1={rBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="0.8" />
-                    <path d={`M ${pA_JFA.x} ${pA_JFA.y} A 8 8 0 0 1 ${pB_JFA.x} ${pB_JFA.y}`} stroke="#22d3ee" strokeWidth="0.8" fill="none" />
+                    <line x1={lBot.x} y1={lBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="1.2" />
+                    <line x1={rBot.x} y1={rBot.y} x2={vertexJFA.x} y2={vertexJFA.y} stroke="#22d3ee" strokeWidth="1.2" />
+                    <path d={`M ${pA_JFA.x} ${pA_JFA.y} A 8 8 0 0 1 ${pB_JFA.x} ${pB_JFA.y}`} stroke="#22d3ee" strokeWidth="1.2" fill="none" />
                     <text x={vertexJFA.x} y={vertexJFA.y + 6} fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{valJFA.toFixed(1)}°</text>
 
                     {/* IAA Visuals (Pink/Purple) */}
-                    <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="0.8" />
-                    <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="0.8" />
-                    <path d={`M ${pA_IAA.x} ${pA_IAA.y} A 8 8 0 0 1 ${pB_IAA.x} ${pB_IAA.y}`} stroke="#d946ef" strokeWidth="0.8" fill="none" />
+                    <line x1={lEye.x} y1={lEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="1.2" />
+                    <line x1={rEye.x} y1={rEye.y} x2={nose.x} y2={nose.y} stroke="#d946ef" strokeWidth="1.2" />
+                    <path d={`M ${pA_IAA.x} ${pA_IAA.y} A 8 8 0 0 1 ${pB_IAA.x} ${pB_IAA.y}`} stroke="#d946ef" strokeWidth="1.2" fill="none" />
                     <text x={nose.x} y={nose.y - 4} fill="#d946ef" fontSize="3" fontWeight="bold" textAnchor="middle">{valIAA.toFixed(1)}°</text>
 
                     {/* Deviation Label (Center) */}

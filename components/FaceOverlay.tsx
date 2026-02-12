@@ -152,12 +152,15 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                 <>
                     <line x1={lCheek.x} y1={lCheek.y} x2={rCheek.x} y2={rCheek.y} stroke="#22d3ee" strokeWidth="0.6" />
                     <line x1={midX} y1={browY} x2={midX} y2={mouth.y} stroke="#22d3ee" strokeWidth="0.6" />
-                    <circle cx={midX} cy={browY} r="0.5" fill="#22d3ee" /> {/* Derived point */}
-                    <circle cx={midX} cy={mouth.y} r="0.5" fill="#22d3ee" /> {/* Derived point? Top and Bottom markers of Line. */}
-                    {/* Actually, user might want to edit the inputs: cheeks, brows, mouth */}
-                    {renderInteractivePoint('leftCheek', lCheek.x, lCheek.y, "#22d3ee00", 0.5)} {/* Hidden hit area? */}
-                    {renderInteractivePoint('rightCheek', rCheek.x, rCheek.y, "#22d3ee00", 0.5)}
-                    {/* The line is MidX. If we drag cheeks, MidX changes. */}
+                    
+                    {/* Width Points */}
+                    {renderInteractivePoint('leftCheek', lCheek.x, lCheek.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('rightCheek', rCheek.x, rCheek.y, "#22d3ee", 0.5)}
+
+                    {/* Height Points (Brows & Mouth) */}
+                    {lBrow && renderInteractivePoint('leftBrowHead', lBrow.x, lBrow.y, "#22d3ee", 0.5)}
+                    {rBrow && renderInteractivePoint('rightBrowHead', rBrow.x, rBrow.y, "#22d3ee", 0.5)}
+                    {renderInteractivePoint('mouthMiddle', mouth.x, mouth.y, "#22d3ee", 0.5)}
                 </>
             );
         }

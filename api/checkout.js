@@ -38,7 +38,8 @@ export default async function handler(req, res) {
     const { 
       products, 
       customerEmail,
-      metadata 
+      metadata,
+      discountCode
     } = req.query;
 
     if (!products && !process.env.DODO_PAYMENTS_PRODUCT_ID) {
@@ -76,6 +77,7 @@ export default async function handler(req, res) {
       customer: {
         email: customerEmail || undefined,
       },
+      discount_code: discountCode || undefined, // Apply discount code if provided
       metadata: parsedMetadata,
       return_url: process.env.DODO_PAYMENTS_SUCCESS_URL || 'https://facemaxify.com/dashboard',
     });

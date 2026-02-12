@@ -5,10 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Clock, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { guides } from "../data/guidesData";
+import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
+import { Ticket } from "lucide-react";
 
 export const Guides: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const discount = useRegionalDiscount();
 
   return (
     <>
@@ -34,6 +37,29 @@ export const Guides: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
             </p>
           </header>
 
+          {/* Regional Discount Banner */}
+          {discount.isEligible && !isPaid && (
+            <div className="mb-8 rounded-2xl bg-gradient-to-r from-orange-500/20 to-amber-500/20 border border-orange-500/30 p-6 flex items-center justify-between gap-4 animate-fadeIn">
+               <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center text-orange-400">
+                   <Ticket className="w-6 h-6" />
+                 </div>
+                 <div>
+                   <h3 className="text-white font-bold text-lg">🇮🇳 India Exclusive Offer</h3>
+                   <p className="text-orange-200 text-sm">
+                     We've detected you are from India. A <span className="font-bold text-white">50% PPP Discount</span> has been auto-applied!
+                   </p>
+                 </div>
+               </div>
+               <div className="hidden sm:block text-right">
+                  <span className="block text-xs text-orange-300 uppercase font-bold tracking-wider mb-1">Your Code</span>
+                  <code className="bg-black/30 px-3 py-1.5 rounded-lg text-orange-400 font-mono font-bold border border-orange-500/30">
+                    {discount.code}
+                  </code>
+               </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {guides.map((guide, idx) => (
               <motion.div
@@ -56,7 +82,9 @@ export const Guides: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+                          let url = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+                          if (discount.isEligible) url += `&discountCode=${discount.code}`;
+                          window.location.href = url;
                         }}
                         className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
                       >

@@ -7,9 +7,10 @@ interface RatioRowProps {
   onHover: (metric: MetricResult | null) => void;
   onClick?: (metric: MetricResult) => void;
   isLocked?: boolean;
+  discountCode?: string;
 }
 
-export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, isLocked = false }) => {
+export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, isLocked = false, discountCode }) => {
   const { user } = useUser();
   const getScoreColor = (score: number) => {
     if (score >= 9) return "text-green-500";
@@ -46,7 +47,9 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, is
            <button 
              onClick={(e) => {
                 e.stopPropagation();
-                window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+                let url = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+                if (discountCode) url += `&discountCode=${discountCode}`;
+                window.location.href = url;
              }}
              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-xl shadow-indigo-500/20 active:scale-95"
            >

@@ -9,6 +9,8 @@ import { Button } from "./Button";
 import { RatioRow } from "./RatioRow";
 import { FaceOverlay } from "./FaceOverlay";
 import { LandmarkEditor } from "./LandmarkEditor";
+import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
+import { Ticket } from "lucide-react";
 
 interface DashboardProps {
   data?: FinalResult;
@@ -29,6 +31,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
     isOpen: boolean;
     landmarkKey: string | null;
   }>({ isOpen: false, landmarkKey: null });
+
+  const discount = useRegionalDiscount();
 
   useEffect(() => {
     if (data?.frontLandmarks) {
@@ -169,6 +173,29 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* Regional Discount Banner */}
+        {discount.isEligible && !isPaid && (
+          <div className="mb-8 rounded-2xl bg-gradient-to-r from-orange-500/20 to-amber-500/20 border border-orange-500/30 p-6 flex items-center justify-between gap-4 animate-fadeIn">
+             <div className="flex items-center gap-4">
+               <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center text-orange-400">
+                 <Ticket className="w-6 h-6" />
+               </div>
+               <div>
+                 <h3 className="text-white font-bold text-lg">🇮🇳 India Exclusive Offer</h3>
+                 <p className="text-orange-200 text-sm">
+                   We've detected you are from India. A <span className="font-bold text-white">50% PPP Discount</span> has been auto-applied!
+                 </p>
+               </div>
+             </div>
+             <div className="hidden sm:block text-right">
+                <span className="block text-xs text-orange-300 uppercase font-bold tracking-wider mb-1">Your Code</span>
+                <code className="bg-black/30 px-3 py-1.5 rounded-lg text-orange-400 font-mono font-bold border border-orange-500/30">
+                  {discount.code}
+                </code>
+             </div>
+          </div>
+        )}
+
         {/* OVERVIEW TAB */}
         {activeTab === "overview" && (
           <div className="space-y-8 animate-fadeIn">
@@ -281,6 +308,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
                       onHover={setHoveredMetric}
                       onClick={handleMetricClick}
                       isLocked={!isPaid && !ALLOWED_FREE_METRICS.includes(metric.name)}
+                      discountCode={discount.isEligible ? discount.code : undefined}
                     />
                   ))}
                 </div>

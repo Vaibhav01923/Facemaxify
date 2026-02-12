@@ -52,7 +52,7 @@ export const RATIO_CONFIGS = {
     noseBridgeWidth: { name: "Nose Bridge to Nose Width", ideal: 2.0, range: 0.2, decay: 0.65, unit: "x" },
     nasalWH: { name: "Nasal W to H Ratio", ideal: 0.6, range: 0.05, decay: 0.2, unit: "x" },
     noseTipRotation: { name: "Nose Tip Rotation Angle", ideal: 95.0, range: 5.0, decay: 0.2, unit: "°" },
-    upperThird: { name: "Upper Third", ideal: 33.3, range: 1.0, decay: 0.1, unit: "%" },
+    upperThird: { name: "Upper Third", ideal: 33.3, range: 0.6, decay: 0.15, unit: "%" },
     earProtrusion: { name: "Ear Protrusion Ratio", ideal: 3.5, range: 1.5, decay: 0.2, unit: "x" },
     orbitalVector: { name: "Orbital Vector", ideal: 3.0, range: 1.0, decay: 0.2, unit: "mm" },
     zAngle: { name: "Z Angle", ideal: 75.0, range: 5.0, decay: 0.2, unit: "°" },

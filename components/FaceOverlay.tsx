@@ -773,19 +773,19 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
             return (
                 <>
                     {/* Line AB (Top Gonions) */}
-                    <line x1={lTop.x} y1={lTop.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    <line x1={lTop.x} y1={lTop.y} x2={rTop.x} y2={rTop.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" />
                     <text x={(lTop.x + rTop.x) / 2} y={lTop.y - 4} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Upper Jaw Width</text>
-                    {renderInteractivePoint('leftTopGonion', lTop.x, lTop.y, "#22d3ee", 1.5)}
-                    {renderInteractivePoint('rightTopGonion', rTop.x, rTop.y, "#22d3ee", 1.5)}
+                    {renderInteractivePoint('leftTopGonion', lTop.x, lTop.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('rightTopGonion', rTop.x, rTop.y, "#22d3ee", 0.8)}
 
                     {/* Line CD (Neck) */}
-                    <line x1={lNeck.x} y1={lNeck.y} x2={rNeck.x} y2={rNeck.y} stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
+                    <line x1={lNeck.x} y1={lNeck.y} x2={rNeck.x} y2={rNeck.y} stroke="#22d3ee" strokeWidth="0.8" strokeLinecap="round" />
                     <text x={(lNeck.x + rNeck.x) / 2} y={lNeck.y + 8} fill="white" fontSize="3" fontWeight="bold" textAnchor="middle">Neck Width</text>
-                    {renderInteractivePoint('neckLeft', lNeck.x, lNeck.y, "#22d3ee", 1.5)}
-                    {renderInteractivePoint('neckRight', rNeck.x, rNeck.y, "#22d3ee", 1.5)}
+                    {renderInteractivePoint('neckLeft', lNeck.x, lNeck.y, "#22d3ee", 0.8)}
+                    {renderInteractivePoint('neckRight', rNeck.x, rNeck.y, "#22d3ee", 0.8)}
                     
                     {/* Dotted Connection (Visual Comparison) */}
-                    <line x1={(lTop.x + rTop.x) / 2} y1={lTop.y} x2={(lNeck.x + rNeck.x) / 2} y2={lNeck.y} stroke="white" strokeWidth="1" strokeDasharray="2,2" opacity="0.6" />
+                    <line x1={(lTop.x + rTop.x) / 2} y1={lTop.y} x2={(lNeck.x + rNeck.x) / 2} y2={lNeck.y} stroke="white" strokeWidth="0.5" strokeDasharray="2,2" opacity="0.6" />
                 </>
             );
         }

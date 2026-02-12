@@ -860,11 +860,24 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
 
                     {/* Deviation Label (Center) */}
                     <g transform={`translate(50, 50)`}>
-                         <rect x="-14" y="-8" width="28" height="16" rx="3" fill="rgba(0,0,0,0.85)" stroke="white" strokeWidth="0.5" />
-                         <text x="0" y="-4" fill="white" fontSize="2.5" fontWeight="bold" textAnchor="middle">Deviation: {deviation}°</text>
-                         <line x1="-12" y1="-2" x2="12" y2="-2" stroke="white" strokeWidth="0.2" opacity="0.5" />
-                         <text x="0" y="2" fill="#d946ef" fontSize="2.2" textAnchor="middle">IAA: {valIAA.toFixed(1)}°</text>
-                         <text x="0" y="5.5" fill="#22d3ee" fontSize="2.2" textAnchor="middle">JFA: {valJFA.toFixed(1)}°</text>
+                         {/* Modern Glassmorphism-style pill */}
+                         <rect x="-16" y="-9" width="32" height="18" rx="4" fill="rgba(15, 23, 42, 0.6)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+                         
+                         {/* Title */}
+                         <text x="0" y="-4.5" fill="rgba(255,255,255,0.9)" fontSize="2.2" fontWeight="600" textAnchor="middle" letterSpacing="0.05em">DEVIATION</text>
+                         
+                         {/* Main Value */}
+                         <text x="0" y="-0.5" fill="white" fontSize="3.5" fontWeight="800" textAnchor="middle">{deviation}°</text>
+                         
+                         {/* Divider */}
+                         <line x1="-12" y1="2" x2="12" y2="2" stroke="white" strokeWidth="0.2" opacity="0.2" />
+                         
+                         {/* Sub-values */}
+                         <g transform="translate(0, 5.5)">
+                             <text x="-4" y="0" fill="#d946ef" fontSize="2" fontWeight="600" textAnchor="end">IAA {valIAA.toFixed(1)}°</text>
+                             <line x1="0" y1="-2" x2="0" y2="1" stroke="white" strokeWidth="0.2" opacity="0.2" />
+                             <text x="4" y="0" fill="#22d3ee" fontSize="2" fontWeight="600" textAnchor="start">JFA {valJFA.toFixed(1)}°</text>
+                         </g>
                     </g>
 
                     {/* Interactive Points */}

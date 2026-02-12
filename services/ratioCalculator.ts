@@ -328,3 +328,27 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
   return results;
 };
 
+export const calculateWeightedTotalScore = (metrics: MetricResult[]): number => {
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    metrics.forEach(m => {
+        let weight = 1.0;
+        const s = m.score;
+
+        if (s < 1.0) weight = 3.0;
+        else if (s < 2.0) weight = 2.5;
+        else if (s < 3.0) weight = 2.0;
+        else if (s < 3.5) weight = 1.5;
+        else if (s < 4.5) weight = 1.25;
+        else if (s < 5.0) weight = 1.2;
+        
+        totalScore += s * weight;
+        totalWeight += weight;
+    });
+
+    if (totalWeight === 0) return 0;
+    
+    return parseFloat((totalScore / totalWeight).toFixed(1));
+};
+

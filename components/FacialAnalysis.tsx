@@ -11,7 +11,7 @@ import {
 } from "../services/mediaPipeService";
 import { standardizeImage } from "../utils/imageProcessing";
 import { saveScanResult, getScanHistory, supabase } from "../services/supabase";
-import { calculateFrontRatios } from "../services/ratioCalculator";
+import { calculateFrontRatios, calculateWeightedTotalScore } from "../services/ratioCalculator";
 import { AnalysisHistory } from "./AnalysisHistory";
 
 export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
@@ -113,7 +113,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
       if (user?.id) {
         const metrics = calculateFrontRatios(editedLandmarks as FrontLandmarks);
         const score = metrics.length > 0 
-          ? parseFloat((metrics.reduce((acc, curr) => acc + curr.score, 0) / metrics.length).toFixed(1))
+          ? calculateWeightedTotalScore(metrics)
           : 0;
         
         saveScanResult(result, score, user.id);

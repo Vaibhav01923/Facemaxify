@@ -871,7 +871,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
                          
                          {/* Sub-values */}
                          <g transform="translate(0, 5.5)">
-                             <text x="-4" y="0" fill="#d946ef" fontSize="2" fontWeight="600" textAnchor="end">IAA {valIAA.toFixed(1)}°</text>
+                             <text x="-4" y="0" fill="#22d3ee" fontSize="2" fontWeight="600" textAnchor="end">IAA {valIAA.toFixed(1)}°</text>
                              <text x="4" y="0" fill="#22d3ee" fontSize="2" fontWeight="600" textAnchor="start">JFA {valJFA.toFixed(1)}°</text>
                          </g>
                     </g>

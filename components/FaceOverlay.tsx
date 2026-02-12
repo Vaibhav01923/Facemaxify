@@ -878,9 +878,11 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
 
                     {/* Deviation Label (Center) */}
                     <g transform={`translate(50, 50)`}>
-                         <rect x="-10" y="-4" width="20" height="8" rx="2" fill="rgba(0,0,0,0.8)" stroke="white" strokeWidth="0.5" />
-                         <text x="0" y="-1" fill="white" fontSize="2.5" textAnchor="middle">Deviation</text>
-                         <text x="0" y="2.5" fill="#22d3ee" fontSize="3" fontWeight="bold" textAnchor="middle">{deviation}°</text>
+                         <rect x="-14" y="-8" width="28" height="16" rx="3" fill="rgba(0,0,0,0.85)" stroke="white" strokeWidth="0.5" />
+                         <text x="0" y="-4" fill="white" fontSize="2.5" fontWeight="bold" textAnchor="middle">Deviation: {deviation}°</text>
+                         <line x1="-12" y1="-2" x2="12" y2="-2" stroke="white" strokeWidth="0.2" opacity="0.5" />
+                         <text x="0" y="2" fill="#d946ef" fontSize="2.2" textAnchor="middle">IAA: {valIAA.toFixed(1)}°</text>
+                         <text x="0" y="5.5" fill="#22d3ee" fontSize="2.2" textAnchor="middle">JFA: {valJFA.toFixed(1)}°</text>
                     </g>
 
                     {/* Interactive Points */}

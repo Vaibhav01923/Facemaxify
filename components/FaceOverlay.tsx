@@ -775,7 +775,7 @@ export const FaceOverlay: React.FC<FaceOverlayProps> = ({
          });
     }
 
-    return null;
+
 
     // --- Neck Width (AB vs CD) ---
     if (metricName === "Neck Width") {

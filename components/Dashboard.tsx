@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { FinalResult } from "../types";
 import {
@@ -15,7 +16,8 @@ import { Ticket } from "lucide-react";
 import { updateScanLandmarks } from "../services/supabase";
 import { calculateWeightedTotalScore } from "../services/ratioCalculator";
 import { getAiRecommendations } from "../services/aiService";
-import ReactMarkdown from "react-markdown";
+// import ReactMarkdown from "react-markdown"; 
+const ReactMarkdown = React.lazy(() => import("react-markdown"));
 
 interface DashboardProps {
   data?: FinalResult;
@@ -25,9 +27,17 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scanId }) => {
   const { user } = useUser();
-  const [activeTab, setActiveTab] = useState<"overview" | "front" | "side">(
-    "front"
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = (searchParams.get("tab") as "overview" | "front" | "side") || "front";
+  const [activeTab, setActiveTabState] = useState<"overview" | "front" | "side">(initialTab);
+
+  const setActiveTab = (tab: "overview" | "front" | "side") => {
+    setActiveTabState(tab);
+    setSearchParams((prev) => {
+      prev.set("tab", tab);
+      return prev;
+    }, { replace: true });
+  };
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
@@ -46,32 +56,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
     }
   }, [data?.frontLandmarks]);
 
-  useEffect(() => {
-    async function fetchAiAnalysis() {
-        if (data && frontMetrics.length > 0) {
-            setLoading(true);
-            try {
-                // Determine photo to send (snapshot or standardized)
-                const photoToSend = data.frontPhotoUrl;
-                
-                // IMPORTANT: In a real app, you might want to debounce this or cache it 
-                // to avoid calling the API on every render/tab switch if not needed.
-                // For now, we call it once when data is ready.
-                const result = await getAiRecommendations(frontMetrics, photoToSend);
-                setAnalysis(result);
-            } catch (e) {
-                console.error("AI Fetch Error", e);
-                setAnalysis("Failed to load AI analysis.");
-            } finally {
-                setLoading(false);
-            }
-        }
-    }
 
-    if (data && !analysis) {
-        fetchAiAnalysis();
-    }
-  }, [data, frontMetrics, analysis]);
 
   const handleLandmarkUpdate = (key: string, newPoint: {x: number, y: number}) => {
       setLocalLandmarks((prev: any) => {
@@ -216,7 +201,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                 Facial Harmony
               </div>
               <div className="text-xl font-bold text-white leading-none">
-                {Math.round(parseFloat(overallScore) * 10)}{" "}
+                {Math.round(typeof overallScore === 'string' ? parseFloat(overallScore) : overallScore * 10)}{" "}
                 <span className="text-sm text-slate-500">/ 100</span>
               </div>
             </div>
@@ -291,7 +276,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                   </div>
                 ) : (
                   <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-indigo-200 prose-li:text-slate-300">
-                    <ReactMarkdown>{analysis}</ReactMarkdown>
+                    <React.Suspense fallback={<div className="h-4 bg-slate-800 rounded w-full animate-pulse"></div>}>
+                        <ReactMarkdown>{analysis}</ReactMarkdown>
+                    </React.Suspense>
                   </div>
                 )}
               </div>

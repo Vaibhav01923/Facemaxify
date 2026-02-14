@@ -81,8 +81,10 @@ export type FinalResult = {
   gender: string;
   race: string;
   faceBox?: {
-    x: number;
-    y: number;
+    xmin: number;
+    ymin: number;
+    xmax: number;
+    ymax: number;
     width: number;
     height: number;
   };

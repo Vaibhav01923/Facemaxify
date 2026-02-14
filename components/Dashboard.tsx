@@ -330,7 +330,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
 
               {/* CONTENT AREA */}
               <div className={`space-y-6 ${!isPaid ? "filter blur-md opacity-40 pointer-events-none select-none" : ""}`}>
-                {loading ? (
+                {loadingAnalysis ? (
                    <div className="space-y-6">
                       <div className="h-32 bg-slate-800/50 rounded-2xl animate-pulse border border-white/5"></div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

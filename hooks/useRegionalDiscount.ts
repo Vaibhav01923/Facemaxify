@@ -11,6 +11,9 @@ export const useRegionalDiscount = () => {
         try {
             const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             // Check for Indian Timezones
+            // Check for Indian Timezones
+            // TEMPORARILY DISABLED
+            /*
             if (timeZone === 'Asia/Calcutta' || timeZone === 'Asia/Kolkata') {
                 setDiscount({
                     isEligible: true,
@@ -18,6 +21,7 @@ export const useRegionalDiscount = () => {
                     region: 'India'
                 });
             }
+            */
         } catch (e) {
             console.error("Failed to detect region", e);
         }

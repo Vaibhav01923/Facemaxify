@@ -168,3 +168,24 @@ export const updateScanLandmarks = async (
 };
 
 
+export const updateScanAnalysis = async (
+  scanId: string,
+  userId: string,
+  analysis: any
+): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from("scans")
+      .update({
+        analysis: analysis,
+      })
+      .eq("id", scanId)
+      .eq("user_id", userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error("Update Analysis Error:", error);
+    return false;
+  }
+};

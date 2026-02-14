@@ -72,20 +72,32 @@ export default async function handler(req, res) {
     ${metricsSummary}
 
     **Instructions:**
-    Provide a structured, easy-to-read report using the following format:
+    Analyze the user's facial aesthetics and provide a structured JSON response. 
+    DO NOT use Markdown. Return ONLY raw JSON.
 
-    # ⚡ Executive Summary
-    (One concise paragraph summarizing their overall harmony and strongest features.)
-
-    # 🟢 Softmax Protocol (Lifestyle & Grooming)
-    *   **Body Fat Assessment:** (Check photo: if >15% suggest leaning down, if >20% mark as URGENT).
-    *   **Skin & Grooming:** (Specific advice on skincare, hair, and facial hair).
-    *   **Style:** (Quick tips to enhance current features).
-    
-    # 🔴 Hardmax Protocol (Medical/Surgical)
-    *   **Bone Structure:** (Analyze jaw, chin, cheekbones).
-    *   **Balance:** (Note specific asymmetries or ratios calling for intervention).
-    *   **Recommendation:** (Only suggest surgery if ratios are extreme. If good (>7/10), explicitly look for "No surgical intervention recommended".)
+    **JSON Schema:**
+    {
+      "executive_summary": "One concise paragraph (max 3 sentences) summarizing their overall harmony and strongest features.",
+      "softmax": {
+        "body_fat": { 
+            "assessment": "Brief check based on photo (e.g., 'Estimated 15% range')",
+            "advice": "Actionable advice (e.g., 'Lean down to 12% to reveal jawline')"
+        },
+        "skin_grooming": { 
+            "assessment": "Observation of skin quality/grooming",
+            "advice": "Specific routine or style advice"
+        },
+        "style": { 
+             "assessment": "Hair/Beard style observation",
+             "advice": "Transformation tip"
+        }
+      },
+      "hardmax": {
+        "bone_structure": "Analysis of jaw, chin, cheekbones and ratios.",
+        "balance": "Note specific asymmetries or deviations.",
+        "recommendation": "Surgical/Procedural advice. If scores > 7/10, say 'No major intervention recommended'."
+      }
+    }
 
     **Tone:** Professional, objective, direct, and actionable. Avoid fluff.
     `;
@@ -95,11 +107,14 @@ export default async function handler(req, res) {
 
     const result = await model.generateContent(parts);
     const response = await result.response;
-    const text = response.text();
+    let text = response.text();
+    
+    // Clean up potential markdown code blocks if the model ignores instructions
+    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-    res.status(200).json({ analysis: text });
+    res.status(200).json({ analysis: JSON.parse(text) });
   } catch (error) {
     console.error("Gemini API Error:", error);
-    res.status(500).json({ error: "Failed to generate analysis" + error.message });
+    res.status(500).json({ error: "Failed to generate analysis: " + error.message });
   }
 }

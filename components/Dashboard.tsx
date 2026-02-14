@@ -327,53 +327,82 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                    </div>
                 ) : (
                   <>
-                    {/* PARSE & RENDER: We assume the AI returns Markdown with specific headers. 
-                        We can use simple string splitting or render the whole markdown. 
-                        For "cards", let's split manually if possible, or fallback to Markdown if not.
-                    */}
-                    {analysis && analysis.includes("# ⚡ Executive Summary") ? (
-                      <>
+                    {/* PARSE & RENDER: JSON STRUCTURE */}
+                    {analysis ? (
+                      <div className="space-y-6">
                         {/* 1. EXECUTIVE SUMMARY */}
                         <div className="bg-gradient-to-br from-slate-900 to-indigo-950/30 p-6 rounded-2xl border border-indigo-500/20 shadow-xl relative overflow-hidden group">
                            <div className="absolute top-0 right-0 p-32 bg-indigo-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                            <h3 className="text-lg font-bold text-indigo-300 mb-3 flex items-center gap-2">
                              ⚡ Executive Summary
                            </h3>
-                           <div className="prose prose-invert prose-p:text-indigo-100/80 prose-p:leading-relaxed">
-                              <Markdown>{analysis.split("# ⚡ Executive Summary")[1].split("# 🟢 Softmax Protocol")[0]}</Markdown>
-                           </div>
+                           <p className="text-indigo-100/80 leading-relaxed text-sm">
+                             {typeof analysis === 'string' ? "Legacy analysis format. Please create a new scan for updated format." : analysis.executive_summary}
+                           </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* 2. SOFTMAX */}
-                            <div className="bg-emerald-950/10 p-6 rounded-2xl border border-emerald-500/10 hover:border-emerald-500/20 transition-colors">
-                                <h3 className="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2">
-                                  <CheckCircle2 className="w-5 h-5" />
-                                  Softmax Protocol
-                                </h3>
-                                <div className="prose prose-invert prose-p:text-slate-300 prose-li:text-slate-300 prose-ul:marker:text-emerald-500/50 text-sm">
-                                  <Markdown>{analysis.split("# 🟢 Softmax Protocol")[1].split("# 🔴 Hardmax Protocol")[0]}</Markdown>
-                                </div>
-                            </div>
+                        {/* JSON RENDERING */}
+                        {typeof analysis !== 'string' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* 2. SOFTMAX */}
+                                <div className="bg-emerald-950/10 p-6 rounded-2xl border border-emerald-500/10 hover:border-emerald-500/20 transition-colors">
+                                    <h3 className="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2">
+                                      <CheckCircle2 className="w-5 h-5" />
+                                      Softmax Protocol
+                                    </h3>
+                                    
+                                    <div className="space-y-4">
+                                        <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                            <div className="text-xs text-emerald-300 font-bold uppercase mb-1">Body Fat & Leanness</div>
+                                            <div className="text-sm text-slate-300 mb-1">{analysis.softmax.body_fat.assessment}</div>
+                                            <div className="text-xs text-slate-400 italic">💡 {analysis.softmax.body_fat.advice}</div>
+                                        </div>
 
-                            {/* 3. HARDMAX */}
-                            <div className="bg-rose-950/10 p-6 rounded-2xl border border-rose-500/10 hover:border-rose-500/20 transition-colors">
-                                <h3 className="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
-                                  <AlertTriangle className="w-5 h-5" />
-                                  Hardmax Protocol
-                                </h3>
-                                <div className="prose prose-invert prose-p:text-slate-300 prose-li:text-slate-300 prose-ul:marker:text-rose-500/50 text-sm">
-                                   <Markdown>{analysis.split("# 🔴 Hardmax Protocol")[1]}</Markdown>
+                                        <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                            <div className="text-xs text-emerald-300 font-bold uppercase mb-1">Skin & Grooming</div>
+                                            <div className="text-sm text-slate-300 mb-1">{analysis.softmax.skin_grooming.assessment}</div>
+                                            <div className="text-xs text-slate-400 italic">💡 {analysis.softmax.skin_grooming.advice}</div>
+                                        </div>
+
+                                        <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                            <div className="text-xs text-emerald-300 font-bold uppercase mb-1">Styling</div>
+                                            <div className="text-sm text-slate-300 mb-1">{analysis.softmax.style.assessment}</div>
+                                            <div className="text-xs text-slate-400 italic">💡 {analysis.softmax.style.advice}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 3. HARDMAX */}
+                                <div className="bg-rose-950/10 p-6 rounded-2xl border border-rose-500/10 hover:border-rose-500/20 transition-colors">
+                                    <h3 className="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
+                                      <AlertTriangle className="w-5 h-5" />
+                                      Hardmax Protocol
+                                    </h3>
+                                    
+                                    <div className="space-y-4">
+                                        <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                            <div className="text-xs text-rose-300 font-bold uppercase mb-1">Bone Structure</div>
+                                            <p className="text-sm text-slate-300">{analysis.hardmax.bone_structure}</p>
+                                        </div>
+
+                                        <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                            <div className="text-xs text-rose-300 font-bold uppercase mb-1">Harmony & Balance</div>
+                                            <p className="text-sm text-slate-300">{analysis.hardmax.balance}</p>
+                                        </div>
+
+                                        <div className="bg-rose-500/10 p-3 rounded-lg border border-rose-500/20">
+                                            <div className="text-xs text-rose-300 font-bold uppercase mb-1">Medical Recommendation</div>
+                                            <p className="text-sm text-slate-200 font-medium">{analysis.hardmax.recommendation}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                      </>
+                        )}
+                      </div>
                     ) : (
-                      // Fallback if AI didn't follow format exactly
-                      <div className="bg-slate-900/40 p-8 rounded-2xl border border-white/5">
-                        <div className="prose prose-invert max-w-none prose-headings:text-indigo-200">
-                          <Markdown>{analysis}</Markdown>
-                        </div>
+                      // Empty / Error State
+                      <div className="text-slate-500 text-center py-10">
+                         Unable to load analysis.
                       </div>
                     )}
                   </>

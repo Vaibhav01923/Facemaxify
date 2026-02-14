@@ -5,12 +5,19 @@ export const useRegionalDiscount = () => {
         isEligible: boolean;
         code: string;
         region: string;
-    }>({ isEligible: false, code: '', region: '' });
+        link: string;
+        price: string;
+    }>({ 
+        isEligible: false, 
+        code: '', 
+        region: '',
+        link: '/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c', // Standard Product ID
+        price: '$5' 
+    });
 
     useEffect(() => {
         try {
             const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            // Check for Indian Timezones
             // Check for Indian Timezones
             // TEMPORARILY DISABLED
             /*
@@ -18,7 +25,9 @@ export const useRegionalDiscount = () => {
                 setDiscount({
                     isEligible: true,
                     code: 'PPP50',
-                    region: 'India'
+                    region: 'India',
+                    link: 'https://buy.stripe.com/test_...', // PPP link
+                    price: '$14'
                 });
             }
             */

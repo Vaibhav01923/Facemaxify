@@ -287,7 +287,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                           Get a personalized maxxing protocol tailored to your specific facial ratios.
                           <br/><span className="text-indigo-400 text-sm mt-2 block font-semibold">Includes Softmax & Hardmax plans.</span>
                       </p>
-                      <Button onClick={() => window.location.href = discount.link} variant="primary" className="shadow-xl shadow-indigo-500/20 w-full max-w-xs py-4 text-lg">
+                      <Button onClick={() => window.location.href = `${discount.link}&customerEmail=${user?.primaryEmailAddress?.emailAddress}`} variant="primary" className="shadow-xl shadow-indigo-500/20 w-full max-w-xs py-4 text-lg">
                           Unlock Full Analysis {discount.price}
                       </Button>
                       <p className="text-xs text-slate-500 mt-6">

@@ -32,9 +32,11 @@ const App: React.FC = () => {
         // 1. Get User Data
         const { data: userData, error } = await supabase
           .from("users")
-          .select("isPaid, country")
+          .select("*") // Fetch everything to be sure of column names
           .eq("email", user.primaryEmailAddress.emailAddress)
           .single();
+
+        console.log("DEBUG: Supabase User Fetch:", { userData, error });
 
         let currentIsPaid = false;
 
@@ -70,8 +72,11 @@ const App: React.FC = () => {
             if (upsertError) console.error("Failed to save country:", upsertError);
         }
 
-        if (userData && userData.isPaid) {
-          currentIsPaid = true;
+        // Handle both casing possibilities and string/bool types
+        if (userData) {
+           if (userData.isPaid === true || userData.is_paid === true || userData.isPaid === 'true') {
+               currentIsPaid = true;
+           }
         }
 
         setIsPaid(currentIsPaid);

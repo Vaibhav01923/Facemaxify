@@ -100,10 +100,10 @@ export const getScanHistory = async (userId: string) => {
 
 export const deleteScan = async (scanId: string, userId: string): Promise<boolean> => {
   try {
-    // 1. Get the scan to find the image path first
+    // 1. Get the scan details
     const { data: scan, error: fetchError } = await supabase
       .from("scans")
-      .select("front_photo_path")
+      .select("*") // Select all fields to copy
       .eq("id", scanId)
       .eq("user_id", userId)
       .single();
@@ -113,16 +113,21 @@ export const deleteScan = async (scanId: string, userId: string): Promise<boolea
       return false;
     }
 
-    // 2. Delete the image from storage
-    if (scan.front_photo_path) {
-      const { error: storageError } = await supabase.storage
-        .from("scans")
-        .remove([scan.front_photo_path]);
-      
-      if (storageError) console.warn("Failed to delete associated image:", storageError);
+    // 2. Archive to deleted_scans table
+    const { error: archiveError } = await supabase
+      .from("deleted_scans")
+      .insert({
+        ...scan,
+        deleted_at: new Date().toISOString()
+      });
+
+    if (archiveError) {
+      console.error("Failed to archive scan:", archiveError);
+      // Decide if we should abort or continue. Safest is to abort to prevent data loss.
+      return false;
     }
 
-    // 3. Delete the record from DB
+    // 3. Delete the record from active DB (But Keep Image in Storage)
     const { error: deleteError } = await supabase
       .from("scans")
       .delete()

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { FinalResult } from "../types";
 import {
@@ -22,7 +23,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scanId }) => {
   const { user } = useUser();
-  const [activeTab, setActiveTab] = useState<"overview" | "front">(
+  const [activeTab, setActiveTab] = useState<"overview" | "front" | "side">(
     "front"
   );
   const [analysis, setAnalysis] = useState<any>(null);
@@ -129,7 +130,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
         <div className="bg-indigo-600 px-4 py-2 text-center relative z-50 overflow-hidden shadow-lg shadow-indigo-500/20">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-700 animate-gradient-x opacity-50"></div>
           <p className="relative z-10 text-[11px] sm:text-xs font-black text-white uppercase tracking-widest flex items-center justify-center gap-3">
-            <span className="opacity-70">✨ Unlock 10+ Premium Facial Ratios & Guides</span>
+            <span className="opacity-70">✨ Unlock 25+ Premium Facial Ratios & Guides</span>
             <button 
               onClick={() => window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`}
               className="bg-white text-indigo-600 px-3 py-1 rounded-full hover:scale-105 transition-transform"
@@ -169,7 +170,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-8 border-b border-transparent">
-            {["overview", "front"].map((tab) => (
+            {["overview", "front", "side"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
@@ -181,7 +182,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)} Analysis
                 {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                  />
                 )}
               </button>
             ))}
@@ -330,6 +334,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+        {/* SIDE PROFILE TAB (COMING SOON) */}
+        {activeTab === "side" && (
+          <div className="min-h-[400px] flex flex-col items-center justify-center text-center animate-fadeIn p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
+            <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
+              <span className="text-4xl">👤</span>
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Side Profile Analysis
+            </h2>
+            <p className="text-slate-400 max-w-md mb-6">
+              Advanced side profile metrics including gonial angle, nose projection, and chin recession analysis.
+            </p>
+            <div className="bg-indigo-500/10 text-indigo-300 px-4 py-2 rounded-full text-sm font-medium border border-indigo-500/20">
+              🚀 Coming Soon (Next Week)
             </div>
           </div>
         )}

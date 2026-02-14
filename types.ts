@@ -80,4 +80,10 @@ export type FinalResult = {
   frontPhotoUrl: string;
   gender: string;
   race: string;
+  faceBox?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 };

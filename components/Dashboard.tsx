@@ -14,6 +14,8 @@ import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
 import { Ticket } from "lucide-react";
 import { updateScanLandmarks } from "../services/supabase";
 import { calculateWeightedTotalScore } from "../services/ratioCalculator";
+import { getAiRecommendations } from "../services/aiService";
+import ReactMarkdown from "react-markdown";
 
 interface DashboardProps {
   data?: FinalResult;
@@ -43,6 +45,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
         setLocalLandmarks(data.frontLandmarks);
     }
   }, [data?.frontLandmarks]);
+
+  useEffect(() => {
+    async function fetchAiAnalysis() {
+        if (data && frontMetrics.length > 0) {
+            setLoading(true);
+            try {
+                // Determine photo to send (snapshot or standardized)
+                const photoToSend = data.frontPhotoUrl;
+                
+                // IMPORTANT: In a real app, you might want to debounce this or cache it 
+                // to avoid calling the API on every render/tab switch if not needed.
+                // For now, we call it once when data is ready.
+                const result = await getAiRecommendations(frontMetrics, photoToSend);
+                setAnalysis(result);
+            } catch (e) {
+                console.error("AI Fetch Error", e);
+                setAnalysis("Failed to load AI analysis.");
+            } finally {
+                setLoading(false);
+            }
+        }
+    }
+
+    if (data && !analysis) {
+        fetchAiAnalysis();
+    }
+  }, [data, frontMetrics, analysis]);
 
   const handleLandmarkUpdate = (key: string, newPoint: {x: number, y: number}) => {
       setLocalLandmarks((prev: any) => {
@@ -111,6 +140,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
     const metrics = calculateFrontRatios(localLandmarks);
     return metrics.sort((a, b) => a.score - b.score);
   }, [localLandmarks]);
+
+  useEffect(() => {
+    async function fetchAiAnalysis() {
+        if (data && frontMetrics.length > 0) {
+            setLoading(true);
+            try {
+                // Determine photo to send (snapshot or standardized)
+                const photoToSend = data.frontPhotoUrl;
+                
+                // IMPORTANT: In a real app, you might want to debounce this or cache it 
+                // to avoid calling the API on every render/tab switch if not needed.
+                // For now, we call it once when data is ready.
+                const result = await getAiRecommendations(frontMetrics, photoToSend);
+                setAnalysis(result);
+            } catch (e) {
+                console.error("AI Fetch Error", e);
+                setAnalysis("Failed to load AI analysis.");
+            } finally {
+                setLoading(false);
+            }
+        }
+    }
+
+    if (data && !analysis) {
+        fetchAiAnalysis();
+    }
+  }, [data, frontMetrics, analysis]);
 
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;
@@ -222,50 +278,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
           <div className="space-y-8 animate-fadeIn">
             <div className="bg-slate-900/40 p-8 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden">
                <div className="relative z-10">
-                <h2 className="text-2xl font-bold text-white mb-6">
-                  Harmony Insights
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                  <span className="text-indigo-400">✨</span> AI Harmony Analysis
                 </h2>
+                
                 {loading ? (
-                  <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-slate-800 rounded w-full"></div>
-                    <div className="h-4 bg-slate-800 rounded w-5/6"></div>
+                  <div className="space-y-4 max-w-2xl">
+                    <div className="h-4 bg-slate-800 rounded w-full animate-pulse"></div>
+                    <div className="h-4 bg-slate-800 rounded w-5/6 animate-pulse"></div>
+                    <div className="h-4 bg-slate-800 rounded w-4/6 animate-pulse"></div>
+                    <p className="text-xs text-indigo-400 font-mono mt-4 animate-pulse">Analyzing geometries and generating softmax/hardmax protocols...</p>
                   </div>
                 ) : (
-                  <div className="prose prose-invert max-w-none">
-                    <p className="text-slate-300 text-lg leading-relaxed font-light">
-                      {analysis?.harmonyAnalysis ||
-                        "Generating comprehensive facial analysis..."}
-                    </p>
+                  <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-indigo-200 prose-li:text-slate-300">
+                    <ReactMarkdown>{analysis}</ReactMarkdown>
                   </div>
                 )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 relative z-10">
-                <div className="bg-slate-950/50 rounded-xl p-5 border border-white/5">
-                  <h3 className="text-emerald-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>{" "}
-                    Top Traits
-                  </h3>
-                  <ul className="space-y-3">
-                    {analysis?.strengths?.map((s: string, i: number) => (
-                      <li
-                        key={i}
-                        className="text-slate-300 text-sm flex items-start gap-2"
-                      >
-                        <span className="text-emerald-500/50 mt-1">✓</span> {s}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="bg-slate-950/50 rounded-xl p-5 border border-white/5">
-                  <h3 className="text-indigo-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>{" "}
-                    Enhancements
-                  </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
-                    {analysis?.improvement}
-                  </p>
-                </div>
               </div>
             </div>
           </div>

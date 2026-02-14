@@ -11,13 +11,16 @@ import { FaceOverlay } from "./FaceOverlay";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
 import { Ticket } from "lucide-react";
+import { updateScanLandmarks } from "../services/supabase";
+import { calculateWeightedTotalScore } from "../services/ratioCalculator";
 
 interface DashboardProps {
   data?: FinalResult;
   isPaid?: boolean;
+  scanId?: string;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scanId }) => {
   const { user } = useUser();
   const [activeTab, setActiveTab] = useState<"overview" | "front">(
     "front"
@@ -59,14 +62,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false }) =>
       setEditorState({ isOpen: true, landmarkKey });
   };
 
-  const handleEditorComplete = (updatedLandmarks: any) => {
+  const handleEditorComplete = async (updatedLandmarks: any) => {
       if (!editorState.landmarkKey) return;
+      
       // Merge the updated landmark back into the full landmark set
-      setLocalLandmarks((prev: any) => ({
-          ...prev,
+      const newLandmarks = {
+          ...localLandmarks,
           [editorState.landmarkKey!]: updatedLandmarks[editorState.landmarkKey!]
-      }));
+      };
+      
+      setLocalLandmarks(newLandmarks);
       setEditorState({ isOpen: false, landmarkKey: null });
+
+      // Persist to database if viewing saved scan
+      if (scanId && user?.id) {
+          const metrics = calculateFrontRatios(newLandmarks);
+          const score = metrics.length > 0 
+              ? calculateWeightedTotalScore(metrics)
+              : 0;
+          
+          await updateScanLandmarks(scanId, user.id, newLandmarks, score);
+      }
   };
 
   // Early return if no data provided

@@ -72,18 +72,22 @@ export default async function handler(req, res) {
     ${metricsSummary}
 
     **Instructions:**
-    1. **Overview**: Brief, honest analysis of their current harmony.
-    2. **Softmaxes (Easy Fixes)**:
-       - **CRITICAL BODY FAT CHECK**: Look at the image. 
-         - If ~15-16% bodyfat: Suggest leaning down for angularity.
-         - If >20%: Write "URGENT: High Priority to lean down."
-         - If >30%: Write "CRITICAL: First priority is weight loss to reveal structure."
-       - Skin, grooming, and hair advice based on their features.
-    3. **Hardmaxes (Surgical/Long-term)**:
-       - Suggest surgical or orthodontic options ONLY for extreme ratios (e.g., severe recession, asymmetry).
-       - If ratios are generally good (scores > 7), EXPLICITLY state: "No meaningful surgical options found with good ROI. Focus on softmaxing."
+    Provide a structured, easy-to-read report using the following format:
+
+    # ⚡ Executive Summary
+    (One concise paragraph summarizing their overall harmony and strongest features.)
+
+    # 🟢 Softmax Protocol (Lifestyle & Grooming)
+    *   **Body Fat Assessment:** (Check photo: if >15% suggest leaning down, if >20% mark as URGENT).
+    *   **Skin & Grooming:** (Specific advice on skincare, hair, and facial hair).
+    *   **Style:** (Quick tips to enhance current features).
     
-    Keep the tone professional, objective, and actionable. Use Markdown formatting.
+    # 🔴 Hardmax Protocol (Medical/Surgical)
+    *   **Bone Structure:** (Analyze jaw, chin, cheekbones).
+    *   **Balance:** (Note specific asymmetries or ratios calling for intervention).
+    *   **Recommendation:** (Only suggest surgery if ratios are extreme. If good (>7/10), explicitly look for "No surgical intervention recommended".)
+
+    **Tone:** Professional, objective, direct, and actionable. Avoid fluff.
     `;
 
     const parts = [prompt];

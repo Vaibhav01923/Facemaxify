@@ -26,9 +26,8 @@ export default async function handler(req, res) {
         throw new Error("GEMINI_API_KEY is not defined");
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    // Use gemini-pro which is generally available in v1beta
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // Use gemini-3-flash-preview as requested
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
     // Prepare inputs
     const metricsSummary = metrics.map(m => `- ${m.name}: ${m.value} (${m.score}/10) - Ideal: ${m.idealMin}-${m.idealMax}`).join('\n');

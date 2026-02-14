@@ -124,32 +124,51 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
     return metrics.sort((a, b) => a.score - b.score);
   }, [localLandmarks]);
 
-  useEffect(() => {
-    async function fetchAiAnalysis() {
-        if (data && frontMetrics.length > 0) {
-            setLoading(true);
-            try {
-                // Determine photo to send (snapshot or standardized)
-                const photoToSend = data.frontPhotoUrl;
-                
-                // IMPORTANT: In a real app, you might want to debounce this or cache it 
-                // to avoid calling the API on every render/tab switch if not needed.
-                // For now, we call it once when data is ready.
-                const result = await getAiRecommendations(frontMetrics, photoToSend);
-                setAnalysis(result);
-            } catch (e) {
-                console.error("AI Fetch Error", e);
-                setAnalysis("Failed to load AI analysis.");
-            } finally {
-                setLoading(false);
-            }
-        }
-    }
+  // ---------------------------------------------------------------------------
+  // AI ANALYSIS LOGIC (JSON + Persistence)
+  // ---------------------------------------------------------------------------
+  const [analysis, setAnalysis] = useState<any>(null); // Now expecting JSON object
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
-    if (data && !analysis) {
-        fetchAiAnalysis();
-    }
-  }, [data, frontMetrics, analysis]);
+  useEffect(() => {
+    const loadAnalysis = async () => {
+       // 1. Check if we already have it in the data prop (from parent/DB)
+       if (data && data.analysis) {
+          console.log("Using cached analysis from DB");
+          setAnalysis(data.analysis);
+          return;
+       }
+
+       // 2. If not, and we have metrics, generate it
+       // Only run if we haven't analyzing, don't have analysis, and not loading
+       if (data && !data.analysis && !analysis && !loadingAnalysis && frontMetrics.length > 0) {
+          setLoadingAnalysis(true);
+          console.log("Generating new AI Analysis...");
+          
+          try {
+             // Fetch from API
+             const result = await getAiRecommendations(frontMetrics, data.frontPhotoUrl);
+             
+             if (result) {
+                setAnalysis(result);
+                // 3. Save to DB immediately if we have scanId
+                if (scanId && user?.id) {
+                    await updateScanAnalysis(scanId, user.id, result);
+                    console.log("Analysis saved to DB for scan:", scanId);
+                } else {
+                    console.warn("Cannot save analysis: Missing scanId or userId", { scanId, userId: user?.id });
+                }
+             }
+          } catch (e) {
+             console.error("Failed to load analysis", e);
+          } finally {
+             setLoadingAnalysis(false);
+          }
+       }
+    };
+
+    loadAnalysis();
+  }, [data, frontMetrics, scanId]); // Depend on scanId and data
 
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;

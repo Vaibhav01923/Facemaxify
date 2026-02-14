@@ -16,7 +16,6 @@ import { Ticket, CheckCircle2, AlertTriangle, Sparkles, Lock } from "lucide-reac
 import { updateScanLandmarks } from "../services/supabase";
 import { calculateWeightedTotalScore } from "../services/ratioCalculator";
 import { getAiRecommendations } from "../services/aiService";
-import Markdown from "markdown-to-jsx";
 
 interface DashboardProps {
   data?: FinalResult;
@@ -322,7 +321,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                       </div>
                       <div className="flex justify-center gap-3 text-indigo-400 text-sm font-mono animate-pulse mt-8">
                          <Sparkles className="w-4 h-4" />
-                         Analyzing {data?.gender || 'facial'} geometries...
+                         Analyzing Your Facial Ratios and Metrics...
                       </div>
                    </div>
                 ) : (

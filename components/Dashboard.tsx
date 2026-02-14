@@ -12,7 +12,7 @@ import { RatioRow } from "./RatioRow";
 import { FaceOverlay } from "./FaceOverlay";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
-import { Ticket } from "lucide-react";
+import { Ticket, CheckCircle2, AlertTriangle, Sparkles, Lock } from "lucide-react";
 import { updateScanLandmarks } from "../services/supabase";
 import { calculateWeightedTotalScore } from "../services/ratioCalculator";
 import { getAiRecommendations } from "../services/aiService";
@@ -257,26 +257,111 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
           </div>
         )}
 
-        {/* OVERVIEW TAB */}
+        {/* OVERVIEW TAB (AI ANALYSIS) */}
         {activeTab === "overview" && (
           <div className="space-y-8 animate-fadeIn">
-            <div className="bg-slate-900/40 p-8 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden">
-               <div className="relative z-10">
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                  <span className="text-indigo-400">✨</span> AI Harmony Analysis
+             {/* HEADER */}
+             <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <span className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/20">
+                    <Sparkles className="w-5 h-5" />
+                  </span>
+                  AI Harmony Analysis
                 </h2>
-                
+                {!isPaid && (
+                  <span className="bg-slate-800 text-slate-400 text-xs px-3 py-1 rounded-full font-medium border border-slate-700">
+                    Preview Mode
+                  </span>
+                )}
+             </div>
+
+            <div className="relative min-h-[400px]">
+               {/* LOCK OVERLAY FOR FREE USERS */}
+               {!isPaid && (
+                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-md p-6 text-center rounded-3xl border border-white/10">
+                      <div className="bg-gradient-to-b from-indigo-500/20 to-purple-500/20 p-4 rounded-full mb-6 ring-1 ring-indigo-500/50 shadow-2xl shadow-indigo-500/10">
+                          <Lock className="w-8 h-8 text-indigo-400" />
+                      </div>
+                      <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Unlock Your AI Coach</h3>
+                      <p className="text-slate-400 max-w-sm mb-8 leading-relaxed">
+                          Get a personalized maxxing protocol tailored to your specific facial ratios.
+                          <br/><span className="text-indigo-400 text-sm mt-2 block font-semibold">Includes Softmax & Hardmax plans.</span>
+                      </p>
+                      <Button onClick={() => window.location.href = discount.link} variant="primary" className="shadow-xl shadow-indigo-500/20 w-full max-w-xs py-4 text-lg">
+                          Unlock Full Analysis {discount.price}
+                      </Button>
+                      <p className="text-xs text-slate-500 mt-6">
+                        Already purchased? <span className="text-indigo-400 cursor-pointer hover:underline" onClick={() => window.location.reload()}>Refresh</span>
+                      </p>
+                  </div>
+              )}
+
+              {/* CONTENT AREA */}
+              <div className={`space-y-6 ${!isPaid ? "filter blur-md opacity-40 pointer-events-none select-none" : ""}`}>
                 {loading ? (
-                  <div className="space-y-4 max-w-2xl">
-                    <div className="h-4 bg-slate-800 rounded w-full animate-pulse"></div>
-                    <div className="h-4 bg-slate-800 rounded w-5/6 animate-pulse"></div>
-                    <div className="h-4 bg-slate-800 rounded w-4/6 animate-pulse"></div>
-                    <p className="text-xs text-indigo-400 font-mono mt-4 animate-pulse">Analyzing geometries and generating softmax/hardmax protocols...</p>
-                  </div>
+                   <div className="space-y-6">
+                      <div className="h-32 bg-slate-800/50 rounded-2xl animate-pulse border border-white/5"></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="h-48 bg-emerald-900/10 rounded-2xl animate-pulse border border-white/5"></div>
+                        <div className="h-48 bg-rose-900/10 rounded-2xl animate-pulse border border-white/5"></div>
+                      </div>
+                      <div className="flex justify-center gap-3 text-indigo-400 text-sm font-mono animate-pulse mt-8">
+                         <Sparkles className="w-4 h-4" />
+                         Analyzing {data?.gender || 'facial'} geometries...
+                      </div>
+                   </div>
                 ) : (
-                  <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-indigo-200 prose-li:text-slate-300">
-                    <Markdown>{analysis}</Markdown>
-                  </div>
+                  <>
+                    {/* PARSE & RENDER: We assume the AI returns Markdown with specific headers. 
+                        We can use simple string splitting or render the whole markdown. 
+                        For "cards", let's split manually if possible, or fallback to Markdown if not.
+                    */}
+                    {analysis && analysis.includes("# ⚡ Executive Summary") ? (
+                      <>
+                        {/* 1. EXECUTIVE SUMMARY */}
+                        <div className="bg-gradient-to-br from-slate-900 to-indigo-950/30 p-6 rounded-2xl border border-indigo-500/20 shadow-xl relative overflow-hidden group">
+                           <div className="absolute top-0 right-0 p-32 bg-indigo-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                           <h3 className="text-lg font-bold text-indigo-300 mb-3 flex items-center gap-2">
+                             ⚡ Executive Summary
+                           </h3>
+                           <div className="prose prose-invert prose-p:text-indigo-100/80 prose-p:leading-relaxed">
+                              <Markdown>{analysis.split("# ⚡ Executive Summary")[1].split("# 🟢 Softmax Protocol")[0]}</Markdown>
+                           </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* 2. SOFTMAX */}
+                            <div className="bg-emerald-950/10 p-6 rounded-2xl border border-emerald-500/10 hover:border-emerald-500/20 transition-colors">
+                                <h3 className="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2">
+                                  <CheckCircle2 className="w-5 h-5" />
+                                  Softmax Protocol
+                                </h3>
+                                <div className="prose prose-invert prose-p:text-slate-300 prose-li:text-slate-300 prose-ul:marker:text-emerald-500/50 text-sm">
+                                  <Markdown>{analysis.split("# 🟢 Softmax Protocol")[1].split("# 🔴 Hardmax Protocol")[0]}</Markdown>
+                                </div>
+                            </div>
+
+                            {/* 3. HARDMAX */}
+                            <div className="bg-rose-950/10 p-6 rounded-2xl border border-rose-500/10 hover:border-rose-500/20 transition-colors">
+                                <h3 className="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
+                                  <AlertTriangle className="w-5 h-5" />
+                                  Hardmax Protocol
+                                </h3>
+                                <div className="prose prose-invert prose-p:text-slate-300 prose-li:text-slate-300 prose-ul:marker:text-rose-500/50 text-sm">
+                                   <Markdown>{analysis.split("# 🔴 Hardmax Protocol")[1]}</Markdown>
+                                </div>
+                            </div>
+                        </div>
+                      </>
+                    ) : (
+                      // Fallback if AI didn't follow format exactly
+                      <div className="bg-slate-900/40 p-8 rounded-2xl border border-white/5">
+                        <div className="prose prose-invert max-w-none prose-headings:text-indigo-200">
+                          <Markdown>{analysis}</Markdown>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

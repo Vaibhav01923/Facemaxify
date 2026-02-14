@@ -10,9 +10,11 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg shadow-lg shadow-blue-500/20">
-              ✨
-            </div>
+            <img 
+              src="/favicon.png" 
+              alt="Facemaxify Logo" 
+              className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20"
+            />
             <h1 className="text-lg font-bold tracking-tight text-white">
               Facemaxify
             </h1>

@@ -277,22 +277,37 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
 
             <div className="relative min-h-[400px]">
                {/* LOCK OVERLAY FOR FREE USERS */}
+               {/* LOCK OVERLAY FOR FREE USERS */}
                {!isPaid && (
-                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-md p-6 text-center rounded-3xl border border-white/10">
-                      <div className="bg-gradient-to-b from-indigo-500/20 to-purple-500/20 p-4 rounded-full mb-6 ring-1 ring-indigo-500/50 shadow-2xl shadow-indigo-500/10">
-                          <Lock className="w-8 h-8 text-indigo-400" />
+                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-xl p-6 text-center rounded-3xl border border-white/10 overflow-hidden">
+                      {/* Animated Background Glow */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none animate-pulse-slow"></div>
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                        <div className="bg-gradient-to-b from-indigo-500/20 to-purple-500/20 p-5 rounded-full mb-6 ring-1 ring-white/20 shadow-[0_0_30px_-5px_rgba(99,102,241,0.3)] backdrop-blur-md">
+                            <Lock className="w-10 h-10 text-indigo-300 drop-shadow-[0_0_10px_rgba(165,180,252,0.5)]" />
+                        </div>
+                        
+                        <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-white mb-3 tracking-tight drop-shadow-sm">
+                          Unlock Your AI Coach
+                        </h3>
+                        
+                        <p className="text-indigo-200/80 max-w-sm mb-8 leading-relaxed font-medium text-lg">
+                            Get your personalized <span className="text-white font-bold">Softmax & Hardmax</span> protocols tailored to your exact facial ratios.
+                        </p>
+                        
+                        <Button 
+                          onClick={() => window.location.href = `${discount.link}&customerEmail=${user?.primaryEmailAddress?.emailAddress}`} 
+                          variant="primary" 
+                          className="shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] w-full max-w-xs py-6 text-xl font-bold rounded-2xl border-t border-white/20 hover:scale-105 transition-transform duration-300 ring-4 ring-indigo-500/10"
+                        >
+                            Unlock Now <span className="ml-2 opacity-80 font-normal text-lg">{discount.price}</span>
+                        </Button>
+                        
+                        <p className="text-xs text-slate-500 mt-8 font-medium hover:text-indigo-400 transition-colors cursor-pointer" onClick={() => window.location.reload()}>
+                          Already purchased? Refresh to sync
+                        </p>
                       </div>
-                      <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Unlock Your AI Coach</h3>
-                      <p className="text-slate-400 max-w-sm mb-8 leading-relaxed">
-                          Get a personalized maxxing protocol tailored to your specific facial ratios.
-                          <br/><span className="text-indigo-400 text-sm mt-2 block font-semibold">Includes Softmax & Hardmax plans.</span>
-                      </p>
-                      <Button onClick={() => window.location.href = `${discount.link}&customerEmail=${user?.primaryEmailAddress?.emailAddress}`} variant="primary" className="shadow-xl shadow-indigo-500/20 w-full max-w-xs py-4 text-lg">
-                          Unlock Full Analysis {discount.price}
-                      </Button>
-                      <p className="text-xs text-slate-500 mt-6">
-                        Already purchased? <span className="text-indigo-400 cursor-pointer hover:underline" onClick={() => window.location.reload()}>Refresh</span>
-                      </p>
                   </div>
               )}
 

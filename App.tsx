@@ -29,17 +29,53 @@ const App: React.FC = () => {
       
       setCheckingPayment(true);
       try {
-        const { data, error } = await supabase
+        // 1. Get User Data
+        const { data: userData, error } = await supabase
           .from("users")
-          .select("isPaid")
+          .select("isPaid, country")
           .eq("email", user.primaryEmailAddress.emailAddress)
           .single();
 
-        if (data && data.isPaid) {
-          setIsPaid(true);
-        } else {
-          setIsPaid(false);
+        let currentIsPaid = false;
+
+        // 2. Detect Country if missing
+        if (!userData?.country) {
+          const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          let country = timeZone; // Fallback to timezone
+          
+          // Simple mapping for major regions
+          if (timeZone.includes('Calcutta') || timeZone.includes('Kolkata')) country = 'India';
+          else if (timeZone.includes('London')) country = 'UK';
+          else if (timeZone.includes('New_York') || timeZone.includes('Los_Angeles') || timeZone.includes('Chicago')) country = 'USA';
+          else if (timeZone.includes('Paris')) country = 'France';
+          else if (timeZone.includes('Berlin')) country = 'Germany';
+          else if (timeZone.includes('Dubai')) country = 'UAE';
+          else if (timeZone.includes('Tokyo')) country = 'Japan';
+          else if (timeZone.includes('Sydney') || timeZone.includes('Melbourne')) country = 'Australia';
+          else if (timeZone.includes('Canada')) country = 'Canada';
+          else if (timeZone.includes('Sao_Paulo')) country = 'Brazil';
+
+          // 3. Upsert User (Insert if new, Update if exists)
+          const { error: upsertError } = await supabase
+            .from("users")
+            .upsert({
+              email: user.primaryEmailAddress.emailAddress,
+              country: country,
+              // We don't overwrite isPaid to false on upsert to avoid revoking access if logic fails, 
+              // but for new users it defaults to false/null in DB structure usually.
+              // If userData exists, keep existing isPaid.
+              ...(userData ? {} : { isPaid: false }) 
+            }, { onConflict: 'email' });
+
+            if (upsertError) console.error("Failed to save country:", upsertError);
         }
+
+        if (userData && userData.isPaid) {
+          currentIsPaid = true;
+        }
+
+        setIsPaid(currentIsPaid);
+
       } catch (err) {
         console.error("Failed to check payment status:", err);
         setIsPaid(false); 

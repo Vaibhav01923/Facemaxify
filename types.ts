@@ -85,7 +85,7 @@ export type FinalResult = {
     ymin: number;
     xmax: number;
     ymax: number;
-    width: number;
     height: number;
   };
+  analysis?: any;
 };

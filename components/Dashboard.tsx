@@ -13,7 +13,7 @@ import { FaceOverlay } from "./FaceOverlay";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
 import { Ticket, CheckCircle2, AlertTriangle, Sparkles, Lock } from "lucide-react";
-import { updateScanLandmarks } from "../services/supabase";
+import { updateScanLandmarks, updateScanAnalysis } from "../services/supabase";
 import { calculateWeightedTotalScore } from "../services/ratioCalculator";
 import { getAiRecommendations } from "../services/aiService";
 
@@ -36,8 +36,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
       return prev;
     }, { replace: true });
   };
-  const [analysis, setAnalysis] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  // Removed duplicate analysis/loading state here; it's defined later with proper logic
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
   const [pinnedMetric, setPinnedMetric] = useState<MetricResult | null>(null);
   const [localLandmarks, setLocalLandmarks] = useState<any>(null);

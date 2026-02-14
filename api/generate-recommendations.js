@@ -81,7 +81,7 @@ export default async function handler(req, res) {
       "softmax": {
         "body_fat": { 
             "assessment": "Brief check based on photo (e.g., 'Estimated 15% range')",
-            "advice": "Actionable advice (e.g., 'Lean down to 12% to reveal jawline')"
+            "advice": "Actionable advice (e.g., 'Lean down to 12% to reveal jawline'. If >18%, mark as CRITICAL/URGENT)"
         },
         "skin_grooming": { 
             "assessment": "Observation of skin quality/grooming",

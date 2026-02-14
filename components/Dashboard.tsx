@@ -297,9 +297,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                         {(pinnedMetric || hoveredMetric)!.name}
                         {pinnedMetric && <span className="text-[8px] bg-indigo-500/20 px-1.5 py-0.5 rounded-full">PINNED</span>}
                       </p>
-                      <p className="text-slate-500 text-xs">
-                        Score: {(pinnedMetric || hoveredMetric)!.score}/10
-                      </p>
+                      {(pinnedMetric || hoveredMetric)!.name !== "Jaw Frontal Angle" && (
+                        <p className="text-slate-500 text-xs">
+                          Score: {(pinnedMetric || hoveredMetric)!.score}/10
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <p className="text-center text-slate-600 text-xs">

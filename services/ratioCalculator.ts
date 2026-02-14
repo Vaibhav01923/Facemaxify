@@ -331,10 +331,15 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
 export const calculateWeightedTotalScore = (metrics: MetricResult[]): number => {
     let totalScore = 0;
     let totalWeight = 0;
+    let lowScoreCount = 0;
 
     metrics.forEach(m => {
         let weight = 1.0;
         const s = m.score;
+
+        if (s < 5.0) {
+            lowScoreCount++;
+        }
 
         if (s < 1.0) weight = 3.0;
         else if (s < 2.0) weight = 2.5;
@@ -349,6 +354,13 @@ export const calculateWeightedTotalScore = (metrics: MetricResult[]): number => 
 
     if (totalWeight === 0) return 0;
     
-    return parseFloat((totalScore / totalWeight).toFixed(1));
+    let finalScore = totalScore / totalWeight;
+
+    // Apply 15% penalty if 10 or more ratios are below 5.0
+    if (lowScoreCount >= 10) {
+        finalScore *= 0.85;
+    }
+    
+    return parseFloat(finalScore.toFixed(1));
 };
 

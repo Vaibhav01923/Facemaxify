@@ -46,10 +46,25 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     async function initHistory() {
       if (user?.id) {
         const data = await getScanHistory(user.id);
+        const urlScanId = new URLSearchParams(window.location.search).get("scanId");
+
         if (data && data.length > 0) {
-          // Default to latest scan
-          loadFromHistory(data[0]);
-          setSelectedScanId(data[0].id);
+          // If URL has a specific scan ID, try to find and load it
+          if (urlScanId) {
+            const targetScan = data.find((s: any) => s.id === urlScanId);
+            if (targetScan) {
+               loadFromHistory(targetScan);
+               setSelectedScanId(targetScan.id);
+            } else {
+               // Fallback if ID invalid
+               loadFromHistory(data[0]);
+               setSelectedScanId(data[0].id);
+            }
+          } else {
+            // Default to latest scan
+            loadFromHistory(data[0]);
+            setSelectedScanId(data[0].id);
+          }
         }
         setHistoryLoaded(true);
       } else {
@@ -133,6 +148,11 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     setFinalResult(historyResult);
     setStep(8);
     setSidebarOpen(false); // Close sidebar on mobile selection
+
+    // Update URL without reloading
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set("scanId", scan.id);
+    window.history.pushState({}, "", newUrl);
   };
 
   const startNewAnalysis = () => {

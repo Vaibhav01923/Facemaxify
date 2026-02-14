@@ -27,7 +27,8 @@ export default async function handler(req, res) {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Use gemini-pro which is generally available in v1beta
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     // Prepare inputs
     const metricsSummary = metrics.map(m => `- ${m.name}: ${m.value} (${m.score}/10) - Ideal: ${m.idealMin}-${m.idealMax}`).join('\n');

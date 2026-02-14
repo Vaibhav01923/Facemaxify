@@ -58,9 +58,18 @@ const App: React.FC = () => {
           else if (timeZone.includes('Sao_Paulo')) country = 'Brazil';
 
           // 3. Upsert User (Insert if new, Update if exists)
+          if (!user.id) {
+             console.error("CRITICAL: user.id is missing!", user);
+             return;
+          }
+          console.log("DEBUG: Upserting user with ID:", user.id);
+
           const { error: upsertError } = await supabase
             .from("users")
             .upsert({
+              // Use Clerk ID as the primary key if possible, 
+              // otherwise ensuring this field is populated fixes the "null value" error
+              id: user.id, 
               email: user.primaryEmailAddress.emailAddress,
               country: country,
               // We don't overwrite isPaid to false on upsert to avoid revoking access if logic fails, 

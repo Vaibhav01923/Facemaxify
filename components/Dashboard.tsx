@@ -16,8 +16,7 @@ import { Ticket } from "lucide-react";
 import { updateScanLandmarks } from "../services/supabase";
 import { calculateWeightedTotalScore } from "../services/ratioCalculator";
 import { getAiRecommendations } from "../services/aiService";
-// import ReactMarkdown from "react-markdown"; 
-const ReactMarkdown = React.lazy(() => import("react-markdown"));
+import Markdown from "markdown-to-jsx";
 
 interface DashboardProps {
   data?: FinalResult;
@@ -276,9 +275,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                   </div>
                 ) : (
                   <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-indigo-200 prose-li:text-slate-300">
-                    <React.Suspense fallback={<div className="h-4 bg-slate-800 rounded w-full animate-pulse"></div>}>
-                        <ReactMarkdown>{analysis}</ReactMarkdown>
-                    </React.Suspense>
+                    <Markdown>{analysis}</Markdown>
                   </div>
                 )}
               </div>

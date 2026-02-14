@@ -89,13 +89,22 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, is
         </div>
 
         {/* Score Area */}
+        {/* Score Area */}
         <div className="flex-1 text-right flex flex-col items-end justify-center">
-          <span className={`text-lg font-bold ${getScoreColor(metric.score)}`}>
-            {metric.score}<span className="text-xs text-slate-600 ml-0.5">/10</span>
-          </span>
-          <span className="text-[10px] text-slate-500 uppercase font-medium tracking-tighter">
-             Perfect: {metric.idealMin} - {metric.idealMax}
-          </span>
+          {metric.name !== "Jaw Frontal Angle" ? (
+            <>
+              <span className={`text-lg font-bold ${getScoreColor(metric.score)}`}>
+                {metric.score}<span className="text-xs text-slate-600 ml-0.5">/10</span>
+              </span>
+              <span className="text-[10px] text-slate-500 uppercase font-medium tracking-tighter">
+                Perfect: {metric.idealMin} - {metric.idealMax}
+              </span>
+            </>
+          ) : (
+            <span className="text-[10px] text-slate-500 uppercase font-medium tracking-tighter">
+               - 
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -113,8 +113,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
 
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;
-    const total = frontMetrics.reduce((acc, curr) => acc + curr.score, 0);
-    return (total / frontMetrics.length).toFixed(1);
+    return calculateWeightedTotalScore(frontMetrics);
   }, [frontMetrics]);
 
   const ALLOWED_FREE_METRICS = [

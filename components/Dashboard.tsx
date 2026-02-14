@@ -145,9 +145,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#050510]/80 border-b border-white/5 shadow-2xl shadow-black/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-lg shadow-lg shadow-indigo-500/20">
-              ✨
-            </div>
+             <img 
+              src="/favicon.png" 
+              alt="Facemaxify Logo" 
+              className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20"
+            />
             <h1 className="text-lg font-bold tracking-tight text-white">
               Facemaxify
             </h1>

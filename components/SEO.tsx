@@ -16,8 +16,8 @@ interface SEOProps {
  * Usage: <SEO title="Page Title" description="Page description" />
  */
 export const SEO: React.FC<SEOProps> = ({
-  title = "Free AI Face Analyzer: Facial Symmetry, Beauty Score & LooksMax Analysis",
-  description = "Free AI-powered facial analysis tool. Instantly analyze facial symmetry, beauty score, proportions & golden ratio. Get personalized LooksMax recommendations with mathematical precision. No signup required.",
+  title = "Free Facial Harmony Analysis : with Mathematical data tailored to your face and AI",
+  description = "Instantly calculate your facial symmetry for free based on your facial ratios calculated mathematically. Get personalized LooksMax recommendations with mathematical precision.",
   keywords = "free face analyzer, AI face rating, facial symmetry analyzer, beauty score calculator, looksmax AI, face analysis free, golden ratio face",
   image = "https://facemaxify.com/og-image.png",
   type = "website",

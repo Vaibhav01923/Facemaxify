@@ -683,3 +683,39 @@ export const DEFAULT_SIDE_RELATIVE_POSITIONS: Record<keyof SideLandmarks, Point>
     gonionTop: { x: 0.3, y: 0.65 },
     gonionBottom: { x: 0.35, y: 0.75 }
 };
+
+/**
+ * Mapping of landmark keys to their reference image paths
+ * These images help users understand where to place each landmark
+ */
+export const LANDMARK_REFERENCE_IMAGES: Record<string, string> = {
+  // Eye landmarks
+  leftEyeMedialCanthus: '/reference-images/duct_area_of_eye.png',
+  rightEyeMedialCanthus: '/reference-images/duct_area_of_eye.png',
+  leftEyeLateralCanthus: '/reference-images/outer_eyelid_corner.png',
+  rightEyeLateralCanthus: '/reference-images/outer_eyelid_corner.png',
+  leftUpperEyelidCrease: '/reference-images/foldline_on_upper_eyelid.png',
+  rightUpperEyelidCrease: '/reference-images/foldline_on_upper_eyelid.png',
+  
+  // Eyebrow landmarks
+  leftBrowArch: '/reference-images/eyebrow_arch_highest_point.png',
+  rightBrowArch: '/reference-images/eyebrow_arch_highest_point.png',
+  leftBrowHead: '/reference-images/brow_inner_start.png',
+  rightBrowHead: '/reference-images/brow_inner_start.png',
+  leftBrowInnerCorner: '/reference-images/brow_lowest_inner_point.png',
+  rightBrowInnerCorner: '/reference-images/brow_lowest_inner_point.png',
+  leftBrowTail: '/reference-images/brow_outer_tip.png',
+  rightBrowTail: '/reference-images/brow_outer_tip.png',
+  leftBrowPeak: '/reference-images/brow_topmost_peak.png',
+  rightBrowPeak: '/reference-images/brow_topmost_peak.png',
+  
+  // Jaw landmarks
+  leftBottomGonion: '/reference-images/lower_jaw_corner.png',
+  rightBottomGonion: '/reference-images/lower_jaw_corner.png',
+  leftTopGonion: '/reference-images/upper_jaw_corner.png',
+  rightTopGonion: '/reference-images/upper_jaw_corner.png',
+  
+  // Chin landmarks
+  chinLeft: '/reference-images/chin_side.png',
+  chinRight: '/reference-images/chin_side.png',
+};

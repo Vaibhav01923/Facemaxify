@@ -2,7 +2,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from './Button';
 import { Point } from '../types';
-import { FRONT_LANDMARK_DEFINITIONS, SIDE_LANDMARK_DEFINITIONS } from '../constants';
+import { FRONT_LANDMARK_DEFINITIONS, SIDE_LANDMARK_DEFINITIONS, LANDMARK_REFERENCE_IMAGES } from '../constants';
+import { ReferenceImageViewer } from './ReferenceImageViewer';
+import { Info } from 'lucide-react';
 
 interface LandmarkEditorProps {
   photoUrl: string;
@@ -23,6 +25,7 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
 }) => {
   const [landmarks, setLandmarks] = useState<Record<string, Point>>(initialLandmarks);
   const [activeKey, setActiveKey] = useState<string>(Object.keys(initialLandmarks)[0]);
+  const [showReference, setShowReference] = useState(false);
   
   const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
   const [imgDim, setImgDim] = useState({ w: 0, h: 0 });
@@ -50,6 +53,7 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   const definitions = landmarkType === 'front' ? FRONT_LANDMARK_DEFINITIONS : SIDE_LANDMARK_DEFINITIONS;
   // @ts-ignore
   const definition = definitions[activeKey];
+  const currentDef = definition; // Alias for clarity
   const activeLabel = definition ? definition.name : activeKey;
   const activeInstruction = definition ? definition.howToFind : "Adjust point location";
 
@@ -327,12 +331,27 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-slate-900 text-white overflow-hidden select-none">
-      {/* Top Bar */}
-      <div className="flex-none p-4 bg-slate-800 border-b border-slate-700 z-20 shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-lg font-bold">{title}</h2>
-            <p className="text-xs text-slate-400">Step {currentIndex + 1} of {keys.length}</p>
+        {/* Header */}
+        <div className="sticky top-0 bg-gradient-to-b from-slate-900 to-slate-900/95 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between z-50">
+          <div className="flex items-center gap-3">
+            <div>
+              <h2 className="text-xl font-bold text-white">{title}</h2>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-sm text-slate-400">
+                  Landmark {currentIndex + 1} of {keys.length}: {currentDef.name}
+                </p>
+                {/* Info Icon Button */}
+                {LANDMARK_REFERENCE_IMAGES[activeKey] && (
+                  <button
+                    onClick={() => setShowReference(true)}
+                    className="p-1 rounded-full hover:bg-indigo-500/20 transition-colors group"
+                    aria-label="View reference image"
+                  >
+                    <Info className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
           <div className="flex flex-col items-end">
             <span className="text-xs font-bold text-blue-400 mb-1">{progress}%</span>
@@ -448,6 +467,14 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
              <Button variant="secondary" onClick={() => handleZoom(1/1.5)} className="w-12 h-12 rounded-full p-0 flex items-center justify-center text-xl shadow-xl bg-slate-800 text-white border-slate-700 hover:bg-slate-700 hover:scale-105 active:scale-95 transition-transform">-</Button>
          </div>
       </div>
+
+      {/* Reference Image Viewer */}
+      <ReferenceImageViewer
+        landmarkKey={activeKey}
+        landmarkName={currentDef.name}
+        isOpen={showReference}
+        onClose={() => setShowReference(false)}
+      />
     </div>
   );
 };

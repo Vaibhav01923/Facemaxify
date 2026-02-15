@@ -118,9 +118,13 @@ export const LandingPage: React.FC = () => {
                 <span>📐 Face Shape Detector</span>
                 <ArrowRight className="w-3 h-3" />
               </a>
-              <div className="px-3 py-1.5 bg-white/5 border border-white/5 rounded-lg text-xs font-medium text-slate-500 whitespace-nowrap cursor-not-allowed">
-                ⏳ Golden Ratio
-              </div>
+              <a
+                href="/tools/golden-ratio"
+                className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 text-amber-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+              >
+                <span>✨ Golden Ratio</span>
+                <ArrowRight className="w-3 h-3" />
+              </a>
             </div>
           </div>
         </motion.div>

@@ -33,7 +33,8 @@ const TOOLS: Tool[] = [
     description: "Calculate your facial proportions and golden ratio score.",
     icon: "✨",
     category: "Face",
-    status: "Coming Soon",
+    status: "Live",
+    link: "/tools/golden-ratio",
   },
   {
     id: "face-age",

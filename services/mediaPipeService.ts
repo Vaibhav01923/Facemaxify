@@ -213,6 +213,15 @@ const deriveSideLandmarks = (mesh: NormalizedLandmark[], w: number, h: number, e
         derived.rhinion = midpoint(pro, nas);
     } catch(e) {};
 
+    // 8. Subnasale - Calculate from nostril base points
+    // MediaPipe index 2 is nose tip, not subnasale
+    // Better approach: use midpoint of left (98) and right (327) nostril base
+    try {
+        const leftNostrilBase = a(98);  // Left alar base
+        const rightNostrilBase = a(327); // Right alar base
+        derived.subnasale = midpoint(leftNostrilBase, rightNostrilBase);
+    } catch(e) {};
+
     return derived;
 };
 

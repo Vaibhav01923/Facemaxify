@@ -465,9 +465,42 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
           </div>
         )}
 
-        {/* FRONT RATIOS TAB */}
+        {/* FRONT ANALYSIS TAB */}
         {activeTab === "front" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fadeIn">
+          <div className="space-y-6">
+            {/* Leanness Bonus Message */}
+            {(() => {
+              const score = Math.round(typeof overallScore === 'string' ? parseFloat(overallScore) : overallScore * 10);
+              const percentile = calculatePercentile(score);
+              
+              // Show bonus for users in 50-80 percentile range (Top 50% to Top 20%)
+              if (percentile >= 50 && percentile <= 80) {
+                const adjustedPercentileMin = Math.max(10, percentile - 20);
+                const adjustedPercentileMax = Math.max(30, percentile - 10);
+                
+                return (
+                  <div className="bg-gradient-to-r from-emerald-900/30 to-teal-900/30 border border-emerald-500/20 rounded-xl p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">💪</div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-emerald-400 mb-1">Leanness Bonus</h3>
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                          If you're lean (<span className="font-semibold text-emerald-300">below 15% body fat</span>), your actual attractiveness percentile could be{" "}
+                          <span className="font-bold text-emerald-400">
+                            Top {adjustedPercentileMax}% to Top {adjustedPercentileMin}%
+                          </span>
+                          {" "}since facial definition significantly enhances perceived attractiveness.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+            
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fadeIn">
             <div className="lg:col-span-5 space-y-4">
               <div className="sticky top-24 bg-slate-900/50 rounded-2xl border border-white/5 p-2 shadow-2xl">
                 <div className="aspect-[3/4] relative rounded-xl overflow-hidden bg-black">

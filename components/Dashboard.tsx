@@ -619,7 +619,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           <p className="text-indigo-100/80 leading-relaxed text-sm">
                             {typeof analysis === "string"
                               ? "Legacy analysis format. Please create a new scan for updated format."
-                              : analysis.executive_summary}
+                              : analysis.executive_summary ||
+                                "Summary not available."}
                           </p>
                         </div>
 

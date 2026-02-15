@@ -152,6 +152,31 @@ export const deleteScan = async (
   }
 };
 
+export const updateSkincareAnalysis = async (
+  scanId: string,
+  userId: string,
+  analysis: any,
+): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from("scans")
+      .update({
+        skincare_analysis: analysis,
+      })
+      .eq("id", scanId)
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Supabase Update Skincare Error:", error);
+      throw error;
+    }
+    return true;
+  } catch (error) {
+    console.error("Update Skincare Exception:", error);
+    return false;
+  }
+};
+
 export const updateScanAnalysis = async (
   scanId: string,
   userId: string,

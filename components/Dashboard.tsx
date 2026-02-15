@@ -23,6 +23,7 @@ import {
 import {
   updateScanLandmarks,
   updateScanAnalysis,
+  updateSkincareAnalysis,
   calculateWebsitePercentile,
   getScanHistory,
 } from "../services/supabase";
@@ -207,17 +208,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   // Reset analysis state when switching to a different scan
   useEffect(() => {
-    // Always reset local state when scanId changes or data changes
+    // 1. General Analysis
     if (data?.analysis) {
       console.log("Using cached analysis from DB");
       setAnalysis(data.analysis);
-      setSkincareAnalysis(data.analysis.skincare || null);
       setLoadingAnalysis(false);
     } else {
-      // Clear previous analysis when switching to a scan without one
       setAnalysis(null);
+    }
+
+    // 2. Skincare Analysis (Separate Column or Legacy)
+    if (data?.skincare_analysis) {
+      console.log("Using cached skincare_analysis from DB");
+      setSkincareAnalysis(data.skincare_analysis);
+    } else if (data?.analysis?.skincare) {
+      console.log("Using legacy skincare analysis from general JSON");
+      setSkincareAnalysis(data.analysis.skincare);
+    } else {
       setSkincareAnalysis(null);
     }
+
     // Also reset any other scan-specific state if needed
     setPinnedMetric(null);
   }, [data, scanId]); // Re-run when data or scanId changes
@@ -250,18 +260,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           );
 
           if (result) {
-            // Merge with existing skincare analysis if present (to avoid race condition overwrite)
-            const currentSkincare = skincareAnalysisRef.current;
-            const completeAnalysis = {
-              ...result,
-              skincare: currentSkincare || result.skincare,
-            };
-
-            setAnalysis(completeAnalysis);
-
+            setAnalysis(result);
             // 3. Save to DB immediately if we have scanId
             if (scanId && user?.id) {
-              await updateScanAnalysis(scanId, user.id, completeAnalysis);
+              await updateScanAnalysis(scanId, user.id, result);
               console.log("Analysis saved to DB for scan:", scanId);
             } else {
               console.warn("Cannot save analysis: Missing scanId or userId", {
@@ -287,15 +289,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // State defined at top of component for access in loadAnalysis
   useEffect(() => {
     const loadSkincare = async () => {
-      // Check if skincare analysis already exists in the main analysis object or data prop
-      const currentAnalysis = analysis || data?.analysis;
+      // 1. Check if we already have it (New Column OR Legacy)
+      const existing =
+        data?.skincare_analysis ||
+        data?.analysis?.skincare ||
+        analysis?.skincare;
 
-      if (currentAnalysis?.skincare) {
-        console.log("Using cached skincare analysis");
-        setSkincareAnalysis(currentAnalysis.skincare);
-        // Ensure local state is synced if it wasn't already
-        if (!analysis && data?.analysis) {
-          setAnalysis(data.analysis);
+      if (existing) {
+        if (!skincareAnalysis) {
+          console.log("Using cached skincare analysis (late check)");
+          setSkincareAnalysis(existing);
         }
         return;
       }
@@ -376,13 +379,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         if (result) {
           setSkincareAnalysis(result);
 
-          // Save to DB by merging with existing analysis (prefer data.analysis if local state is null)
+          // Save to NEW SEPARATE COLUMN
           if (scanId && user?.id) {
-            const baseAnalysis = analysis || data?.analysis || {};
-            const updatedAnalysis = { ...baseAnalysis, skincare: result };
-            setAnalysis(updatedAnalysis); // Update local state immediately
-            await updateScanAnalysis(scanId, user.id, updatedAnalysis);
-            console.log("Skincare analysis saved to DB");
+            await updateSkincareAnalysis(scanId, user.id, result);
+            console.log("Skincare analysis saved to separate column");
           }
         }
       } catch (error) {

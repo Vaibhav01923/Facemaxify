@@ -211,6 +211,60 @@ export const LandingPage: React.FC = () => {
         </motion.div>
       </motion.main>
 
+      {/* Free Tools Strip - High Visibility */}
+      <div className="relative z-20 bg-slate-950 border-y border-white/5 py-8 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+                <span className="text-2xl">✨</span>
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-lg">
+                  Free AI Analysis
+                </h3>
+                <p className="text-slate-400 text-sm">
+                  Try our advanced tools without signing up
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+              <a
+                href="/tools/facial-shape"
+                className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-lg transition-all group whitespace-nowrap"
+              >
+                <div className="w-6 h-6 rounded-md bg-indigo-500/20 flex items-center justify-center text-xs">
+                  📐
+                </div>
+                <span className="text-slate-300 group-hover:text-white font-medium text-sm">
+                  Face Shape Detector
+                </span>
+                <ArrowRight className="w-3 h-3 text-slate-500 group-hover:text-indigo-400" />
+              </a>
+
+              <div className="flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-800/50 rounded-lg opacity-60 whitespace-nowrap cursor-not-allowed">
+                <div className="w-6 h-6 rounded-md bg-slate-800/50 flex items-center justify-center text-xs">
+                  ⏳
+                </div>
+                <span className="text-slate-500 font-medium text-sm">
+                  Golden Ratio (Soon)
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-800/50 rounded-lg opacity-60 whitespace-nowrap cursor-not-allowed hidden sm:flex">
+                <div className="w-6 h-6 rounded-md bg-slate-800/50 flex items-center justify-center text-xs">
+                  👁️
+                </div>
+                <span className="text-slate-500 font-medium text-sm">
+                  Eye Shape (Soon)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Value Proposition Section */}
       <section
         id="value-prop"

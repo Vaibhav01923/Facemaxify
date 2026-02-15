@@ -92,7 +92,11 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     try {
       // SECURITY: Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'];
-      if (!allowedTypes.includes(file.type)) {
+      const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif'];
+      const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+      
+      // Check MIME type OR file extension (HEIC files often have incorrect MIME types)
+      if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
         throw new Error('Invalid file type. Only JPEG, PNG, WebP, and HEIC images are allowed.');
       }
 

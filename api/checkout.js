@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       products, 
       customerEmail,
       metadata,
-      discountCode
+      discountCode = 'earlybird' // Default to earlybird coupon
     } = req.query;
 
     if (!products && !process.env.DODO_PAYMENTS_PRODUCT_ID) {

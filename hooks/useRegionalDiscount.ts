@@ -11,7 +11,7 @@ export const useRegionalDiscount = () => {
         isEligible: false, 
         code: '', 
         region: '',
-        link: '/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c', // Standard Product ID
+        link: '/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&discountCode=earlybird', // Standard Product ID with earlybird coupon
         price: '$5' 
     });
 

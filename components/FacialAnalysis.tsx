@@ -309,7 +309,12 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
           )}
 
           {step === 8 && finalResult && (
-            <ResultsDashboard data={finalResult} isPaid={isPaid} scanId={selectedScanId} />
+            <ResultsDashboard 
+              data={finalResult} 
+              isPaid={isPaid} 
+              scanId={selectedScanId || undefined} 
+              onNewScan={startNewAnalysis}
+            />
           )}
 
           {/* Loading Overlay for internal transitions */}

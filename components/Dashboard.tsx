@@ -22,9 +22,10 @@ interface DashboardProps {
   data?: FinalResult;
   isPaid?: boolean;
   scanId?: string;
+  onNewScan?: () => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scanId }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scanId, onNewScan }) => {
   const { user } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (searchParams.get("tab") as "overview" | "front" | "side" | "skincare") || "front";
@@ -205,6 +206,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
 
   useEffect(() => {
     const loadSkincare = async () => {
+        // Check if skincare analysis already exists in the main analysis object
+        if (analysis?.skincare) {
+            console.log("Using cached skincare analysis");
+            setSkincareAnalysis(analysis.skincare);
+            return;
+        }
+
         // Only run if tab is active and not loaded
         if (activeTab !== 'skincare' || skincareAnalysis || loadingSkincare || !data || !user) return;
 
@@ -237,7 +245,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
 
             if (result) {
                 setSkincareAnalysis(result);
-                // Optionally save to DB if we add a column for it
+                
+                // Save to DB by merging with existing analysis
+                if (scanId && user?.id) {
+                    const updatedAnalysis = { ...analysis, skincare: result };
+                    setAnalysis(updatedAnalysis); // Update local state immediately
+                    await updateScanAnalysis(scanId, user.id, updatedAnalysis);
+                    console.log("Skincare analysis saved to DB");
+                }
             }
         } catch (error) {
             console.error("Failed to load skincare:", error);
@@ -309,6 +324,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                 )}
               </div>
             </div>
+            {onNewScan && (
+              <button 
+                onClick={onNewScan}
+                className="ml-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-colors shadow-lg shadow-indigo-500/20 flex items-center gap-2"
+              >
+                <span>➕</span> <span className="hidden sm:inline">New Scan</span>
+              </button>
+            )}
           </div>
         </div>
 

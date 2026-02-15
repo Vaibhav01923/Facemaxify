@@ -259,6 +259,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
       frontPhotoUrl: scan.front_photo_url,
       frontLandmarks: scan.front_landmarks,
       analysis: scan.analysis, // Include cached analysis from DB
+      skincare_analysis: scan.skincare_analysis, // Include cached skincare from DB
     };
     setSelectedScanId(scan.id);
     setFinalResult(historyResult);

@@ -1,4 +1,3 @@
-
 export type Point = { x: number; y: number };
 
 export interface LandmarkDefinition {
@@ -65,8 +64,6 @@ export type FrontLandmarks = {
   nasion: Point;
 };
 
-
-
 export interface AppState {
   step: number;
   gender: string | null;
@@ -88,4 +85,5 @@ export type FinalResult = {
     height: number;
   };
   analysis?: any;
+  skincare_analysis?: any;
 };

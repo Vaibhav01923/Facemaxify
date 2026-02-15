@@ -86,7 +86,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
   };
 
   // PHASE A: NORMALIZATION PIPELINE
-  const handleFrontPhotoUpload = async (file: File) => {
+  const handleFrontPhotoUpload = async (file: File, mode: 'full' | 'skincare' = 'full') => {
     setLoading(true);
     setError(null);
     try {
@@ -134,8 +134,40 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
         setFrontLandmarks(finalLandmarks);
         setFrontBox(finalBox);
 
-        // Move to editing step
-        setStep(4);
+        if (mode === 'skincare') {
+            // SKIP EDITOR: Auto-save and jump to results
+             const result: FinalResult = {
+                frontPhotoUrl: standardized,
+                frontLandmarks: finalLandmarks as FrontLandmarks,
+                gender: "unknown",
+                race: "unknown",
+              };
+              setFinalResult(result);
+              setStep(8); // Jump to results
+
+              // AUTO-SAVE
+              if (user?.id) {
+                const metrics = calculateFrontRatios(finalLandmarks as FrontLandmarks);
+                const score = metrics.length > 0 
+                  ? calculateWeightedTotalScore(metrics)
+                  : 0;
+                
+                await saveScanResult(result, score, user.id);
+                await refreshHistory();
+                
+                // Force switch to skincare tab
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set("tab", "skincare");
+                // Wait for history refresh to get ID? Ideally, saveScanResult returns ID.
+                // For now, refreshHistory will reload list, we might need to select latest.
+                // But Dashboard will load latest if scanId param is missing or handle updates.
+                // We'll update URL to show skincare tab.
+                window.history.pushState({}, "", newUrl);
+              }
+        } else {
+            // Move to editing step
+            setStep(4);
+        }
         setLoading(false);
       };
       reader.readAsDataURL(file);
@@ -277,20 +309,37 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
                   </div>
                 )}
 
-                <label className="block w-full cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-indigo-500/10 active:scale-[0.98]">
-                  <span>{loading ? "Processing..." : "Upload Front Photo"}</span>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    disabled={loading}
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        handleFrontPhotoUpload(e.target.files[0]);
-                      }
-                    }}
-                  />
-                </label>
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                  <label className="flex-1 cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-center text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-indigo-500/10 active:scale-[0.98]">
+                    <span>{loading ? "Processing..." : "Full Facial Analysis"}</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      disabled={loading}
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          handleFrontPhotoUpload(e.target.files[0], 'full');
+                        }
+                      }}
+                    />
+                  </label>
+
+                  <label className="flex-1 cursor-pointer bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/50 text-center text-pink-200 font-bold py-4 px-6 rounded-2xl transition-all active:scale-[0.98]">
+                    <span>{loading ? "Processing..." : "✨ Skincare Only Scan"}</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      disabled={loading}
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          handleFrontPhotoUpload(e.target.files[0], 'skincare');
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
             </div>
           )}

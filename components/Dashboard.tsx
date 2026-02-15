@@ -149,15 +149,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
 
   // Reset analysis state when switching to a different scan
   useEffect(() => {
+    // Always reset local state when scanId changes or data changes
     if (data?.analysis) {
       console.log("Using cached analysis from DB");
       setAnalysis(data.analysis);
+      setSkincareAnalysis(data.analysis.skincare || null);
       setLoadingAnalysis(false);
     } else {
       // Clear previous analysis when switching to a scan without one
       setAnalysis(null);
+      setSkincareAnalysis(null);
     }
-  }, [data?.analysis, scanId]); // Re-run when scanId or analysis changes
+    // Also reset any other scan-specific state if needed
+    setPinnedMetric(null);
+  }, [data, scanId]); // Re-run when data or scanId changes
 
   useEffect(() => {
     const loadAnalysis = async () => {

@@ -466,10 +466,6 @@ export const LandingPage: React.FC = () => {
                 📸 Snippet from F**eIQ's website
               </span>
               <br />
-              <span className="text-xs text-slate-600 mt-2 inline-block">
-                (their code was exposed and not secure, so we could replicate
-                their exact formulas and algorithms)
-              </span>
             </p>
           </div>
         </div>

@@ -40,6 +40,7 @@ interface DashboardProps {
   onNewScan?: () => void;
   scans?: any[]; // Full history for timeline
   onUploadSkincare?: (file: File) => void;
+  onRefresh?: () => void;
 }
 
 import { SkincareTimeline } from "./SkincareTimeline";
@@ -51,6 +52,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNewScan,
   scans = [],
   onUploadSkincare,
+  onRefresh,
 }) => {
   const { user } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -265,6 +267,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             if (scanId && user?.id) {
               await updateScanAnalysis(scanId, user.id, result);
               console.log("Analysis saved to DB for scan:", scanId);
+              onRefresh?.();
             } else {
               console.warn("Cannot save analysis: Missing scanId or userId", {
                 scanId,
@@ -383,6 +386,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           if (scanId && user?.id) {
             await updateSkincareAnalysis(scanId, user.id, result);
             console.log("Skincare analysis saved to separate column");
+            onRefresh?.();
           }
         }
       } catch (error) {

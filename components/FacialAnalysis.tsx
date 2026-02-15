@@ -326,6 +326,8 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
               onNewScan={startNewAnalysis}
               selectedScanId={selectedScanId || undefined}
               isPaid={isPaid}
+              history={historyData}
+              onRefresh={refreshHistory}
             />
           </div>
         </>
@@ -416,6 +418,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
               onUploadSkincare={(file) =>
                 handleFrontPhotoUpload(file, "skincare")
               }
+              onRefresh={refreshHistory}
             />
           )}
 

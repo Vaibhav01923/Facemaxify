@@ -362,8 +362,10 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
               />
             </div>
           </div>
-        </div>
+         </div>
 
+      {/* Control Bar */}
+      <div className="flex-none p-4 bg-slate-800 border-b border-slate-700 z-20 shadow-lg">
         <div className="flex items-center justify-between bg-slate-700/50 p-3 rounded-lg border border-slate-600 backdrop-blur-sm">
            <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold shadow-lg ring-2 ring-blue-500/30">
@@ -380,7 +382,8 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
                   {currentIndex === keys.length - 1 ? "Finish" : "Next Point"}
               </Button>
            </div>
-        </div>
+            </div>
+         </div>
       </div>
 
       {/* Main Viewport */}

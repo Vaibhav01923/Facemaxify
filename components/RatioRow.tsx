@@ -91,7 +91,7 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, is
         {/* Score Area */}
         {/* Score Area */}
         <div className="flex-1 text-right flex flex-col items-end justify-center">
-          {metric.name !== "Jaw Frontal Angle" ? (
+          {metric.name !== "Jaw Frontal Angle" || !isLocked ? (
             <>
               <span className={`text-lg font-bold ${getScoreColor(metric.score)}`}>
                 {metric.score}<span className="text-xs text-slate-600 ml-0.5">/10</span>
@@ -110,3 +110,4 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, is
     </div>
   );
 };
+```

@@ -14,7 +14,6 @@ import { LandmarkEditor } from "./LandmarkEditor";
 import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
 import { Ticket, CheckCircle2, AlertTriangle, Sparkles, Lock } from "lucide-react";
 import { updateScanLandmarks, updateScanAnalysis } from "../services/supabase";
-import { calculateWeightedTotalScore } from "../services/ratioCalculator";
 import { getAiRecommendations } from "../services/aiService";
 
 interface DashboardProps {

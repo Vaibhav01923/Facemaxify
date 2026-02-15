@@ -192,3 +192,31 @@ export const updateScanAnalysis = async (
     return false;
   }
 };
+
+export const updateScanLandmarks = async (
+  scanId: string,
+  userId: string,
+  landmarks: any,
+  overallScore: number
+): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from("scans")
+      .update({
+        front_landmarks: landmarks,
+        overall_score: overallScore,
+      })
+      .eq("id", scanId)
+      .eq("user_id", userId);
+
+    if (error) {
+        console.error("Update Landmarks Error:", error);
+        throw error;
+    }
+    console.log("Landmarks updated successfully for scan:", scanId);
+    return true;
+  } catch (error) {
+    console.error("Update Landmarks Exception:", error);
+    return false;
+  }
+};

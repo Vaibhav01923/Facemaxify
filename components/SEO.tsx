@@ -8,6 +8,7 @@ interface SEOProps {
   image?: string;
   type?: string;
   canonicalUrl?: string;
+  schema?: Record<string, any> | Record<string, any>[];
 }
 
 /**
@@ -21,6 +22,7 @@ export const SEO: React.FC<SEOProps> = ({
   image = "https://facemaxify.com/og-image.png",
   type = "website",
   canonicalUrl,
+  schema,
 }) => {
   const location = useLocation();
   const baseUrl = "https://facemaxify.com";
@@ -75,9 +77,33 @@ export const SEO: React.FC<SEOProps> = ({
       document.head.appendChild(canonicalLink);
     }
     canonicalLink.href = currentUrl;
-  }, [title, description, keywords, image, type, currentUrl]);
 
-  return null; // This component doesn't render anything
+    // Handle Schema.org JSON-LD
+    if (schema) {
+      let script = document.querySelector('script[id="schema-json-ld"]');
+      if (!script) {
+        script = document.createElement("script");
+        script.id = "schema-json-ld";
+        script.setAttribute("type", "application/ld+json");
+        document.head.appendChild(script);
+      }
+
+      const schemaData = Array.isArray(schema)
+        ? schema.map((s) => JSON.stringify(s)).join(",")
+        : JSON.stringify(schema);
+
+      script.textContent = Array.isArray(schema)
+        ? `[${schemaData}]`
+        : schemaData;
+
+      return () => {
+        // Optional: remove schema on cleanup, or let next page update it
+        // script?.remove();
+      };
+    }
+  }, [title, description, keywords, image, type, currentUrl, schema]);
+
+  return null;
 };
 
 // Pre-configured SEO for common pages

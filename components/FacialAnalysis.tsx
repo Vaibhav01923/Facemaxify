@@ -88,6 +88,22 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
       const data = await getScanHistory(user.id);
       if (data) {
         setHistoryData(data);
+
+        // SYNC CURRENT VIEW: Update finalResult if we are currently viewing a scan
+        if (selectedScanId) {
+          const updatedScan = data.find((s) => s.id === selectedScanId);
+          if (updatedScan) {
+            const updatedResult: FinalResult = {
+              gender: updatedScan.gender,
+              race: updatedScan.race,
+              frontPhotoUrl: updatedScan.front_photo_url,
+              frontLandmarks: updatedScan.front_landmarks,
+              analysis: updatedScan.analysis,
+              skincare_analysis: updatedScan.skincare_analysis,
+            };
+            setFinalResult(updatedResult);
+          }
+        }
       }
     }
   };

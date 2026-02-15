@@ -307,6 +307,26 @@ export const detectLandmarksInstant = async (
                         }
                     });
 
+                    // 1.5. Calculate nasalBase for front view (subnasale equivalent)
+                    // MediaPipe index 290 is not accurate for subnasale
+                    // Better: use midpoint of left (98) and right (327) nostril base
+                    if (type === 'front') {
+                        try {
+                            const leftNostrilBase = mesh[98];
+                            const rightNostrilBase = mesh[327];
+                            if (leftNostrilBase && rightNostrilBase) {
+                                const midX = (leftNostrilBase.x + rightNostrilBase.x) / 2;
+                                const midY = (leftNostrilBase.y + rightNostrilBase.y) / 2;
+                                landmarks.nasalBase = {
+                                    x: midX * 1000,
+                                    y: midY * 1000
+                                };
+                            }
+                        } catch(e) {
+                            console.warn("Failed to calculate nasalBase:", e);
+                        }
+                    }
+
                     // 2. Geometric Derivation (Side Profile Enhancements)
                     if (type === 'side') {
                         const pixelLandmarks: Record<string, Point> = {};

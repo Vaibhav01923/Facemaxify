@@ -384,7 +384,6 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
            </div>
             </div>
          </div>
-      </div>
 
       {/* Main Viewport */}
       <div className="flex-1 relative bg-black overflow-hidden cursor-move">

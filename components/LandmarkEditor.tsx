@@ -344,10 +344,11 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
                 {LANDMARK_REFERENCE_IMAGES[activeKey] && (
                   <button
                     onClick={() => setShowReference(true)}
-                    className="p-1 rounded-full hover:bg-indigo-500/20 transition-colors group"
+                    className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-full transition-colors group ml-2"
                     aria-label="View reference image"
                   >
-                    <Info className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300" />
+                    <Info className="w-3.5 h-3.5 text-indigo-400" />
+                    <span className="text-xs font-medium text-indigo-300 group-hover:text-indigo-200">See Example</span>
                   </button>
                 )}
               </div>

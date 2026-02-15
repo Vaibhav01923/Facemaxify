@@ -243,12 +243,15 @@ const SkincareResults: React.FC<{ analysis: any }> = ({ analysis }) => {
                     <span>☀️</span> Morning Routine
                   </h3>
                   <div className="bg-slate-900/50 rounded-2xl border border-white/5 p-6 space-y-4">
-                    {analysis.routine.morning?.map((step: string, i: number) => (
+                    {analysis.routine.morning?.map((step: any, i: number) => (
                       <div key={i} className="flex gap-4">
                         <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold border border-amber-500/20">
                           {i + 1}
                         </span>
-                        <p className="text-slate-300 text-sm">{step}</p>
+                        <div>
+                            <p className="text-white font-bold text-sm">{step.step}: <span className="text-amber-300">{step.product_type}</span></p>
+                            <p className="text-slate-400 text-xs mt-1">{step.reason}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -260,12 +263,15 @@ const SkincareResults: React.FC<{ analysis: any }> = ({ analysis }) => {
                     <span>🌙</span> Evening Routine
                   </h3>
                   <div className="bg-slate-900/50 rounded-2xl border border-white/5 p-6 space-y-4">
-                    {analysis.routine.evening?.map((step: string, i: number) => (
+                    {analysis.routine.evening?.map((step: any, i: number) => (
                       <div key={i} className="flex gap-4">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-bold border border-indigo-500/20">
+                         <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-bold border border-indigo-500/20">
                           {i + 1}
                         </span>
-                        <p className="text-slate-300 text-sm">{step}</p>
+                        <div>
+                            <p className="text-white font-bold text-sm">{step.step}: <span className="text-indigo-300">{step.product_type}</span></p>
+                            <p className="text-slate-400 text-xs mt-1">{step.reason}</p>
+                        </div>
                       </div>
                     ))}
                   </div>

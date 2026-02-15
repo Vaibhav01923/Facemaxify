@@ -41,20 +41,52 @@ export const Navbar: React.FC = () => {
               </button>
 
               {/* Dropdown */}
-              <div className="absolute left-0 mt-2 w-64 bg-slate-900 border border-slate-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform origin-top-left z-50">
+              <div className="absolute left-0 mt-2 w-72 bg-slate-900 border border-slate-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform origin-top-left z-50 overflow-hidden">
                 <div className="py-2">
+                  <div className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Popular Tools
+                  </div>
                   <a
                     href="/tools/facial-shape"
-                    className="block px-4 py-3 hover:bg-slate-800 transition-colors"
+                    className="flex items-start gap-3 px-4 py-3 hover:bg-slate-800 transition-colors group/item block"
                   >
-                    <div className="text-white font-medium mb-1">
-                      Face Shape Detector
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-lg mt-0.5 group-hover/item:bg-indigo-500/20 transition-colors flex-shrink-0">
+                      📐
                     </div>
-                    <div className="text-xs text-slate-400">
-                      Identify your face shape instantly
+                    <div>
+                      <div className="text-white font-medium mb-0.5 group-hover/item:text-indigo-300 transition-colors">
+                        Face Shape Detector
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        Identify your face shape instantly
+                      </div>
                     </div>
                   </a>
-                  {/* Add more tools here later */}
+
+                  <div className="h-px bg-slate-800 my-2"></div>
+
+                  <a
+                    href="/tools"
+                    className="flex items-center justify-between px-4 py-3 hover:bg-indigo-500/10 transition-colors group/all block"
+                  >
+                    <span className="text-sm font-medium text-indigo-400 group-hover/all:text-indigo-300">
+                      View All 20+ Tools
+                    </span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-indigo-400 group-hover/all:translate-x-1 transition-transform"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </a>
                 </div>
               </div>
             </div>

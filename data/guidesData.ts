@@ -208,5 +208,24 @@ export const guides: Guide[] = [
         ]
       }
     ]
+  },
+  {
+    id: "steroid-cycle",
+    title: "Your First Steroid Cycle",
+    description: "A complete harm-reduction guide to your first cycle. Protocols, bloodwork, and PCT.",
+    category: "Performance",
+    readTime: "Coming Soon",
+    thumbnail: "https://images.unsplash.com/photo-1579126038374-6064e9370f0f?auto=format&fit=crop&q=80&w=800",
+    sections: [
+      {
+        title: "Coming Soon",
+        steps: [
+          {
+            title: "Under Construction",
+            content: "This guide is currently being written by our experts. Check back later."
+          }
+        ]
+      }
+    ]
   }
 ];

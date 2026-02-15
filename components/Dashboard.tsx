@@ -14,8 +14,8 @@ import { FaceOverlay } from "./FaceOverlay";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
 import { Ticket, CheckCircle2, AlertTriangle, Sparkles, Lock } from "lucide-react";
-import { updateScanLandmarks, updateScanAnalysis, calculateWebsitePercentile } from "../services/supabase";
-import { getAiRecommendations } from "../services/aiService";
+import { updateScanLandmarks, updateScanAnalysis, calculateWebsitePercentile, getScanHistory } from "../services/supabase";
+import { getAiRecommendations, generateSkincareRoutine } from "../services/aiService";
 import { calculatePercentile, getPercentileText } from "../utils/percentile";
 
 interface DashboardProps {
@@ -27,10 +27,10 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scanId }) => {
   const { user } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = (searchParams.get("tab") as "overview" | "front" | "side") || "front";
-  const [activeTab, setActiveTabState] = useState<"overview" | "front" | "side">(initialTab);
+  const initialTab = (searchParams.get("tab") as "overview" | "front" | "side" | "skincare") || "front";
+  const [activeTab, setActiveTabState] = useState<"overview" | "front" | "side" | "skincare">(initialTab);
 
-  const setActiveTab = (tab: "overview" | "front" | "side") => {
+  const setActiveTab = (tab: "overview" | "front" | "side" | "skincare") => {
     setActiveTabState(tab);
     setSearchParams((prev) => {
       prev.set("tab", tab);
@@ -197,6 +197,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
     loadAnalysis();
   }, [data, frontMetrics, analysis, loadingAnalysis, scanId, user?.id]);
 
+  // ---------------------------------------------------------------------------
+  // SKINCARE ANALYSIS LOGIC
+  // ---------------------------------------------------------------------------
+  const [skincareAnalysis, setSkincareAnalysis] = useState<any>(null);
+  const [loadingSkincare, setLoadingSkincare] = useState(false);
+
+  useEffect(() => {
+    const loadSkincare = async () => {
+        // Only run if tab is active and not loaded
+        if (activeTab !== 'skincare' || skincareAnalysis || loadingSkincare || !data || !user) return;
+
+        setLoadingSkincare(true);
+        console.log("Generating Skincare Analysis...");
+
+        try {
+            // 1. Get History for comparison
+            const history = await getScanHistory(user.id);
+            
+            // Find previous scan (excluding current)
+            const currentScanIndex = history.findIndex((scan: any) => scan.id === scanId);
+            const previousScan = currentScanIndex !== -1 && currentScanIndex < history.length - 1 
+                ? history[currentScanIndex + 1] 
+                : null;
+            
+            let daysSinceLastScan = null;
+            if (previousScan) {
+                const currentTime = new Date().getTime(); // Use current time or scan time if available
+                const prevTime = new Date(previousScan.created_at).getTime();
+                daysSinceLastScan = Math.floor((currentTime - prevTime) / (1000 * 60 * 60 * 24));
+            }
+
+            // 2. Generate Routine
+            const result = await generateSkincareRoutine(
+                data.frontPhotoUrl,
+                previousScan?.front_photo_url || null,
+                daysSinceLastScan
+            );
+
+            if (result) {
+                setSkincareAnalysis(result);
+                // Optionally save to DB if we add a column for it
+            }
+        } catch (error) {
+            console.error("Failed to load skincare:", error);
+        } finally {
+            setLoadingSkincare(false);
+        }
+    };
+
+    loadSkincare();
+  }, [activeTab, skincareAnalysis, loadingSkincare, data, user, scanId]);
+
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;
     return calculateWeightedTotalScore(frontMetrics);
@@ -263,7 +315,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-8 border-b border-transparent">
-            {["overview", "front", "side"].map((tab) => (
+            {["overview", "front", "side", "skincare"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
@@ -584,6 +636,164 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
             </div>
           </div>
         )}
+        {/* SKINCARE TAB (AI ANALYSIS + ROUTINE) */}
+        {activeTab === "skincare" && (
+          <div className="space-y-8 animate-fadeIn">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <span className="bg-gradient-to-br from-cyan-500 to-blue-600 p-2 rounded-xl text-white shadow-lg shadow-cyan-500/20">
+                  <Sparkles className="w-5 h-5" />
+                </span>
+                Softmaxxing Protocol
+              </h2>
+              {loadingSkincare && (
+                <span className="text-sm text-cyan-400 animate-pulse flex items-center gap-2">
+                   Generating dedicated routine...
+                </span>
+              )}
+            </div>
+
+            {/* Loading State */}
+            {loadingSkincare ? (
+                <div className="space-y-6">
+                   <div className="h-40 bg-slate-900/50 rounded-2xl animate-pulse border border-white/5"></div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="h-64 bg-slate-900/50 rounded-2xl animate-pulse delay-100 border border-white/5"></div>
+                      <div className="h-64 bg-slate-900/50 rounded-2xl animate-pulse delay-200 border border-white/5"></div>
+                   </div>
+                </div>
+            ) : skincareAnalysis ? (
+                <div className="space-y-8">
+                    {/* 1. Progress / Status Card */}
+                    <div className={`p-6 rounded-2xl border ${
+                        skincareAnalysis.progress_report?.status === 'improved' ? 'bg-emerald-950/30 border-emerald-500/30' :
+                        skincareAnalysis.progress_report?.status === 'worsened' ? 'bg-rose-950/30 border-rose-500/30' :
+                        'bg-slate-900/50 border-white/10'
+                    }`}>
+                        <div className="flex items-start gap-4">
+                           <div className={`p-3 rounded-xl ${
+                                skincareAnalysis.progress_report?.status === 'improved' ? 'bg-emerald-500/20 text-emerald-400' :
+                                skincareAnalysis.progress_report?.status === 'worsened' ? 'bg-rose-500/20 text-rose-400' :
+                                'bg-indigo-500/20 text-indigo-400'
+                           }`}>
+                               {skincareAnalysis.progress_report?.status === 'improved' ? <CheckCircle2 className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
+                           </div>
+                           <div>
+                               <h3 className="text-lg font-bold text-white mb-2">
+                                   Status: {skincareAnalysis.progress_report?.status?.replace('_', ' ').toUpperCase()}
+                               </h3>
+                               <p className="text-slate-300 leading-relaxed">
+                                   {skincareAnalysis.progress_report?.summary}
+                               </p>
+                           </div>
+                        </div>
+                    </div>
+
+                    {/* 2. Skin Analysis Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
+                            <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Skin Type</h4>
+                            <p className="text-xl font-bold text-white mb-1">{skincareAnalysis.analysis?.skin_type || "Unknown"}</p>
+                            <p className="text-xs text-slate-500">Based on visual analysis</p>
+                        </div>
+                        <div className="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
+                            <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Main Concerns</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {skincareAnalysis.analysis?.concerns?.map((c: string) => (
+                                    <span key={c} className="px-3 py-1 bg-red-500/10 text-red-400 text-xs font-bold rounded-lg border border-red-500/20">
+                                        {c}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
+                            <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Severity Score</h4>
+                            <div className="flex items-end gap-2">
+                                <span className={`text-4xl font-black ${
+                                    (skincareAnalysis.analysis?.severity_score || 0) > 6 ? 'text-red-500' : 'text-emerald-500'
+                                }`}>
+                                    {skincareAnalysis.analysis?.severity_score || "?"}
+                                </span>
+                                <span className="text-slate-500 mb-2">/ 10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 3. The Routine */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Morning Routine */}
+                        <div className="bg-gradient-to-b from-amber-500/5 to-transparent rounded-3xl p-8 border border-amber-500/10">
+                             <div className="flex items-center gap-3 mb-8">
+                                 <div className="p-2 bg-amber-500/20 rounded-lg text-amber-400">☀️</div>
+                                 <h3 className="text-xl font-bold text-amber-100">Morning Protocol</h3>
+                             </div>
+                             
+                             <div className="space-y-6 relative">
+                                 {/* Connector Line */}
+                                 <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-amber-500/20"></div>
+
+                                 {skincareAnalysis.routine?.morning?.map((step: any, idx: number) => (
+                                     <div key={idx} className="relative pl-12">
+                                         <div className="absolute left-0 top-1 w-10 h-10 bg-[#050510] border border-amber-500/30 rounded-full flex items-center justify-center text-amber-500 font-bold text-sm z-10">
+                                             {idx + 1}
+                                         </div>
+                                         <h4 className="text-white font-bold mb-1">{step.step}: <span className="text-amber-300">{step.product_type}</span></h4>
+                                         <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
+                                             {step.reason}
+                                         </p>
+                                     </div>
+                                 ))}
+                             </div>
+                        </div>
+
+                        {/* Evening Routine */}
+                        <div className="bg-gradient-to-b from-indigo-500/5 to-transparent rounded-3xl p-8 border border-indigo-500/10">
+                             <div className="flex items-center gap-3 mb-8">
+                                 <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">🌙</div>
+                                 <h3 className="text-xl font-bold text-indigo-100">Evening Protocol</h3>
+                             </div>
+                             
+                             <div className="space-y-6 relative">
+                                 {/* Connector Line */}
+                                 <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-indigo-500/20"></div>
+
+                                 {skincareAnalysis.routine?.evening?.map((step: any, idx: number) => (
+                                     <div key={idx} className="relative pl-12">
+                                         <div className="absolute left-0 top-1 w-10 h-10 bg-[#050510] border border-indigo-500/30 rounded-full flex items-center justify-center text-indigo-500 font-bold text-sm z-10">
+                                             {idx + 1}
+                                         </div>
+                                         <h4 className="text-white font-bold mb-1">{step.step}: <span className="text-indigo-300">{step.product_type}</span></h4>
+                                         <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
+                                             {step.reason}
+                                         </p>
+                                     </div>
+                                 ))}
+                             </div>
+                        </div>
+                    </div>
+
+                    {/* 4. Lifestyle Tips */}
+                    <div className="bg-slate-900/50 rounded-2xl p-6 border border-white/5">
+                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Lifestyle Optimizations</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {skincareAnalysis.lifestyle_tips?.map((tip: string, idx: number) => (
+                                <div key={idx} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                                    <span className="text-sm text-slate-300 font-medium">{tip}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="text-center py-20 bg-slate-900/30 rounded-3xl border border-white/5 border-dashed">
+                    <p className="text-slate-400">Unable to generate analysis. Please try refreshing.</p>
+                </div>
+            )}
+        </div>
+        )}
+
       </div>
 
       {/* Landmark Editor Overlay - Single Point Mode */}

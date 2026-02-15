@@ -129,14 +129,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
   const [analysis, setAnalysis] = useState<any>(null); // Now expecting JSON object
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
+  // Reset analysis state when switching to a different scan
+  useEffect(() => {
+    if (data?.analysis) {
+      console.log("Using cached analysis from DB");
+      setAnalysis(data.analysis);
+      setLoadingAnalysis(false);
+    } else {
+      // Clear previous analysis when switching to a scan without one
+      setAnalysis(null);
+    }
+  }, [data?.analysis, scanId]); // Re-run when scanId or analysis changes
+
   useEffect(() => {
     const loadAnalysis = async () => {
-       // 1. Check if we already have it in the data prop (from parent/DB)
-       if (data && data.analysis) {
-          console.log("Using cached analysis from DB");
-          setAnalysis(data.analysis);
-          return;
-       }
+       // Skip if we already have analysis set (from the effect above)
+       if (analysis) return;
+       
+       // Skip if data already has analysis (handled by effect above)
+       if (data?.analysis) return;
 
        // 2. If not, and we have metrics, generate it
        // Only run if we haven't analyzing, don't have analysis, and not loading
@@ -158,8 +169,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
                     console.warn("Cannot save analysis: Missing scanId or userId", { scanId, userId: user?.id });
                 }
              }
-          } catch (e) {
-             console.error("Failed to load analysis", e);
+          } catch (error) {
+             console.error("Failed to generate AI analysis:", error);
           } finally {
              setLoadingAnalysis(false);
           }
@@ -167,7 +178,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
     };
 
     loadAnalysis();
-  }, [data, frontMetrics, scanId]); // Depend on scanId and data
+  }, [data, frontMetrics, analysis, loadingAnalysis, scanId, user?.id]);
 
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;

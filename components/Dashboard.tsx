@@ -912,6 +912,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <SkincareTimeline
                 scans={scans}
                 currentScanId={scanId}
+                analysis={skincareAnalysis}
                 onUploadCheckIn={onUploadSkincare || (() => {})}
                 loading={loadingSkincare}
               />

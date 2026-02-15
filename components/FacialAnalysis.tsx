@@ -38,28 +38,29 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
 
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [selectedScanId, setSelectedScanId] = useState<string | null>(null);
+  const [historyData, setHistoryData] = useState<any[]>([]);
 
-  // Initialize MediaPipe and fetch history on mount
+  // Initialize MediaPipe  // Load history on mount
   React.useEffect(() => {
     initializeMediaPipe();
-    
-    async function initHistory() {
-      if (user?.id) {
+    const initHistory = async () => {
+      if (user?.id && historyData.length === 0) {
         const data = await getScanHistory(user.id);
-        const urlScanId = new URLSearchParams(window.location.search).get("scanId");
-
         if (data && data.length > 0) {
-          // If URL has a specific scan ID, try to find and load it
-          if (urlScanId) {
-            const targetScan = data.find((s: any) => s.id === urlScanId);
-            if (targetScan) {
-               loadFromHistory(targetScan);
-               setSelectedScanId(targetScan.id);
-            } else {
-               // Fallback if ID invalid
-               loadFromHistory(data[0]);
-               setSelectedScanId(data[0].id);
-            }
+          setHistoryData(data);
+          
+          // Auto-load based on URL param
+          const params = new URLSearchParams(window.location.search);
+          const scanId = params.get('scanId');
+          if (scanId) {
+             const scan = data.find(s => s.id === scanId);
+             if (scan) {
+                loadFromHistory(scan);
+                setSelectedScanId(scan.id);
+             } else {
+                loadFromHistory(data[0]);
+                setSelectedScanId(data[0].id);
+             }
           } else {
             // Default to latest scan
             loadFromHistory(data[0]);
@@ -73,6 +74,16 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     }
     initHistory();
   }, [user]);
+
+  // Function to refresh history after saving
+  const refreshHistory = async () => {
+    if (user?.id) {
+      const data = await getScanHistory(user.id);
+      if (data) {
+        setHistoryData(data);
+      }
+    }
+  };
 
   // PHASE A: NORMALIZATION PIPELINE
   const handleFrontPhotoUpload = async (file: File) => {
@@ -151,7 +162,10 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
           ? calculateWeightedTotalScore(metrics)
           : 0;
         
-        saveScanResult(result, score, user.id);
+        saveScanResult(result, score, user.id).then(() => {
+          // Refresh history after save
+          refreshHistory();
+        });
       }
     }
   };

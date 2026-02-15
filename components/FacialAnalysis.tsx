@@ -309,8 +309,8 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
-                  <label className="flex-1 cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-center text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-indigo-500/10 active:scale-[0.98]">
+                <div className="flex justify-center w-full">
+                  <label className="cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-center text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-lg shadow-indigo-500/10 active:scale-[0.98] min-w-[200px]">
                     <span>{loading ? "Processing..." : "Full Facial Analysis"}</span>
                     <input
                       type="file"
@@ -320,21 +320,6 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
                       onChange={(e) => {
                         if (e.target.files?.[0]) {
                           handleFrontPhotoUpload(e.target.files[0], 'full');
-                        }
-                      }}
-                    />
-                  </label>
-
-                  <label className="flex-1 cursor-pointer bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/50 text-center text-pink-200 font-bold py-4 px-6 rounded-2xl transition-all active:scale-[0.98]">
-                    <span>{loading ? "Processing..." : "✨ Skincare Only Scan"}</span>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      disabled={loading}
-                      onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                          handleFrontPhotoUpload(e.target.files[0], 'skincare');
                         }
                       }}
                     />

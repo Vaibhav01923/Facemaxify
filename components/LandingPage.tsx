@@ -95,8 +95,35 @@ export const LandingPage: React.FC = () => {
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative z-10 flex flex-col justify-center items-center min-h-[80vh] px-6 text-center"
+        className="relative z-10 flex flex-col justify-center items-center min-h-[80vh] px-6 text-center pt-12"
       >
+        {/* Top Tools Strip */}
+        <motion.div variants={item} className="w-full max-w-4xl mx-auto mb-16">
+          <div className="bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:border-indigo-500/30 transition-colors">
+            <div className="flex items-center gap-3">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              <p className="text-sm font-medium text-slate-300">
+                New: Free AI Tools Available
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide max-w-full">
+              <a
+                href="/tools/facial-shape"
+                className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 text-indigo-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+              >
+                <span>📐 Face Shape Detector</span>
+                <ArrowRight className="w-3 h-3" />
+              </a>
+              <div className="px-3 py-1.5 bg-white/5 border border-white/5 rounded-lg text-xs font-medium text-slate-500 whitespace-nowrap cursor-not-allowed">
+                ⏳ Golden Ratio
+              </div>
+            </div>
+          </div>
+        </motion.div>
         {/* Hero Text */}
         <motion.h1
           variants={item}
@@ -210,60 +237,6 @@ export const LandingPage: React.FC = () => {
           </div>
         </motion.div>
       </motion.main>
-
-      {/* Free Tools Strip - High Visibility */}
-      <div className="relative z-20 bg-slate-950 border-y border-white/5 py-8 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                <span className="text-2xl">✨</span>
-              </div>
-              <div>
-                <h3 className="text-white font-bold text-lg">
-                  Free AI Analysis
-                </h3>
-                <p className="text-slate-400 text-sm">
-                  Try our advanced tools without signing up
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-              <a
-                href="/tools/facial-shape"
-                className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-lg transition-all group whitespace-nowrap"
-              >
-                <div className="w-6 h-6 rounded-md bg-indigo-500/20 flex items-center justify-center text-xs">
-                  📐
-                </div>
-                <span className="text-slate-300 group-hover:text-white font-medium text-sm">
-                  Face Shape Detector
-                </span>
-                <ArrowRight className="w-3 h-3 text-slate-500 group-hover:text-indigo-400" />
-              </a>
-
-              <div className="flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-800/50 rounded-lg opacity-60 whitespace-nowrap cursor-not-allowed">
-                <div className="w-6 h-6 rounded-md bg-slate-800/50 flex items-center justify-center text-xs">
-                  ⏳
-                </div>
-                <span className="text-slate-500 font-medium text-sm">
-                  Golden Ratio (Soon)
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-800/50 rounded-lg opacity-60 whitespace-nowrap cursor-not-allowed hidden sm:flex">
-                <div className="w-6 h-6 rounded-md bg-slate-800/50 flex items-center justify-center text-xs">
-                  👁️
-                </div>
-                <span className="text-slate-500 font-medium text-sm">
-                  Eye Shape (Soon)
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Value Proposition Section */}
       <section

@@ -639,10 +639,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                     Body Fat & Leanness
                                   </div>
                                   <div className="text-sm text-slate-300 mb-1">
-                                    {analysis.softmax.body_fat.assessment}
+                                    {analysis.softmax?.body_fat?.assessment ||
+                                      "Analysis unavailable"}
                                   </div>
                                   <div className="text-xs text-slate-400 italic">
-                                    💡 {analysis.softmax.body_fat.advice}
+                                    💡{" "}
+                                    {analysis.softmax?.body_fat?.advice ||
+                                      "No advice available"}
                                   </div>
                                 </div>
 
@@ -651,10 +654,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                     Skin & Grooming
                                   </div>
                                   <div className="text-sm text-slate-300 mb-1">
-                                    {analysis.softmax.skin_grooming.assessment}
+                                    {analysis.softmax?.skin_grooming
+                                      ?.assessment || "Analysis unavailable"}
                                   </div>
                                   <div className="text-xs text-slate-400 italic">
-                                    💡 {analysis.softmax.skin_grooming.advice}
+                                    💡{" "}
+                                    {analysis.softmax?.skin_grooming?.advice ||
+                                      "No advice available"}
                                   </div>
                                 </div>
 
@@ -663,10 +669,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                     Styling
                                   </div>
                                   <div className="text-sm text-slate-300 mb-1">
-                                    {analysis.softmax.style.assessment}
+                                    {analysis.softmax?.style?.assessment ||
+                                      "Analysis unavailable"}
                                   </div>
                                   <div className="text-xs text-slate-400 italic">
-                                    💡 {analysis.softmax.style.advice}
+                                    💡{" "}
+                                    {analysis.softmax?.style?.advice ||
+                                      "No advice available"}
                                   </div>
                                 </div>
                               </div>
@@ -685,7 +694,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                     Bone Structure
                                   </div>
                                   <p className="text-sm text-slate-300">
-                                    {analysis.hardmax.bone_structure}
+                                    {analysis.hardmax?.bone_structure ||
+                                      "Analysis unavailable"}
                                   </p>
                                 </div>
 
@@ -694,7 +704,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                     Harmony & Balance
                                   </div>
                                   <p className="text-sm text-slate-300">
-                                    {analysis.hardmax.balance}
+                                    {analysis.hardmax?.balance ||
+                                      "Analysis unavailable"}
                                   </p>
                                 </div>
 
@@ -703,7 +714,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                     Medical Recommendation
                                   </div>
                                   <p className="text-sm text-slate-200 font-medium">
-                                    {analysis.hardmax.recommendation}
+                                    {analysis.hardmax?.recommendation ||
+                                      "Consult a professional."}
                                   </p>
                                 </div>
                               </div>

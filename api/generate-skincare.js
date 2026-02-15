@@ -78,11 +78,13 @@ export default async function handler(req, res) {
     if (previousPhotoUrl) {
         promptText += `\n**Comparison Task:**\nThere are two images. The first is the CURRENT image. The second is the PREVIOUS image from ${daysSinceLastScan} days ago.\nCompare them closely. Has their skin quality (acne, redness, texture, dark circles) improved or worsened? Be specific.`;
         
-        if (daysSinceLastScan > 14) {
+        if (daysSinceLastScan > 10) {
             promptText += `\n\n**CRITICAL OBSERVATION:** The user has not uploaded a photo in ${daysSinceLastScan} days (Goal is 7 days). You must respectfully but firmly reprimand them for breaking their consistency streak. Explain why consistency is key for skin turnover cycles.`;
+        } else if (daysSinceLastScan < 4 && daysSinceLastScan > 0) {
+            promptText += `\n\n**EARLY CHECK-IN:** The user is checking in very frequently (${daysSinceLastScan} days). Acknowledge their enthusiasm but remind them that skin cycles take time (approx 28 days) and weekly check-ins are optimal for tracking visible changes. Provide analysis but manage expectations about day-to-day changes.`;
         }
     } else {
-        promptText += `\n**Task:**\nAnalyze the single provided image for skin quality.`;
+        promptText += `\n**Task:**\nAnalyze the single provided image for skin quality. Welcome them to their first scan.`;
     }
 
     promptText += `

@@ -363,6 +363,8 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
               isPaid={isPaid} 
               scanId={selectedScanId || undefined} 
               onNewScan={startNewAnalysis}
+              scans={historyData}
+              onUploadSkincare={(file) => handleFrontPhotoUpload(file, 'skincare')}
             />
           )}
 

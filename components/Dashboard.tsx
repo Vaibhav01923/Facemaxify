@@ -14,8 +14,9 @@ import { FaceOverlay } from "./FaceOverlay";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { useRegionalDiscount } from "../hooks/useRegionalDiscount";
 import { Ticket, CheckCircle2, AlertTriangle, Sparkles, Lock } from "lucide-react";
-import { updateScanLandmarks, updateScanAnalysis } from "../services/supabase";
+import { updateScanLandmarks, updateScanAnalysis, calculateWebsitePercentile } from "../services/supabase";
 import { getAiRecommendations } from "../services/aiService";
+import { calculatePercentile, getPercentileText } from "../utils/percentile";
 
 interface DashboardProps {
   data?: FinalResult;
@@ -40,10 +41,26 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
   const [pinnedMetric, setPinnedMetric] = useState<MetricResult | null>(null);
   const [localLandmarks, setLocalLandmarks] = useState<any>(null);
-  const [editorState, setEditorState] = useState<{
-    isOpen: boolean;
-    landmarkKey: string | null;
-  }>({ isOpen: false, landmarkKey: null });
+  const [editorState, setEditorState] = useState<{ isOpen: boolean, landmarkKey: string | null }>({ isOpen: false, landmarkKey: null });
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+  const [loadingAi, setLoadingAi] = useState(false);
+  const [websitePercentile, setWebsitePercentile] = useState<number | null>(null);
+
+  // Fetch website percentile
+  useEffect(() => {
+    const fetchPercentile = async () => {
+      if (localLandmarks) {
+        const metrics = calculateFrontRatios(localLandmarks);
+        const score = metrics.length > 0 
+          ? calculateWeightedTotalScore(metrics)
+          : 0;
+        
+        const percentile = await calculateWebsitePercentile(score);
+        setWebsitePercentile(percentile);
+      }
+    };
+    fetchPercentile();
+  }, [localLandmarks]);
 
   const discount = useRegionalDiscount();
 
@@ -230,6 +247,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
               <div className="text-xl font-bold text-white leading-none">
                 {Math.round(typeof overallScore === 'string' ? parseFloat(overallScore) : overallScore * 10)}{" "}
                 <span className="text-sm text-slate-500">/ 100</span>
+              </div>
+              <div className="text-[10px] text-indigo-400 font-semibold mt-0.5">
+                {getPercentileText(calculatePercentile(typeof overallScore === 'string' ? parseFloat(overallScore) : overallScore * 10))}
+                {websitePercentile !== null && (
+                  <span className="text-slate-500 ml-1">
+                    • {websitePercentile.toFixed(1)}% on site
+                  </span>
+                )}
               </div>
             </div>
           </div>

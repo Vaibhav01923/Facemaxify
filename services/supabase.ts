@@ -195,3 +195,48 @@ export const updateScanLandmarks = async (
     return false;
   }
 };
+
+/**
+ * Calculate website percentile - user's rank compared to all users
+ * Returns percentile (0-100) where higher is better
+ */
+export const calculateWebsitePercentile = async (
+  userScore: number
+): Promise<number | null> => {
+  try {
+    // Get all scores from the database
+    const { data, error } = await supabase
+      .from("scans")
+      .select("overall_score")
+      .not("overall_score", "is", null);
+
+    if (error) {
+      console.error("Error fetching scores:", error);
+      return null;
+    }
+
+    if (!data || data.length === 0) {
+      return null; // Not enough data
+    }
+
+    // Convert scores to numbers and filter out invalid values
+    const scores = data
+      .map(scan => parseFloat(scan.overall_score))
+      .filter(score => !isNaN(score));
+
+    if (scores.length === 0) {
+      return null;
+    }
+
+    // Count how many scores are below the user's score
+    const scoresBelow = scores.filter(score => score < userScore).length;
+    
+    // Calculate percentile
+    const percentile = (scoresBelow / scores.length) * 100;
+    
+    return Math.round(percentile * 10) / 10; // Round to 1 decimal place
+  } catch (error) {
+    console.error("Calculate Website Percentile Exception:", error);
+    return null;
+  }
+};

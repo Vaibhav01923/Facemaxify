@@ -17,6 +17,12 @@ import { DashboardHome } from "./components/DashboardHome";
 import { FacialAnalysis } from "./components/FacialAnalysis";
 import { Guides } from "./components/Guides";
 import { GuideDetail } from "./components/GuideDetail";
+import {
+  SEO,
+  DashboardSEO,
+  FacialAnalysisSEO,
+  GuidesSEO,
+} from "./components/SEO";
 
 const App: React.FC = () => {
   const { user, isLoaded } = useUser();
@@ -26,7 +32,7 @@ const App: React.FC = () => {
   React.useEffect(() => {
     async function checkPaymentStatus() {
       if (!user?.primaryEmailAddress?.emailAddress) return;
-      
+
       setCheckingPayment(true);
       try {
         // 1. Get User Data
@@ -44,55 +50,70 @@ const App: React.FC = () => {
         if (!userData?.country) {
           const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
           let country = timeZone; // Fallback to timezone
-          
+
           // Simple mapping for major regions
-          if (timeZone.includes('Calcutta') || timeZone.includes('Kolkata')) country = 'India';
-          else if (timeZone.includes('London')) country = 'UK';
-          else if (timeZone.includes('New_York') || timeZone.includes('Los_Angeles') || timeZone.includes('Chicago')) country = 'USA';
-          else if (timeZone.includes('Paris')) country = 'France';
-          else if (timeZone.includes('Berlin')) country = 'Germany';
-          else if (timeZone.includes('Dubai')) country = 'UAE';
-          else if (timeZone.includes('Tokyo')) country = 'Japan';
-          else if (timeZone.includes('Sydney') || timeZone.includes('Melbourne')) country = 'Australia';
-          else if (timeZone.includes('Canada')) country = 'Canada';
-          else if (timeZone.includes('Sao_Paulo')) country = 'Brazil';
+          if (timeZone.includes("Calcutta") || timeZone.includes("Kolkata"))
+            country = "India";
+          else if (timeZone.includes("London")) country = "UK";
+          else if (
+            timeZone.includes("New_York") ||
+            timeZone.includes("Los_Angeles") ||
+            timeZone.includes("Chicago")
+          )
+            country = "USA";
+          else if (timeZone.includes("Paris")) country = "France";
+          else if (timeZone.includes("Berlin")) country = "Germany";
+          else if (timeZone.includes("Dubai")) country = "UAE";
+          else if (timeZone.includes("Tokyo")) country = "Japan";
+          else if (
+            timeZone.includes("Sydney") ||
+            timeZone.includes("Melbourne")
+          )
+            country = "Australia";
+          else if (timeZone.includes("Canada")) country = "Canada";
+          else if (timeZone.includes("Sao_Paulo")) country = "Brazil";
 
           // 3. Upsert User (Insert if new, Update if exists)
           if (!user.id) {
-             console.error("CRITICAL: user.id is missing!", user);
-             return;
+            console.error("CRITICAL: user.id is missing!", user);
+            return;
           }
           console.log("DEBUG: Upserting user with ID:", user.id);
 
-          const { error: upsertError } = await supabase
-            .from("users")
-            .upsert({
-              // Use Clerk ID as the primary key if possible, 
+          const { error: upsertError } = await supabase.from("users").upsert(
+            {
+              // Use Clerk ID as the primary key if possible,
               // otherwise ensuring this field is populated fixes the "null value" error
-              id: user.id, 
+              id: user.id,
               email: user.primaryEmailAddress.emailAddress,
               country: country,
-              // We don't overwrite isPaid to false on upsert to avoid revoking access if logic fails, 
+              // We don't overwrite isPaid to false on upsert to avoid revoking access if logic fails,
               // but for new users it defaults to false/null in DB structure usually.
               // If userData exists, keep existing isPaid.
-              ...(userData ? {} : { isPaid: false }) 
-            }, { onConflict: 'email' });
+              ...(userData ? {} : { isPaid: false }),
+            },
+            { onConflict: "email" },
+          );
 
-            if (upsertError) console.error("Failed to save country:", upsertError);
+          if (upsertError)
+            console.error("Failed to save country:", upsertError);
         }
 
         // Handle both casing possibilities and string/bool types
         if (userData) {
-           if (userData.isPaid === true || userData.is_paid === true || userData.isPaid === 'true') {
-               currentIsPaid = true;
-           }
+          if (
+            userData.isPaid === true ||
+            userData.is_paid === true ||
+            userData.isPaid === "true"
+          ) {
+            currentIsPaid = true;
+          }
         }
 
         setIsPaid(currentIsPaid);
-
       } catch (err) {
         console.error("Failed to check payment status:", err);
-        setIsPaid(false); 
+        setIsPaid(false);
       } finally {
         setCheckingPayment(false);
       }
@@ -103,9 +124,10 @@ const App: React.FC = () => {
     }
   }, [user]);
 
-  // Show loader while Clerk is loading, OR while we are checking payment, 
+  // Show loader while Clerk is loading, OR while we are checking payment,
   // OR if we have a user but haven't determined their paid status yet.
-  const isDeterminingAccess = !isLoaded || checkingPayment || (user && isPaid === null);
+  const isDeterminingAccess =
+    !isLoaded || checkingPayment || (user && isPaid === null);
 
   if (isDeterminingAccess) {
     return (
@@ -121,6 +143,7 @@ const App: React.FC = () => {
         path="/"
         element={
           <>
+            <SEO />
             <SignedOut>
               <LandingPage />
             </SignedOut>
@@ -135,7 +158,10 @@ const App: React.FC = () => {
         path="/dashboard"
         element={
           <SignedIn>
-            <DashboardHome isPaid={isPaid} />
+            <>
+              <DashboardSEO />
+              <DashboardHome isPaid={isPaid} />
+            </>
           </SignedIn>
         }
       />
@@ -144,7 +170,10 @@ const App: React.FC = () => {
         path="/dashboard/facial-analysis"
         element={
           <SignedIn>
-            <FacialAnalysis isPaid={isPaid} />
+            <>
+              <FacialAnalysisSEO />
+              <FacialAnalysis isPaid={isPaid} />
+            </>
           </SignedIn>
         }
       />
@@ -153,7 +182,10 @@ const App: React.FC = () => {
         path="/dashboard/guides"
         element={
           <SignedIn>
-            <Guides isPaid={isPaid} />
+            <>
+              <GuidesSEO />
+              <Guides isPaid={isPaid} />
+            </>
           </SignedIn>
         }
       />
@@ -162,7 +194,11 @@ const App: React.FC = () => {
         path="/dashboard/guides/:guideId"
         element={
           <SignedIn>
-            {isPaid ? <GuideDetail /> : <Navigate to="/dashboard/guides" replace />}
+            {isPaid ? (
+              <GuideDetail />
+            ) : (
+              <Navigate to="/dashboard/guides" replace />
+            )}
           </SignedIn>
         }
       />
@@ -183,9 +219,9 @@ const WaitlistSuccess: React.FC = () => (
       <p className="text-slate-400 mb-8 max-w-md">
         You need to purchase access to use this tool.
       </p>
-      <button 
+      <button
         onClick={() => {
-             window.location.href = "/";
+          window.location.href = "/";
         }}
         className="px-6 py-3 bg-blue-600 rounded-lg font-semibold hover:bg-blue-500 transition-colors"
       >

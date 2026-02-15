@@ -13,6 +13,7 @@ import {
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { supabase } from "../services/supabase";
+import { FAQ } from "./FAQ";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -112,7 +113,7 @@ export const LandingPage: React.FC = () => {
         </motion.p>
 
         {/* CTAs */}
-        <motion.div 
+        <motion.div
           variants={item}
           className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-2xl"
         >
@@ -165,7 +166,9 @@ export const LandingPage: React.FC = () => {
           >
             <button
               onClick={() => {
-                document.getElementById("value-prop")?.scrollIntoView({ behavior: "smooth" });
+                document
+                  .getElementById("value-prop")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
               className="group relative w-full sm:w-auto px-8 py-4 bg-slate-800/50 text-white border border-slate-700 rounded-full font-semibold text-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 backdrop-blur-md hover:border-indigo-500/50"
             >
@@ -174,8 +177,6 @@ export const LandingPage: React.FC = () => {
             </button>
           </motion.div>
         </motion.div>
-
-
 
         {/* Scroll Indicator */}
         <motion.div
@@ -228,24 +229,26 @@ export const LandingPage: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-5xl sm:text-7xl font-black mb-6 tracking-tighter leading-[1.1]">
-              Why <span className="text-emerald-400 inline-block transform hover:scale-105 transition-transform duration-300 cursor-default shadow-emerald-500/20 drop-shadow-lg">Us?</span>
+              Why{" "}
+              <span className="text-emerald-400 inline-block transform hover:scale-105 transition-transform duration-300 cursor-default shadow-emerald-500/20 drop-shadow-lg">
+                Us?
+              </span>
             </h2>
-            
+
             <p className="text-xl sm:text-3xl text-slate-300 font-light max-w-4xl mx-auto leading-relaxed">
-              We're offering this at a 
+              We're offering this at a
               <span className="text-white font-bold mx-2 relative inline-block">
                 <span className="absolute inset-0 bg-indigo-500/20 skew-x-[-10deg] rounded-sm transform scale-110"></span>
                 <span className="relative z-10">dirt cheap price</span>
-              </span> 
+              </span>
               because we're just getting started.
             </p>
           </motion.div>
 
           {/* Bento Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            
             {/* Left Card: No BS */}
-            <motion.div 
+            <motion.div
               whileHover={{ y: -5 }}
               className="md:col-span-5 bg-gradient-to-br from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
             >
@@ -254,34 +257,48 @@ export const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:bg-indigo-500/30 transition-colors">
                   <Shield className="w-6 h-6 text-indigo-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Real, No-BS Guides</h3>
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  Real, No-BS Guides
+                </h3>
                 <p className="text-slate-400 leading-relaxed font-light">
-                  Our library is growing. We are committed to updating the quality and quantity of our guides weekly with <span className="text-slate-200 font-medium">actionable, no-cope protocols</span>.
+                  Our library is growing. We are committed to updating the
+                  quality and quantity of our guides weekly with{" "}
+                  <span className="text-slate-200 font-medium">
+                    actionable, no-cope protocols
+                  </span>
+                  .
                 </p>
               </div>
             </motion.div>
 
             {/* Right Card: No AI Slop */}
-            <motion.div 
+            <motion.div
               whileHover={{ y: -5 }}
               className="md:col-span-7 bg-gradient-to-bl from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
             >
               <div className="absolute inset-0 bg-gradient-to-bl from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                 <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors">
+                <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors">
                   <Activity className="w-6 h-6 text-emerald-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">NOT "AI Slop"</h3>
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  NOT "AI Slop"
+                </h3>
                 <p className="text-slate-400 leading-relaxed font-light">
-                  This isn't a black box. We use <span className="text-white font-bold bg-white/5 px-2 py-0.5 rounded">actual mathematical metrics</span> calculated for your face.
-                  <br className="my-2"/>
-                  You can verify every metric and ratio visually by simply hovering over the results. Transparancy is key.
+                  This isn't a black box. We use{" "}
+                  <span className="text-white font-bold bg-white/5 px-2 py-0.5 rounded">
+                    actual mathematical metrics
+                  </span>{" "}
+                  calculated for your face.
+                  <br className="my-2" />
+                  You can verify every metric and ratio visually by simply
+                  hovering over the results. Transparancy is key.
                 </p>
               </div>
             </motion.div>
 
             {/* Bottom: The Offer (Ticket Style) */}
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.005 }}
               className="md:col-span-12 relative overflow-hidden group"
             >
@@ -289,7 +306,7 @@ export const LandingPage: React.FC = () => {
               <div className="bg-slate-900 border border-indigo-500/30 rounded-3xl p-1 relative overflow-hidden shadow-2xl shadow-indigo-500/20">
                 {/* Glowing Border Animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-20 animate-gradient-xy"></div>
-                
+
                 <div className="bg-slate-950/90 backdrop-blur-xl rounded-[20px] p-8 sm:p-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/5">
                   {/* Left Side: Text */}
                   <div className="flex-1 text-center md:text-left">
@@ -313,31 +330,42 @@ export const LandingPage: React.FC = () => {
                   {/* Right Side: Price & Code */}
                   <div className="flex flex-col items-center gap-4 min-w-[280px]">
                     <div className="text-center">
-                       <span className="text-slate-500 line-through text-lg font-bold mr-2">$10</span>
-                       <span className="text-5xl sm:text-6xl font-black text-white tracking-tighter shadow-indigo-500/50 drop-shadow-lg">$5.99</span>
+                      <span className="text-slate-500 line-through text-lg font-bold mr-2">
+                        $10
+                      </span>
+                      <span className="text-5xl sm:text-6xl font-black text-white tracking-tighter shadow-indigo-500/50 drop-shadow-lg">
+                        $5.99
+                      </span>
                     </div>
 
-                    <div 
+                    <div
                       onClick={() => {
                         navigator.clipboard.writeText("EARLY40");
                         // Simple visual feedback could be added here if we had a toast lib
                         // For now we can change text momentarily or just rely on user knowing it copied
                         const el = document.getElementById("code-text");
-                        if(el) {
-                           const original = el.innerText;
-                           el.innerText = "COPIED!";
-                           setTimeout(() => el.innerText = original, 1000);
+                        if (el) {
+                          const original = el.innerText;
+                          el.innerText = "COPIED!";
+                          setTimeout(() => (el.innerText = original), 1000);
                         }
                       }}
                       className="w-full bg-indigo-500/10 border border-indigo-500/30 border-dashed rounded-lg p-3 flex flex-col items-center gap-1 group/code cursor-pointer transition-colors hover:bg-indigo-500/20 active:scale-95 select-none"
                     >
-                      <span className="text-[10px] text-indigo-300 uppercase tracking-widest font-bold">Use Code (Click to Copy)</span>
-                      <span id="code-text" className="text-2xl font-mono font-bold text-white tracking-widest group-hover/code:text-indigo-200 transition-colors">EARLY40</span>
+                      <span className="text-[10px] text-indigo-300 uppercase tracking-widest font-bold">
+                        Use Code (Click to Copy)
+                      </span>
+                      <span
+                        id="code-text"
+                        className="text-2xl font-mono font-bold text-white tracking-widest group-hover/code:text-indigo-200 transition-colors"
+                      >
+                        EARLY40
+                      </span>
                     </div>
 
                     <button
                       onClick={() => {
-                       if (!isSignedIn) {
+                        if (!isSignedIn) {
                           localStorage.setItem("pendingAction", "purchase");
                           openSignIn();
                         } else {
@@ -346,14 +374,16 @@ export const LandingPage: React.FC = () => {
                       }}
                       className="w-full py-4 bg-white hover:bg-indigo-50 text-black rounded-xl font-bold text-lg transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2 group/btn mt-2"
                     >
-                      Get Access <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                      Get Access{" "}
+                      <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                     </button>
-                    <p className="text-xs text-slate-500 font-medium">One-time payment • Lifetime access</p>
+                    <p className="text-xs text-slate-500 font-medium">
+                      One-time payment • Lifetime access
+                    </p>
                   </div>
                 </div>
               </div>
             </motion.div>
-
           </div>
         </div>
       </section>
@@ -377,7 +407,7 @@ export const LandingPage: React.FC = () => {
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-lg text-balance">
               We use the exact same advanced computer vision frameworks that our
-              competitors use ! {" "}
+              competitors use !{" "}
               <span className="text-white font-extrabold">don't overpay</span>{" "}
               for it !
             </p>
@@ -417,6 +447,9 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section for SEO */}
+      <FAQ />
 
       {/* CSS for custom animations (inline for simplicity) */}
       <style>{`

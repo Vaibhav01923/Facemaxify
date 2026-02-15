@@ -206,10 +206,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
 
   useEffect(() => {
     const loadSkincare = async () => {
-        // Check if skincare analysis already exists in the main analysis object
-        if (analysis?.skincare) {
+        // Check if skincare analysis already exists in the main analysis object or data prop
+        const currentAnalysis = analysis || data?.analysis;
+        
+        if (currentAnalysis?.skincare) {
             console.log("Using cached skincare analysis");
-            setSkincareAnalysis(analysis.skincare);
+            setSkincareAnalysis(currentAnalysis.skincare);
+            // Ensure local state is synced if it wasn't already
+            if (!analysis && data?.analysis) {
+                setAnalysis(data.analysis);
+            }
             return;
         }
 
@@ -246,9 +252,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
             if (result) {
                 setSkincareAnalysis(result);
                 
-                // Save to DB by merging with existing analysis
+                // Save to DB by merging with existing analysis (prefer data.analysis if local state is null)
                 if (scanId && user?.id) {
-                    const updatedAnalysis = { ...analysis, skincare: result };
+                    const baseAnalysis = analysis || data?.analysis || {};
+                    const updatedAnalysis = { ...baseAnalysis, skincare: result };
                     setAnalysis(updatedAnalysis); // Update local state immediately
                     await updateScanAnalysis(scanId, user.id, updatedAnalysis);
                     console.log("Skincare analysis saved to DB");

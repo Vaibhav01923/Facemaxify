@@ -286,7 +286,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Regional Discount Banner */}
         {discount.isEligible && !isPaid && (
           <div className="mb-8 rounded-2xl bg-gradient-to-r from-orange-500/20 to-amber-500/20 border border-orange-500/30 p-6 flex items-center justify-between gap-4 animate-fadeIn">
@@ -565,6 +565,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
               </div>
             </div>
           </div>
+          </div>
         )}
         {/* SIDE PROFILE TAB (COMING SOON) */}
         {activeTab === "side" && (
@@ -583,7 +584,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
             </div>
           </div>
         )}
-      </main>
+      </div>
 
       {/* Landmark Editor Overlay - Single Point Mode */}
       {editorState.isOpen && editorState.landmarkKey && localLandmarks && (

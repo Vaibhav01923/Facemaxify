@@ -8,32 +8,31 @@
   <url>
     <loc>https://facemaxify.com/</loc>
     <lastmod>2026-02-15</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   
-  <!-- Dashboard (requires login, but good to list) -->
+  <!-- Tools Directory -->
   <url>
-    <loc>https://facemaxify.com/dashboard</loc>
+    <loc>https://facemaxify.com/tools</loc>
     <lastmod>2026-02-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <!-- Facial Analysis -->
-  <url>
-    <loc>https://facemaxify.com/dashboard/facial-analysis</loc>
-    <lastmod>2026-02-15</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-  
-  <!-- Guides -->
+
+  <!-- Face Shape Tool -->
   <url>
-    <loc>https://facemaxify.com/dashboard/guides</loc>
+    <loc>https://facemaxify.com/tools/facial-shape</loc>
     <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
+  <!-- Golden Ratio Tool -->
+  <url>
+    <loc>https://facemaxify.com/tools/golden-ratio</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

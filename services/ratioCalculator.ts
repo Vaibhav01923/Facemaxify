@@ -356,9 +356,9 @@ export const calculateWeightedTotalScore = (metrics: MetricResult[]): number => 
     
     let finalScore = totalScore / totalWeight;
 
-    // Apply 15% penalty if 10 or more ratios are below 5.0
+    // Apply 5% penalty if 10 or more ratios are below 5.0
     if (lowScoreCount >= 10) {
-        finalScore *= 0.85;
+        finalScore *= 0.95;
     }
     
     return parseFloat(finalScore.toFixed(1));

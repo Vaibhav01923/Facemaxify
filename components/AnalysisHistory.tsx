@@ -156,14 +156,11 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
                    )}
                </div>
                
-               <div className="flex items-center gap-2">
-                  <div className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/5 text-[10px] text-slate-400 font-medium">
-                     {scan.gender || "Unknown"}
-                  </div>
-                  {/* Delete button (hover only) */}
-                  <button 
+               {/* Delete button (hover only) */}
+               <div className="flex justify-end">
+                   <button 
                     onClick={(e) => handleDelete(e, scan.id)}
-                    className="ml-auto p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                    className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-md opacity-0 group-hover:opacity-100 transition-all"
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>

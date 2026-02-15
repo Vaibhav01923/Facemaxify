@@ -186,9 +186,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, isPaid = false, scan
   }, [frontMetrics]);
 
   const ALLOWED_FREE_METRICS = [
-    "Jaw Frontal Angle",
+    "Lateral Canthal Tilt",
+    "Eye Aspect Ratio",
+    "Interpupillary-Mouth Width Ratio",
+    "Mouth width to nose width ratio",
+    "Lower Lip to Upper Lip Ratio",
+    "Cupid's Bow Depth",
+    "Intercanthal-Nasal Width Ratio",
     "Middle Third",
-    "Mouth width to nose width ratio"
+    "Lower Third",
+    "Jaw Frontal Angle",
+    "Jaw Slope",
   ];
 
   return (

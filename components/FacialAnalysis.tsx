@@ -185,14 +185,20 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
             const score =
               metrics.length > 0 ? calculateWeightedTotalScore(metrics) : 0;
 
-            await saveScanResult(result, score, user.id);
-            await refreshHistory();
+            const savedScan = await saveScanResult(result, score, user.id);
+            if (savedScan) {
+              setSelectedScanId(savedScan.id);
+              // Refresh history to include the new scan
+              await refreshHistory();
 
-            setSearchParams((prev) => {
-              const newParams = new URLSearchParams(prev);
-              newParams.set("tab", "skincare");
-              return newParams;
-            });
+              setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                newParams.set("tab", "skincare");
+                // Ideally set scanId here too if we want to be explicit
+                newParams.set("scanId", savedScan.id);
+                return newParams;
+              });
+            }
           }
         } else {
           // Move to editing step
@@ -227,9 +233,19 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
         const score =
           metrics.length > 0 ? calculateWeightedTotalScore(metrics) : 0;
 
-        saveScanResult(result, score, user.id).then(() => {
-          // Refresh history after save
-          refreshHistory();
+        saveScanResult(result, score, user.id).then((savedScan) => {
+          if (savedScan) {
+            setSelectedScanId(savedScan.id);
+            // Refresh history after save
+            refreshHistory();
+
+            // Update URL to reflect new scan ID
+            setSearchParams((prev) => {
+              const newParams = new URLSearchParams(prev);
+              newParams.set("scanId", savedScan.id);
+              return newParams;
+            });
+          }
         });
       }
     }

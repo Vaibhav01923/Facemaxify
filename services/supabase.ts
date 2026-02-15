@@ -12,7 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const uploadImage = async (
   base64Image: string,
-  path: string
+  path: string,
 ): Promise<string | null> => {
   try {
     const base64Data = base64Image.split(",")[1];
@@ -42,7 +42,7 @@ export const uploadImage = async (
 export const saveScanResult = async (
   data: FinalResult,
   overallScore: number,
-  userId: string
+  userId: string,
 ) => {
   try {
     // 1. Upload Front Photo
@@ -54,21 +54,25 @@ export const saveScanResult = async (
     // 2. Upload Side Photo (Removed)
 
     // 3. Save to DB
-    const { error } = await supabase.from("scans").insert({
-      user_id: userId,
-      gender: data.gender,
-      race: data.race,
-      front_photo_path: frontPath,
-      front_landmarks: data.frontLandmarks,
-      overall_score: overallScore,
-    });
+    const { data: insertedScan, error } = await supabase
+      .from("scans")
+      .insert({
+        user_id: userId,
+        gender: data.gender,
+        race: data.race,
+        front_photo_path: frontPath,
+        front_landmarks: data.frontLandmarks,
+        overall_score: overallScore,
+      })
+      .select()
+      .single();
 
     if (error) throw error;
 
-    return true;
+    return insertedScan;
   } catch (error) {
     console.error("Save Error:", error);
-    return false;
+    return null;
   }
 };
 
@@ -81,10 +85,12 @@ export const getScanHistory = async (userId: string) => {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    
+
     // Convert relative paths to public URLs
     const scansWithUrls = data.map((scan) => {
-      const frontUrl = supabase.storage.from("scans").getPublicUrl(scan.front_photo_path).data.publicUrl;
+      const frontUrl = supabase.storage
+        .from("scans")
+        .getPublicUrl(scan.front_photo_path).data.publicUrl;
       return {
         ...scan,
         front_photo_url: frontUrl,
@@ -98,7 +104,10 @@ export const getScanHistory = async (userId: string) => {
   }
 };
 
-export const deleteScan = async (scanId: string, userId: string): Promise<boolean> => {
+export const deleteScan = async (
+  scanId: string,
+  userId: string,
+): Promise<boolean> => {
   try {
     // 1. Get the scan details
     const { data: scan, error: fetchError } = await supabase
@@ -118,7 +127,7 @@ export const deleteScan = async (scanId: string, userId: string): Promise<boolea
       .from("deleted_scans")
       .insert({
         ...scan,
-        deleted_at: new Date().toISOString()
+        deleted_at: new Date().toISOString(),
       });
 
     if (archiveError) {
@@ -146,7 +155,7 @@ export const deleteScan = async (scanId: string, userId: string): Promise<boolea
 export const updateScanAnalysis = async (
   scanId: string,
   userId: string,
-  analysis: any
+  analysis: any,
 ): Promise<boolean> => {
   try {
     const { error } = await supabase
@@ -158,8 +167,8 @@ export const updateScanAnalysis = async (
       .eq("user_id", userId);
 
     if (error) {
-        console.error("Supabase Update Error:", error);
-        throw error;
+      console.error("Supabase Update Error:", error);
+      throw error;
     }
     return true;
   } catch (error) {
@@ -172,7 +181,7 @@ export const updateScanLandmarks = async (
   scanId: string,
   userId: string,
   landmarks: any,
-  overallScore: number
+  overallScore: number,
 ): Promise<boolean> => {
   try {
     const { error } = await supabase
@@ -185,8 +194,8 @@ export const updateScanLandmarks = async (
       .eq("user_id", userId);
 
     if (error) {
-        console.error("Update Landmarks Error:", error);
-        throw error;
+      console.error("Update Landmarks Error:", error);
+      throw error;
     }
     console.log("Landmarks updated successfully for scan:", scanId);
     return true;
@@ -201,7 +210,7 @@ export const updateScanLandmarks = async (
  * Returns percentile (0-100) where higher is better
  */
 export const calculateWebsitePercentile = async (
-  userScore: number
+  userScore: number,
 ): Promise<number | null> => {
   try {
     // Get all scores from the database
@@ -221,19 +230,19 @@ export const calculateWebsitePercentile = async (
 
     // Convert scores to numbers and filter out invalid values
     const scores = data
-      .map(scan => parseFloat(scan.overall_score))
-      .filter(score => !isNaN(score));
+      .map((scan) => parseFloat(scan.overall_score))
+      .filter((score) => !isNaN(score));
 
     if (scores.length === 0) {
       return null;
     }
 
     // Count how many scores are below the user's score
-    const scoresBelow = scores.filter(score => score < userScore).length;
-    
+    const scoresBelow = scores.filter((score) => score < userScore).length;
+
     // Calculate percentile
     const percentile = (scoresBelow / scores.length) * 100;
-    
+
     return Math.round(percentile * 10) / 10; // Round to 1 decimal place
   } catch (error) {
     console.error("Calculate Website Percentile Exception:", error);

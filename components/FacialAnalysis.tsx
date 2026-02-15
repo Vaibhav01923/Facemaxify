@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
+import { useSearchParams } from "react-router-dom";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { Dashboard as ResultsDashboard } from "./Dashboard";
 import { Navbar } from "./Navbar";
@@ -11,11 +12,17 @@ import {
 } from "../services/mediaPipeService";
 import { standardizeImage } from "../utils/imageProcessing";
 import { saveScanResult, getScanHistory, supabase } from "../services/supabase";
-import { calculateFrontRatios, calculateWeightedTotalScore } from "../services/ratioCalculator";
+import {
+  calculateFrontRatios,
+  calculateWeightedTotalScore,
+} from "../services/ratioCalculator";
 import { AnalysisHistory } from "./AnalysisHistory";
 
-export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
+export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
+  isPaid = false,
+}) => {
   const { user } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [step, setStep] = useState(0);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -48,19 +55,19 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
         const data = await getScanHistory(user.id);
         if (data && data.length > 0) {
           setHistoryData(data);
-          
+
           // Auto-load based on URL param
           const params = new URLSearchParams(window.location.search);
-          const scanId = params.get('scanId');
+          const scanId = params.get("scanId");
           if (scanId) {
-             const scan = data.find(s => s.id === scanId);
-             if (scan) {
-                loadFromHistory(scan);
-                setSelectedScanId(scan.id);
-             } else {
-                loadFromHistory(data[0]);
-                setSelectedScanId(data[0].id);
-             }
+            const scan = data.find((s) => s.id === scanId);
+            if (scan) {
+              loadFromHistory(scan);
+              setSelectedScanId(scan.id);
+            } else {
+              loadFromHistory(data[0]);
+              setSelectedScanId(data[0].id);
+            }
           } else {
             // Default to latest scan
             loadFromHistory(data[0]);
@@ -71,7 +78,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
       } else {
         setHistoryLoaded(true);
       }
-    }
+    };
     initHistory();
   }, [user]);
 
@@ -86,31 +93,56 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
   };
 
   // PHASE A: NORMALIZATION PIPELINE
-  const handleFrontPhotoUpload = async (file: File, mode: 'full' | 'skincare' = 'full') => {
+  const handleFrontPhotoUpload = async (
+    file: File,
+    mode: "full" | "skincare" = "full",
+  ) => {
     setLoading(true);
     setError(null);
     try {
       // SECURITY: Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'];
-      const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif'];
-      const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
-      
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/heic",
+      ];
+      const allowedExtensions = [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".heic",
+        ".heif",
+      ];
+      const fileExtension = file.name
+        .toLowerCase()
+        .substring(file.name.lastIndexOf("."));
+
       // Check MIME type OR file extension (HEIC files often have incorrect MIME types)
-      if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
-        throw new Error('Invalid file type. Only JPEG, PNG, WebP, and HEIC images are allowed.');
+      if (
+        !allowedTypes.includes(file.type) &&
+        !allowedExtensions.includes(fileExtension)
+      ) {
+        throw new Error(
+          "Invalid file type. Only JPEG, PNG, WebP, and HEIC images are allowed.",
+        );
       }
 
       // SECURITY: Validate file size (20MB max)
       const maxSize = 20 * 1024 * 1024; // 20MB in bytes
       if (file.size > maxSize) {
-        throw new Error('File too large. Maximum size is 20MB.');
+        throw new Error("File too large. Maximum size is 20MB.");
       }
 
       // SECURITY: Check scan limit (20 scans max per user)
       if (user?.id) {
         const history = await getScanHistory(user.id);
         if (history && history.length >= 20) {
-          throw new Error('You have reached the maximum limit of 20 scans. Please delete old scans to create new ones.');
+          throw new Error(
+            "You have reached the maximum limit of 20 scans. Please delete old scans to create new ones.",
+          );
         }
       }
 
@@ -134,39 +166,37 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
         setFrontLandmarks(finalLandmarks);
         setFrontBox(finalBox);
 
-        if (mode === 'skincare') {
-            // SKIP EDITOR: Auto-save and jump to results
-             const result: FinalResult = {
-                frontPhotoUrl: standardized,
-                frontLandmarks: finalLandmarks as FrontLandmarks,
-                gender: "unknown",
-                race: "unknown",
-              };
-              setFinalResult(result);
-              setStep(8); // Jump to results
+        if (mode === "skincare") {
+          // SKIP EDITOR: Auto-save and jump to results
+          const result: FinalResult = {
+            frontPhotoUrl: standardized,
+            frontLandmarks: finalLandmarks as FrontLandmarks,
+            gender: "unknown",
+            race: "unknown",
+          };
+          setFinalResult(result);
+          setStep(8); // Jump to results
 
-              // AUTO-SAVE
-              if (user?.id) {
-                const metrics = calculateFrontRatios(finalLandmarks as FrontLandmarks);
-                const score = metrics.length > 0 
-                  ? calculateWeightedTotalScore(metrics)
-                  : 0;
-                
-                await saveScanResult(result, score, user.id);
-                await refreshHistory();
-                
-                // Force switch to skincare tab
-                const newUrl = new URL(window.location.href);
-                newUrl.searchParams.set("tab", "skincare");
-                // Wait for history refresh to get ID? Ideally, saveScanResult returns ID.
-                // For now, refreshHistory will reload list, we might need to select latest.
-                // But Dashboard will load latest if scanId param is missing or handle updates.
-                // We'll update URL to show skincare tab.
-                window.history.pushState({}, "", newUrl);
-              }
+          // AUTO-SAVE
+          if (user?.id) {
+            const metrics = calculateFrontRatios(
+              finalLandmarks as FrontLandmarks,
+            );
+            const score =
+              metrics.length > 0 ? calculateWeightedTotalScore(metrics) : 0;
+
+            await saveScanResult(result, score, user.id);
+            await refreshHistory();
+
+            setSearchParams((prev) => {
+              const newParams = new URLSearchParams(prev);
+              newParams.set("tab", "skincare");
+              return newParams;
+            });
+          }
         } else {
-            // Move to editing step
-            setStep(4);
+          // Move to editing step
+          setStep(4);
         }
         setLoading(false);
       };
@@ -179,7 +209,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
 
   const handleFrontEditComplete = (editedLandmarks: Record<string, Point>) => {
     setFrontLandmarks(editedLandmarks);
-    
+
     // Jump directly to results
     if (frontPhotoStandardized) {
       const result: FinalResult = {
@@ -194,10 +224,9 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
       // AUTO-SAVE with calculated score
       if (user?.id) {
         const metrics = calculateFrontRatios(editedLandmarks as FrontLandmarks);
-        const score = metrics.length > 0 
-          ? calculateWeightedTotalScore(metrics)
-          : 0;
-        
+        const score =
+          metrics.length > 0 ? calculateWeightedTotalScore(metrics) : 0;
+
         saveScanResult(result, score, user.id).then(() => {
           // Refresh history after save
           refreshHistory();
@@ -221,9 +250,11 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     setSidebarOpen(false); // Close sidebar on mobile selection
 
     // Update URL without reloading
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set("scanId", scan.id);
-    window.history.pushState({}, "", newUrl);
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("scanId", scan.id);
+      return newParams;
+    });
   };
 
   const startNewAnalysis = () => {
@@ -252,53 +283,64 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
         <>
           {/* Backdrop */}
           {isSidebarOpen && (
-            <div 
+            <div
               className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 md:hidden animate-fadeIn"
               onClick={() => setSidebarOpen(false)}
             />
           )}
-          
+
           {/* Sidebar */}
-          <div className={`
+          <div
+            className={`
             fixed inset-y-0 left-0 z-50 w-80 bg-[#0A0A0F] transform transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:block
             ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          `}>
-             <div className="absolute top-4 right-4 md:hidden z-10">
-               <button onClick={() => setSidebarOpen(false)} className="p-2 text-slate-400 hover:text-white">
-                 <X className="w-6 h-6" />
-               </button>
-             </div>
-             <AnalysisHistory 
-              onSelectScan={loadFromHistory} 
+          `}
+          >
+            <div className="absolute top-4 right-4 md:hidden z-10">
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 text-slate-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <AnalysisHistory
+              onSelectScan={loadFromHistory}
               onNewScan={startNewAnalysis}
               selectedScanId={selectedScanId || undefined}
-              isPaid={isPaid} 
+              isPaid={isPaid}
             />
           </div>
         </>
       )}
-      
+
       <div className="flex-1 flex flex-col min-w-0 bg-[#050510] relative z-0">
         {/* Mobile Header Toggle */}
         {user && (
           <div className="md:hidden p-4 flex items-center justify-between border-b border-white/5 bg-[#050510]/80 backdrop-blur-md sticky top-0 z-40">
-            <button 
+            <button
               onClick={() => setSidebarOpen(true)}
               className="p-2 -ml-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <span className="font-bold text-white text-sm tracking-tight">Facemaxify</span>
+            <span className="font-bold text-white text-sm tracking-tight">
+              Facemaxify
+            </span>
             <div className="w-10" /> {/* Spacer for balance */}
           </div>
         )}
 
-        <div className={`flex-1 relative custom-scrollbar ${step === 4 ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+        <div
+          className={`flex-1 relative custom-scrollbar ${step === 4 ? "overflow-hidden" : "overflow-y-auto"}`}
+        >
           {/* Main Content Area */}
           {step === 0 && (
             <div className="flex flex-col items-center justify-center p-8 min-h-full">
-               <div className="max-w-md w-full bg-slate-900/50 border border-white/5 backdrop-blur-xl rounded-3xl p-10 text-center shadow-2xl">
-                <h1 className="text-3xl font-black text-white mb-4 tracking-tight">Facial Analysis</h1>
+              <div className="max-w-md w-full bg-slate-900/50 border border-white/5 backdrop-blur-xl rounded-3xl p-10 text-center shadow-2xl">
+                <h1 className="text-3xl font-black text-white mb-4 tracking-tight">
+                  Facial Analysis
+                </h1>
                 <p className="text-slate-400 mb-10 font-medium tracking-tight">
                   Upload a front-facing photo to begin your aesthetic journey
                 </p>
@@ -311,7 +353,9 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
 
                 <div className="flex justify-center w-full">
                   <label className="cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-center text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-lg shadow-indigo-500/10 active:scale-[0.98] min-w-[200px]">
-                    <span>{loading ? "Processing..." : "Full Facial Analysis"}</span>
+                    <span>
+                      {loading ? "Processing..." : "Full Facial Analysis"}
+                    </span>
                     <input
                       type="file"
                       className="hidden"
@@ -319,7 +363,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
                       disabled={loading}
                       onChange={(e) => {
                         if (e.target.files?.[0]) {
-                          handleFrontPhotoUpload(e.target.files[0], 'full');
+                          handleFrontPhotoUpload(e.target.files[0], "full");
                         }
                       }}
                     />
@@ -329,27 +373,32 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
             </div>
           )}
 
-          {step === 4 && frontPhotoStandardized && frontLandmarks && frontBox && (
-            <div className="h-full">
-              <LandmarkEditor
-                photoUrl={frontPhotoStandardized}
-                initialLandmarks={frontLandmarks}
-                faceBox={frontBox}
-                onComplete={handleFrontEditComplete}
-                title="Refine My Landmarks"
-                landmarkType="front"
-              />
-            </div>
-          )}
+          {step === 4 &&
+            frontPhotoStandardized &&
+            frontLandmarks &&
+            frontBox && (
+              <div className="h-full">
+                <LandmarkEditor
+                  photoUrl={frontPhotoStandardized}
+                  initialLandmarks={frontLandmarks}
+                  faceBox={frontBox}
+                  onComplete={handleFrontEditComplete}
+                  title="Refine My Landmarks"
+                  landmarkType="front"
+                />
+              </div>
+            )}
 
           {step === 8 && finalResult && (
-            <ResultsDashboard 
-              data={finalResult} 
-              isPaid={isPaid} 
-              scanId={selectedScanId || undefined} 
+            <ResultsDashboard
+              data={finalResult}
+              isPaid={isPaid}
+              scanId={selectedScanId || undefined}
               onNewScan={startNewAnalysis}
               scans={historyData}
-              onUploadSkincare={(file) => handleFrontPhotoUpload(file, 'skincare')}
+              onUploadSkincare={(file) =>
+                handleFrontPhotoUpload(file, "skincare")
+              }
             />
           )}
 
@@ -357,8 +406,10 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
           {loading && step !== 0 && (
             <div className="absolute inset-0 bg-[#050510]/60 backdrop-blur-sm flex items-center justify-center z-50">
               <div className="text-center">
-                 <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                 <p className="text-slate-400 font-bold tracking-wide">Refining Analysis...</p>
+                <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-slate-400 font-bold tracking-wide">
+                  Refining Analysis...
+                </p>
               </div>
             </div>
           )}

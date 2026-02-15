@@ -23,6 +23,7 @@ import {
   FacialAnalysisSEO,
   GuidesSEO,
 } from "./components/SEO";
+import { FacialShapePage } from "./pages/FacialShapePage";
 
 const App: React.FC = () => {
   const { user, isLoaded } = useUser();
@@ -202,6 +203,8 @@ const App: React.FC = () => {
           </SignedIn>
         }
       />
+
+      <Route path="/tools/facial-shape" element={<FacialShapePage />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

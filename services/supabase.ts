@@ -123,12 +123,27 @@ export const deleteScan = async (
     }
 
     // 2. Archive to deleted_scans table
-    const { error: archiveError } = await supabase
-      .from("deleted_scans")
-      .insert({
+    // 2. Archive to deleted_scans table
+    let archiveError = (
+      await supabase.from("deleted_scans").insert({
         ...scan,
         deleted_at: new Date().toISOString(),
-      });
+      })
+    ).error;
+
+    // Fallback: If archive fails due to missing skincare_analysis column, remove it and retry
+    if (archiveError && archiveError.message?.includes("skincare_analysis")) {
+      console.warn(
+        "Archiving failed due to schema mismatch. Retrying without skincare_analysis...",
+      );
+      const { skincare_analysis, ...legacyScan } = scan;
+      archiveError = (
+        await supabase.from("deleted_scans").insert({
+          ...legacyScan,
+          deleted_at: new Date().toISOString(),
+        })
+      ).error;
+    }
 
     if (archiveError) {
       console.error("Failed to archive scan:", archiveError);

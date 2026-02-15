@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
@@ -195,6 +195,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [analysis, setAnalysis] = useState<any>(null); // Now expecting JSON object
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
+  // SKINCARE STATE (Moved up for access)
+  const [skincareAnalysis, setSkincareAnalysis] = useState<any>(null);
+  const [loadingSkincare, setLoadingSkincare] = useState(false);
+
+  // Trace latest skincare analysis for async merging
+  const skincareAnalysisRef = useRef(skincareAnalysis);
+  useEffect(() => {
+    skincareAnalysisRef.current = skincareAnalysis;
+  }, [skincareAnalysis]);
+
   // Reset analysis state when switching to a different scan
   useEffect(() => {
     // Always reset local state when scanId changes or data changes
@@ -240,10 +250,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
           );
 
           if (result) {
-            setAnalysis(result);
+            // Merge with existing skincare analysis if present (to avoid race condition overwrite)
+            const currentSkincare = skincareAnalysisRef.current;
+            const completeAnalysis = {
+              ...result,
+              skincare: currentSkincare || result.skincare,
+            };
+
+            setAnalysis(completeAnalysis);
+
             // 3. Save to DB immediately if we have scanId
             if (scanId && user?.id) {
-              await updateScanAnalysis(scanId, user.id, result);
+              await updateScanAnalysis(scanId, user.id, completeAnalysis);
               console.log("Analysis saved to DB for scan:", scanId);
             } else {
               console.warn("Cannot save analysis: Missing scanId or userId", {
@@ -266,9 +284,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // ---------------------------------------------------------------------------
   // SKINCARE ANALYSIS LOGIC
   // ---------------------------------------------------------------------------
-  const [skincareAnalysis, setSkincareAnalysis] = useState<any>(null);
-  const [loadingSkincare, setLoadingSkincare] = useState(false);
-
+  // State defined at top of component for access in loadAnalysis
   useEffect(() => {
     const loadSkincare = async () => {
       // Check if skincare analysis already exists in the main analysis object or data prop

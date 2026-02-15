@@ -430,15 +430,18 @@ export const GoldenRatioAnalyzer: React.FC = () => {
                 {/* CTA */}
                 <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 text-center">
                   <h4 className="font-bold text-white mb-2">
-                    Want to improve your score?
+                    Want a detailed breakdown?
                   </h4>
                   <p className="text-slate-400 text-sm mb-4">
-                    Our premium guides cover mewing, skincare, and styling to
-                    maximize your potential.
+                    Get a comprehensive analysis of all your facial features,
+                    symmetry, and potential.
                   </p>
-                  <button className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                    View Guides
-                  </button>
+                  <a
+                    href="/"
+                    className="inline-block px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm"
+                  >
+                    Get Full Facial Analysis
+                  </a>
                 </div>
               </div>
             )}

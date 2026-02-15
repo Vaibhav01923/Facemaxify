@@ -385,6 +385,23 @@ export const FacialShapeAnalyzer: React.FC = () => {
               </div>
             </div>
 
+            {/* Premium CTA */}
+            <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 text-center">
+              <h4 className="font-bold text-white mb-2">
+                Want a detailed breakdown?
+              </h4>
+              <p className="text-slate-400 text-sm mb-4">
+                Get a comprehensive analysis of all your facial features,
+                symmetry, and potential.
+              </p>
+              <a
+                href="/"
+                className="inline-block px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm"
+              >
+                Get Full Facial Analysis
+              </a>
+            </div>
+
             {/* Try Again Button */}
             <div className="text-center">
               <button

@@ -80,9 +80,9 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     setError(null);
     try {
       // SECURITY: Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'];
       if (!allowedTypes.includes(file.type)) {
-        throw new Error('Invalid file type. Only JPEG, PNG, and WebP images are allowed.');
+        throw new Error('Invalid file type. Only JPEG, PNG, WebP, and HEIC images are allowed.');
       }
 
       // SECURITY: Validate file size (20MB max)

@@ -110,4 +110,3 @@ export const RatioRow: React.FC<RatioRowProps> = ({ metric, onHover, onClick, is
     </div>
   );
 };
-```

@@ -319,7 +319,7 @@ export const LandingPage: React.FC = () => {
 
                     <div 
                       onClick={() => {
-                        navigator.clipboard.writeText("EPSTEIN");
+                        navigator.clipboard.writeText("EARLY40");
                         // Simple visual feedback could be added here if we had a toast lib
                         // For now we can change text momentarily or just rely on user knowing it copied
                         const el = document.getElementById("code-text");
@@ -332,7 +332,7 @@ export const LandingPage: React.FC = () => {
                       className="w-full bg-indigo-500/10 border border-indigo-500/30 border-dashed rounded-lg p-3 flex flex-col items-center gap-1 group/code cursor-pointer transition-colors hover:bg-indigo-500/20 active:scale-95 select-none"
                     >
                       <span className="text-[10px] text-indigo-300 uppercase tracking-widest font-bold">Use Code (Click to Copy)</span>
-                      <span id="code-text" className="text-2xl font-mono font-bold text-white tracking-widest group-hover/code:text-indigo-200 transition-colors">EPSTEIN</span>
+                      <span id="code-text" className="text-2xl font-mono font-bold text-white tracking-widest group-hover/code:text-indigo-200 transition-colors">EARLY40</span>
                     </div>
 
                     <button

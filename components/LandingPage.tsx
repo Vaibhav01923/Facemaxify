@@ -294,7 +294,7 @@ export const LandingPage: React.FC = () => {
                   {/* Left Side: Text */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-4">
-                      Limited Time Launch Offer
+                      Limited Time Launch Offer (41% OFF)
                     </div>
                     <h3 className="text-3xl sm:text-5xl font-black text-white mb-2 tracking-tight">
                       Full Access Pass
@@ -314,7 +314,7 @@ export const LandingPage: React.FC = () => {
                   <div className="flex flex-col items-center gap-4 min-w-[280px]">
                     <div className="text-center">
                        <span className="text-slate-500 line-through text-lg font-bold mr-2">$10</span>
-                       <span className="text-5xl sm:text-6xl font-black text-white tracking-tighter shadow-indigo-500/50 drop-shadow-lg">$5</span>
+                       <span className="text-5xl sm:text-6xl font-black text-white tracking-tighter shadow-indigo-500/50 drop-shadow-lg">$5.99</span>
                     </div>
 
                     <div 

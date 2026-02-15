@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { BrowserRouter } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
 import "./index.css";
 
@@ -24,5 +25,6 @@ root.render(
         <App />
       </BrowserRouter>
     </ClerkProvider>
+    <Analytics />
   </React.StrictMode>,
 );

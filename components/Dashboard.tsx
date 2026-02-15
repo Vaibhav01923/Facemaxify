@@ -5,6 +5,7 @@ import { useUser } from "@clerk/clerk-react";
 import { FinalResult } from "../types";
 import {
   calculateFrontRatios,
+  calculateWeightedTotalScore,
   MetricResult,
 } from "../services/ratioCalculator";
 import { Button } from "./Button";

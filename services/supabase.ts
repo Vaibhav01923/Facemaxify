@@ -143,31 +143,6 @@ export const deleteScan = async (scanId: string, userId: string): Promise<boolea
   }
 };
 
-export const updateScanLandmarks = async (
-  scanId: string,
-  userId: string,
-  frontLandmarks: any,
-  newScore: number
-): Promise<boolean> => {
-  try {
-    const { error } = await supabase
-      .from("scans")
-      .update({
-        front_landmarks: frontLandmarks,
-        overall_score: newScore,
-      })
-      .eq("id", scanId)
-      .eq("user_id", userId);
-
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.error("Update Landmarks Error:", error);
-    return false;
-  }
-};
-
-
 export const updateScanAnalysis = async (
   scanId: string,
   userId: string,

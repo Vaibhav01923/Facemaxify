@@ -103,12 +103,6 @@ const App: React.FC = () => {
     }
   }, [user]);
 
-  // Check if the current user is the owner (bypass payment)
-  const isOwner = user?.primaryEmailAddress?.emailAddress === "kandpal1221@gmail.com";
-  
-  // Grant access if owner OR paid
-  const hasAccess = isOwner || isPaid;
-
   // Show loader while Clerk is loading, OR while we are checking payment, 
   // OR if we have a user but haven't determined their paid status yet.
   const isDeterminingAccess = !isLoaded || checkingPayment || (user && isPaid === null);
@@ -141,7 +135,7 @@ const App: React.FC = () => {
         path="/dashboard"
         element={
           <SignedIn>
-            <DashboardHome isPaid={hasAccess} />
+            <DashboardHome isPaid={isPaid} />
           </SignedIn>
         }
       />
@@ -150,7 +144,7 @@ const App: React.FC = () => {
         path="/dashboard/facial-analysis"
         element={
           <SignedIn>
-            <FacialAnalysis isPaid={hasAccess} />
+            <FacialAnalysis isPaid={isPaid} />
           </SignedIn>
         }
       />
@@ -159,7 +153,7 @@ const App: React.FC = () => {
         path="/dashboard/guides"
         element={
           <SignedIn>
-            <Guides isPaid={hasAccess} />
+            <Guides isPaid={isPaid} />
           </SignedIn>
         }
       />
@@ -168,7 +162,7 @@ const App: React.FC = () => {
         path="/dashboard/guides/:guideId"
         element={
           <SignedIn>
-            {hasAccess ? <GuideDetail /> : <Navigate to="/dashboard/guides" replace />}
+            {isPaid ? <GuideDetail /> : <Navigate to="/dashboard/guides" replace />}
           </SignedIn>
         }
       />

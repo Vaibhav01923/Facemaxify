@@ -182,10 +182,13 @@ export const updateScanAnalysis = async (
       .eq("id", scanId)
       .eq("user_id", userId);
 
-    if (error) throw error;
+    if (error) {
+        console.error("Supabase Update Error:", error);
+        throw error;
+    }
     return true;
   } catch (error) {
-    console.error("Update Analysis Error:", error);
+    console.error("Update Analysis Exception:", error);
     return false;
   }
 };

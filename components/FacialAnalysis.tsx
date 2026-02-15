@@ -79,6 +79,26 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({ isPaid = false 
     setLoading(true);
     setError(null);
     try {
+      // SECURITY: Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('Invalid file type. Only JPEG, PNG, and WebP images are allowed.');
+      }
+
+      // SECURITY: Validate file size (20MB max)
+      const maxSize = 20 * 1024 * 1024; // 20MB in bytes
+      if (file.size > maxSize) {
+        throw new Error('File too large. Maximum size is 20MB.');
+      }
+
+      // SECURITY: Check scan limit (20 scans max per user)
+      if (user?.id) {
+        const history = await getScanHistory(user.id);
+        if (history && history.length >= 20) {
+          throw new Error('You have reached the maximum limit of 20 scans. Please delete old scans to create new ones.');
+        }
+      }
+
       // Convert to base64
       const reader = new FileReader();
       reader.onload = async (e) => {

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaceMesh } from "@mediapipe/face_mesh";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import {
   Upload,
   Loader2,
@@ -15,6 +16,8 @@ import {
 } from "../../utils/goldenRatioCalculator";
 
 export const GoldenRatioAnalyzer: React.FC = () => {
+  const { isSignedIn } = useUser();
+  const { openSignIn } = useClerk();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<GoldenRatioResult | null>(null);
@@ -427,21 +430,33 @@ export const GoldenRatioAnalyzer: React.FC = () => {
                   </div>
                 </div>
 
-                {/* CTA */}
-                <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 text-center">
-                  <h4 className="font-bold text-white mb-2">
-                    Want a detailed breakdown?
+                {/* Accuracy Disclaimer & Upsell CTA */}
+                <div className="mt-8 p-6 bg-slate-800/50 border border-slate-700 rounded-2xl text-center relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500/0 via-amber-500/50 to-amber-500/0"></div>
+                  <h4 className="font-bold text-white mb-2 text-xl">
+                    Want an accurate analysis of your facial attractiveness?
                   </h4>
-                  <p className="text-slate-400 text-sm mb-4">
+                  <p className="text-slate-300 text-base mb-6 leading-relaxed max-w-lg mx-auto">
                     Get a comprehensive analysis of all your facial features,
-                    symmetry, and potential.
+                    symmetry, and potential from our most accurate tool here.
                   </p>
-                  <a
-                    href="/"
-                    className="inline-block px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm"
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!isSignedIn) {
+                        openSignIn({
+                          forceRedirectUrl:
+                            "https://facemaxify.com/dashboard/facial-analysis",
+                        });
+                      } else {
+                        window.location.href =
+                          "https://facemaxify.com/dashboard/facial-analysis";
+                      }
+                    }}
+                    className="inline-block w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg shadow-amber-500/20"
                   >
                     Get Full Facial Analysis
-                  </a>
+                  </button>
                 </div>
               </div>
             )}

@@ -122,7 +122,7 @@ export const LandingPage: React.FC = () => {
                 href="/tools/golden-ratio"
                 className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 text-amber-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
               >
-                <span>✨ Golden Ratio</span>
+                <span>✨ Golden Ratio Face Analysis Tool</span>
                 <ArrowRight className="w-3 h-3" />
               </a>
             </div>

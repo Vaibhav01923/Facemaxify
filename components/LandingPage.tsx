@@ -115,14 +115,21 @@ export const LandingPage: React.FC = () => {
                 href="/tools/facial-shape"
                 className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 text-indigo-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
               >
-                <span>📐 Face Shape Detector</span>
+                <span>📐 Face Shape</span>
+                <ArrowRight className="w-3 h-3" />
+              </a>
+              <a
+                href="/tools/canthal-tilt"
+                className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 text-purple-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+              >
+                <span>👁️ Eye Tilt</span>
                 <ArrowRight className="w-3 h-3" />
               </a>
               <a
                 href="/tools/golden-ratio"
                 className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 text-amber-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
               >
-                <span>✨ Golden Ratio Face Analysis Tool</span>
+                <span>✨ Golden Ratio</span>
                 <ArrowRight className="w-3 h-3" />
               </a>
             </div>

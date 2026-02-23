@@ -99,10 +99,11 @@ const TOOLS: Tool[] = [
   {
     id: "canthal-tilt",
     title: "Canthal Tilt Analyzer",
-    description: "Measure your eye tilt (positive, neutral, negative).",
-    icon: "📏",
+    description: "Measure your precise eye tilt (positive, neutral, negative).",
+    icon: "👁️",
     category: "Eyes",
-    status: "Coming Soon",
+    status: "Live",
+    link: "/tools/canthal-tilt",
   },
   {
     id: "glasses",

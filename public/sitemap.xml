@@ -35,4 +35,11 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Canthal Tilt Tool -->
+  <url>
+    <loc>https://facemaxify.com/tools/canthal-tilt</loc>
+    <lastmod>2026-02-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

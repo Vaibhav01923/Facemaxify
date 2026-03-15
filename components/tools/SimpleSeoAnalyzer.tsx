@@ -409,7 +409,7 @@ export const SimpleSeoAnalyzer: React.FC<SimpleSeoAnalyzerProps> = ({
               <div className="mt-6 flex items-start gap-3 rounded-2xl border border-emerald-400/15 bg-emerald-400/10 p-4 text-sm text-slate-100">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
                 <span>
-                  This is a lightweight preview. The full Facemaxify page goes much deeper with the detailed analysis and more measurements.
+                  This preview is not fully accurate and can be off. For a more accurate result, use the main Facemaxify tool with the full detailed analysis.
                 </span>
               </div>
             </>

@@ -47,6 +47,23 @@ export const Navbar: React.FC = () => {
                     Popular Tools
                   </div>
                   <a
+                    href="/facial-harmony-analyzer"
+                    className="flex items-start gap-3 px-4 py-3 hover:bg-slate-800 transition-colors group/item block"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-lg mt-0.5 group-hover/item:bg-amber-500/20 transition-colors flex-shrink-0">
+                      🎯
+                    </div>
+                    <div>
+                      <div className="text-white font-medium mb-0.5 group-hover/item:text-amber-300 transition-colors">
+                        Facial Harmony Analyzer
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        Broad keyword page into full report
+                      </div>
+                    </div>
+                  </a>
+
+                  <a
                     href="/tools/facial-shape"
                     className="flex items-start gap-3 px-4 py-3 hover:bg-slate-800 transition-colors group/item block"
                   >
@@ -70,7 +87,7 @@ export const Navbar: React.FC = () => {
                     className="flex items-center justify-between px-4 py-3 hover:bg-indigo-500/10 transition-colors group/all block"
                   >
                     <span className="text-sm font-medium text-indigo-400 group-hover/all:text-indigo-300">
-                      View All 20+ Tools
+                      View All Tools and Pages
                     </span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

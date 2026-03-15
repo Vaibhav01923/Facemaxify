@@ -35,6 +35,47 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Facial Harmony Analyzer -->
+  <url>
+    <loc>https://facemaxify.com/facial-harmony-analyzer</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Facial Harmony Score -->
+  <url>
+    <loc>https://facemaxify.com/facial-harmony-score</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Face Ratio Analyzer -->
+  <url>
+    <loc>https://facemaxify.com/face-ratio-analyzer</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Face Symmetry Test -->
+  <url>
+    <loc>https://facemaxify.com/face-symmetry-test</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Looksmax Calculator -->
+  <url>
+    <loc>https://facemaxify.com/looksmax-calculator</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Canthal Tilt Tool -->
   <url>
     <loc>https://facemaxify.com/tools/canthal-tilt</loc>

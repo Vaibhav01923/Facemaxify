@@ -112,6 +112,13 @@ export const LandingPage: React.FC = () => {
 
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide max-w-full">
               <a
+                href="/facial-harmony-analyzer"
+                className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+              >
+                <span>🎯 Harmony</span>
+                <ArrowRight className="w-3 h-3" />
+              </a>
+              <a
                 href="/tools/facial-shape"
                 className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 text-indigo-300 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
               >

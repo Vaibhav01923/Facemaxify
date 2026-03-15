@@ -37,6 +37,46 @@ const TOOLS: Tool[] = [
     link: "/tools/golden-ratio",
   },
   {
+    id: "facial-harmony-analyzer",
+    title: "Facial Harmony Analyzer",
+    description:
+      "Learn how full-face harmony analysis works, then unlock the deeper multi-ratio report.",
+    icon: "🎯",
+    category: "Face",
+    status: "Live",
+    link: "/facial-harmony-analyzer",
+  },
+  {
+    id: "face-ratio-analyzer",
+    title: "Face Ratio Analyzer",
+    description:
+      "Understand which facial proportions matter before running the main analysis.",
+    icon: "📏",
+    category: "Face",
+    status: "Live",
+    link: "/face-ratio-analyzer",
+  },
+  {
+    id: "face-symmetry-test",
+    title: "Face Symmetry Test",
+    description:
+      "Explore left-right facial balance and why symmetry is only one part of harmony.",
+    icon: "⚖️",
+    category: "Face",
+    status: "Live",
+    link: "/face-symmetry-test",
+  },
+  {
+    id: "looksmax-calculator",
+    title: "Looksmax Calculator",
+    description:
+      "Search-intent page for users who want objective facial improvement feedback.",
+    icon: "🚀",
+    category: "Face",
+    status: "Live",
+    link: "/looksmax-calculator",
+  },
+  {
     id: "face-age",
     title: "Face Age Estimator",
     description: "AI-powered estimation of your perceived facial age.",
@@ -80,14 +120,6 @@ const TOOLS: Tool[] = [
   },
 
   // Phase 3 & 4
-  {
-    id: "symmetry",
-    title: "Facial Symmetry Test",
-    description: "Check how symmetrical your facial features are.",
-    icon: "⚖️",
-    category: "Face",
-    status: "Coming Soon",
-  },
   {
     id: "hairstyles",
     title: "Hairstyle Recommender",
@@ -142,8 +174,8 @@ export const ToolsDirectoryPage: React.FC = () => {
     <div className="min-h-screen bg-[#050510] relative overflow-hidden">
       <SEO
         title="Free AI Facial Analysis Tools Directory | Facemaxify"
-        description="Explore our collection of free AI-powered facial analysis tools. Detect your face shape, analyze symmetry, find your golden ratio, and more."
-        keywords="free face analysis tools, AI beauty tools, face shape detector, golden ratio calculator, eye shape analyzer, looksmax tools"
+        description="Explore Facemaxify's free AI facial analysis tools and SEO topic pages. Detect face shape, measure golden ratio, learn facial harmony, and funnel into the full premium report."
+        keywords="free face analysis tools, AI beauty tools, face shape detector, golden ratio calculator, facial harmony analyzer, face ratio analyzer, looksmax calculator"
         canonicalUrl="https://facemaxify.com/tools"
       />
 
@@ -181,7 +213,8 @@ export const ToolsDirectoryPage: React.FC = () => {
             className="text-slate-400 text-lg max-w-2xl mx-auto"
           >
             Discover insights about your facial features with our suite of
-            advanced AI tools. Private, secure, and completely free to start.
+            advanced AI tools and high-intent analysis pages. Private, secure,
+            and built to guide you toward the full Facemaxify report.
           </motion.p>
         </div>
 

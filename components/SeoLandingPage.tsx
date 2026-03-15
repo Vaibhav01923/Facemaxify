@@ -1,6 +1,6 @@
 import React from "react";
 import { useClerk, useUser } from "@clerk/clerk-react";
-import { ArrowRight, BarChart3, Lock, ScanSearch, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SEO } from "./SEO";
 import { Navbar } from "./Navbar";
 import { SimpleSeoAnalyzer } from "./tools/SimpleSeoAnalyzer";
@@ -72,63 +72,22 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({ page }) => {
 
           <main className="px-4 py-14 sm:px-6 lg:px-8">
             <div className="mx-auto flex max-w-6xl flex-col gap-10">
-              <section className="grid gap-8 rounded-[32px] border border-white/10 bg-slate-950/70 p-8 shadow-2xl shadow-black/30 lg:grid-cols-[1.2fr_0.8fr] lg:p-12">
-                <div>
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-sky-200">
-                    <Sparkles className="h-4 w-4" />
-                    {page.heroEyebrow}
-                  </div>
-                  <h1 className="max-w-3xl text-4xl font-black tracking-tight text-white sm:text-6xl">
-                    {page.heroTitle}
-                  </h1>
-                  <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
-                    {page.heroDescription}
-                  </p>
-
-                  <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                    <button
-                      onClick={startFullAnalysis}
-                      className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-slate-200"
-                    >
-                      Run Full Harmony Analysis
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                    <a
-                      href="/tools"
-                      className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
-                    >
-                      Explore Free Tools
-                      <ScanSearch className="h-4 w-4" />
-                    </a>
-                  </div>
+              <section className="rounded-[32px] border border-white/10 bg-slate-950/70 p-8 shadow-2xl shadow-black/30 lg:p-10">
+                <h1 className="max-w-3xl text-4xl font-black tracking-tight text-white sm:text-6xl">
+                  {page.heroTitle}
+                </h1>
+                <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-300 sm:text-xl">
+                  {page.heroDescription}
+                </p>
+                <div className="mt-6">
+                  <button
+                    onClick={startFullAnalysis}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-slate-200"
+                  >
+                    Open Full Analysis
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </div>
-
-                <aside className="rounded-[28px] border border-amber-400/15 bg-gradient-to-br from-amber-300/10 via-slate-900 to-slate-950 p-6">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-100">
-                    <Lock className="h-3.5 w-3.5" />
-                    Main feature
-                  </div>
-                  <h2 className="mt-4 text-2xl font-bold text-white">
-                    Keep the real edge in the core product
-                  </h2>
-                  <p className="mt-4 leading-7 text-slate-300">
-                    These pages are built to rank for broad search terms. The
-                    deeper Facemaxify experience stays inside the main analyzer,
-                    where users unlock a proprietary 25+ ratio facial harmony
-                    report with a score and stronger context.
-                  </p>
-
-                  <div className="mt-6 space-y-3 text-sm text-slate-200">
-                    <div className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/5 p-3">
-                      <BarChart3 className="mt-0.5 h-4 w-4 text-sky-300" />
-                      <span>Broad search page outside, deeper scoring logic inside.</span>
-                    </div>
-                    <div className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/5 p-3">
-                      <Sparkles className="mt-0.5 h-4 w-4 text-amber-300" />
-                      <span>Every subpage funnels users into the full analysis instead of leaking the whole method.</span>
-                    </div>
-                  </div>
-                </aside>
               </section>
 
               <SimpleSeoAnalyzer
@@ -253,34 +212,6 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({ page }) => {
                     ))}
                   </div>
                 </div>
-              </section>
-
-              <section className="rounded-[32px] border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/20 lg:p-8">
-                <div className="mb-5 max-w-3xl">
-                  <h2 className="text-3xl font-black text-white sm:text-4xl">
-                    For detailed analysis like this
-                  </h2>
-                  <p className="mt-3 text-lg leading-8 text-slate-300">
-                    Visit our main page for the full Facemaxify facial analysis:
-                    <a
-                      href="https://facemaxify.com/dashboard/facial-analysis"
-                      className="ml-2 font-semibold text-sky-300 transition hover:text-sky-200"
-                    >
-                      https://facemaxify.com/dashboard/facial-analysis
-                    </a>
-                  </p>
-                </div>
-
-                <a
-                  href="https://facemaxify.com/dashboard/facial-analysis"
-                  className="group block overflow-hidden rounded-[28px] border border-white/8 bg-black/30"
-                >
-                  <img
-                    src="/pagepromo.jpg"
-                    alt="Facemaxify detailed facial analysis preview"
-                    className="w-full object-cover transition duration-300 group-hover:scale-[1.01]"
-                  />
-                </a>
               </section>
             </div>
           </main>

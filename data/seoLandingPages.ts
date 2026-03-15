@@ -16,6 +16,17 @@ export interface SeoLandingPageConfig {
     question: string;
     answer: string;
   }>;
+  quickTool: {
+    title: string;
+    description: string;
+    questions: Array<{
+      id: string;
+      label: string;
+      helper: string;
+    }>;
+    scoreLabel: string;
+    resultLabels: [string, string, string];
+  };
 }
 
 export const seoLandingPages: SeoLandingPageConfig[] = [
@@ -81,6 +92,19 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
           "This page is built to explain the concept and rank for informational searches. The full Facemaxify analyzer is where the deeper proprietary multi-ratio breakdown and score live.",
       },
     ],
+    quickTool: {
+      title: "Quick facial harmony check",
+      description:
+        "Upload a photo for reference, rate a few visible traits, and get a lightweight preview score before using the full analyzer.",
+      questions: [
+        { id: "symmetry", label: "How balanced does your face look left-to-right?", helper: "Rate from visibly uneven to very balanced." },
+        { id: "spacing", label: "How balanced do your eye, nose, and mouth spacing look?", helper: "Think overall feature placement, not perfection." },
+        { id: "lowerThird", label: "How strong does your lower-third balance look?", helper: "Jaw, lips, and chin working together." },
+        { id: "overall", label: "How harmonious does the full face feel at first glance?", helper: "Your quick overall impression." },
+      ],
+      scoreLabel: "Preview harmony score",
+      resultLabels: ["Needs more context", "Fairly balanced", "Strong visual harmony"],
+    },
   },
   {
     slug: "facial-harmony-score",
@@ -144,6 +168,19 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
           "Because the core product is the proprietary analysis engine. These public pages are designed to rank for broad search terms and funnel users into the deeper report.",
       },
     ],
+    quickTool: {
+      title: "Quick harmony score estimator",
+      description:
+        "This free version gives you a rough directional score. The real score comes from the deeper ratio-based report inside Facemaxify.",
+      questions: [
+        { id: "balance", label: "How balanced do your main features look together?", helper: "Eyes, nose, lips, and jaw as a set." },
+        { id: "symmetry", label: "How symmetrical does your face appear?", helper: "Left side versus right side." },
+        { id: "proportion", label: "How proportionate do your facial thirds look?", helper: "Upper, mid, and lower face." },
+        { id: "structure", label: "How strong does your structure read in photos?", helper: "A rough visual impression only." },
+      ],
+      scoreLabel: "Estimated harmony score",
+      resultLabels: ["Basic estimate only", "Promising structure", "High-potential result"],
+    },
   },
   {
     slug: "face-ratio-analyzer",
@@ -207,6 +244,19 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
           "There is no perfect fixed number, but broader coverage is generally better than a one-ratio tool. Facemaxify's main feature goes far beyond the public overview pages.",
       },
     ],
+    quickTool: {
+      title: "Quick face ratio preview",
+      description:
+        "Use this simple free check to estimate how balanced your facial proportions feel before getting the full multi-ratio report.",
+      questions: [
+        { id: "lengthWidth", label: "How balanced is your face length versus width?", helper: "Too long or too wide lowers the score." },
+        { id: "eyes", label: "How balanced is your eye spacing?", helper: "Think natural spacing and placement." },
+        { id: "noseMouth", label: "How balanced is nose width relative to mouth width?", helper: "A quick visual estimate is enough." },
+        { id: "thirds", label: "How even do your facial thirds look?", helper: "Forehead, midface, and lower face." },
+      ],
+      scoreLabel: "Ratio balance preview",
+      resultLabels: ["Ratios may be uneven", "Moderately balanced", "Ratios look strong"],
+    },
   },
   {
     slug: "face-symmetry-test",
@@ -269,6 +319,19 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
           "Because symmetry is only one dimension. The main analyzer adds broader ratio coverage and a fuller interpretation of facial structure.",
       },
     ],
+    quickTool: {
+      title: "Quick symmetry checker",
+      description:
+        "This free check estimates visible balance between the left and right sides of your face. It is intentionally simple and not a full structural analysis.",
+      questions: [
+        { id: "eyes", label: "How even do your eyes and brows look?", helper: "Compare left and right side height and shape." },
+        { id: "nose", label: "How centered does your nose appear?", helper: "Rough visual alignment only." },
+        { id: "mouth", label: "How level does your mouth area look?", helper: "Check lip height and smile line." },
+        { id: "jaw", label: "How even does your jawline look on both sides?", helper: "Use your best quick estimate." },
+      ],
+      scoreLabel: "Symmetry preview",
+      resultLabels: ["Visible asymmetry", "Moderate symmetry", "Strong symmetry"],
+    },
   },
   {
     slug: "looksmax-calculator",
@@ -332,6 +395,19 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
           "These public pages are educational and SEO-focused, but the main Facemaxify analyzer is where the deeper proprietary facial harmony system and score are offered.",
       },
     ],
+    quickTool: {
+      title: "Quick looksmax check",
+      description:
+        "This simple free tool gives a rough visual baseline. The detailed version happens in the main facial analysis dashboard.",
+      questions: [
+        { id: "structure", label: "How strong does your facial structure look?", helper: "Jaw, cheekbones, and overall frame." },
+        { id: "balance", label: "How balanced do your features look together?", helper: "Overall facial harmony." },
+        { id: "presence", label: "How strong is your eye area and first impression?", helper: "Your quick visual read." },
+        { id: "photogenic", label: "How well does your face usually photograph?", helper: "General photo performance." },
+      ],
+      scoreLabel: "Looksmax preview score",
+      resultLabels: ["Needs deeper analysis", "Good starting point", "Strong improvement potential"],
+    },
   },
 ];
 

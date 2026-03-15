@@ -3,6 +3,7 @@ import { useClerk, useUser } from "@clerk/clerk-react";
 import { ArrowRight, BarChart3, Lock, ScanSearch, Sparkles } from "lucide-react";
 import { SEO } from "./SEO";
 import { Navbar } from "./Navbar";
+import { SimpleSeoAnalyzer } from "./tools/SimpleSeoAnalyzer";
 import {
   SeoLandingPageConfig,
   seoLandingPages,
@@ -130,6 +131,11 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({ page }) => {
                 </aside>
               </section>
 
+              <SimpleSeoAnalyzer
+                page={page}
+                onOpenFullAnalysis={startFullAnalysis}
+              />
+
               <section className="grid gap-6 lg:grid-cols-[1fr_0.78fr]">
                 <div className="rounded-[28px] border border-white/8 bg-slate-950/70 p-8">
                   <h2 className="text-2xl font-bold text-white sm:text-3xl">
@@ -247,6 +253,34 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({ page }) => {
                     ))}
                   </div>
                 </div>
+              </section>
+
+              <section className="rounded-[32px] border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/20 lg:p-8">
+                <div className="mb-5 max-w-3xl">
+                  <h2 className="text-3xl font-black text-white sm:text-4xl">
+                    For detailed analysis like this
+                  </h2>
+                  <p className="mt-3 text-lg leading-8 text-slate-300">
+                    Visit our main page for the full Facemaxify facial analysis:
+                    <a
+                      href="https://facemaxify.com/dashboard/facial-analysis"
+                      className="ml-2 font-semibold text-sky-300 transition hover:text-sky-200"
+                    >
+                      https://facemaxify.com/dashboard/facial-analysis
+                    </a>
+                  </p>
+                </div>
+
+                <a
+                  href="https://facemaxify.com/dashboard/facial-analysis"
+                  className="group block overflow-hidden rounded-[28px] border border-white/8 bg-black/30"
+                >
+                  <img
+                    src="/pagepromo.jpg"
+                    alt="Facemaxify detailed facial analysis preview"
+                    className="w-full object-cover transition duration-300 group-hover:scale-[1.01]"
+                  />
+                </a>
               </section>
             </div>
           </main>

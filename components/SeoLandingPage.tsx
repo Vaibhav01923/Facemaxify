@@ -16,7 +16,10 @@ interface SeoLandingPageProps {
 export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({ page }) => {
   const { isSignedIn } = useUser();
   const { openSignIn } = useClerk();
-  const relatedPages = seoLandingPages.filter((entry) => entry.slug !== page.slug);
+  const relatedPages = seoLandingPages
+    .filter((entry) => entry.slug !== page.slug)
+    .sort((a, b) => Number(b.category === page.category) - Number(a.category === page.category))
+    .slice(0, 6);
 
   const startFullAnalysis = () => {
     if (isSignedIn) {

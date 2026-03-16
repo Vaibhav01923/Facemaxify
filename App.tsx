@@ -27,11 +27,7 @@ import { FacialShapePage } from "./pages/FacialShapePage";
 import { ToolsDirectoryPage } from "./pages/ToolsDirectoryPage";
 import { GoldenRatioPage } from "./pages/GoldenRatioPage";
 import { CanthalTiltPage } from "./pages/CanthalTiltPage";
-import { FacialHarmonyAnalyzerPage } from "./pages/FacialHarmonyAnalyzerPage";
-import { FacialHarmonyScorePage } from "./pages/FacialHarmonyScorePage";
-import { FaceRatioAnalyzerPage } from "./pages/FaceRatioAnalyzerPage";
-import { FaceSymmetryTestPage } from "./pages/FaceSymmetryTestPage";
-import { LooksmaxCalculatorPage } from "./pages/LooksmaxCalculatorPage";
+import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
 
 const App: React.FC = () => {
   const { user, isLoaded } = useUser();
@@ -216,14 +212,7 @@ const App: React.FC = () => {
       <Route path="/tools/facial-shape" element={<FacialShapePage />} />
       <Route path="/tools/golden-ratio" element={<GoldenRatioPage />} />
       <Route path="/tools/canthal-tilt" element={<CanthalTiltPage />} />
-      <Route
-        path="/facial-harmony-analyzer"
-        element={<FacialHarmonyAnalyzerPage />}
-      />
-      <Route path="/facial-harmony-score" element={<FacialHarmonyScorePage />} />
-      <Route path="/face-ratio-analyzer" element={<FaceRatioAnalyzerPage />} />
-      <Route path="/face-symmetry-test" element={<FaceSymmetryTestPage />} />
-      <Route path="/looksmax-calculator" element={<LooksmaxCalculatorPage />} />
+      <Route path="/:slug" element={<SeoLandingPageRoute />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

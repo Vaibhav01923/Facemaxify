@@ -3,6 +3,7 @@ import { FrontLandmarks, Point } from "../types";
 import { distance } from "../utils/geometry";
 
 export interface MetricResult {
+  key: keyof typeof RATIO_CONFIGS;
   name: string;
   value: number;
   unit: string;
@@ -11,6 +12,8 @@ export interface MetricResult {
   score: number; // 0-10
   relatedLandmarks: string[]; 
 }
+
+export type RatioMetricKey = keyof typeof RATIO_CONFIGS;
 
 // User Provided Configuration
 export const RATIO_CONFIGS = {
@@ -173,6 +176,7 @@ export const calculateFrontRatios = (l: FrontLandmarks): MetricResult[] => {
       const config = RATIO_CONFIGS[key];
       if (!config) return;
       results.push({
+          key,
           name: config.name,
           value: parseFloat(value.toFixed(2)),
           unit: config.unit,
@@ -363,4 +367,3 @@ export const calculateWeightedTotalScore = (metrics: MetricResult[]): number => 
     
     return parseFloat(finalScore.toFixed(1));
 };
-

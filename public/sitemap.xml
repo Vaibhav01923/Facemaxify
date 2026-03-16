@@ -1,86 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  
-  <!-- Homepage -->
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>https://facemaxify.com/</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Tools Directory -->
   <url>
     <loc>https://facemaxify.com/tools</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-
-  <!-- Face Shape Tool -->
   <url>
     <loc>https://facemaxify.com/tools/facial-shape</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Golden Ratio Tool -->
   <url>
     <loc>https://facemaxify.com/tools/golden-ratio</loc>
-    <lastmod>2026-02-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Facial Harmony Analyzer -->
-  <url>
-    <loc>https://facemaxify.com/facial-harmony-analyzer</loc>
     <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Facial Harmony Score -->
-  <url>
-    <loc>https://facemaxify.com/facial-harmony-score</loc>
-    <lastmod>2026-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Face Ratio Analyzer -->
-  <url>
-    <loc>https://facemaxify.com/face-ratio-analyzer</loc>
-    <lastmod>2026-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Face Symmetry Test -->
-  <url>
-    <loc>https://facemaxify.com/face-symmetry-test</loc>
-    <lastmod>2026-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Looksmax Calculator -->
-  <url>
-    <loc>https://facemaxify.com/looksmax-calculator</loc>
-    <lastmod>2026-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Canthal Tilt Tool -->
   <url>
     <loc>https://facemaxify.com/tools/canthal-tilt</loc>
-    <lastmod>2026-02-24</lastmod>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url><loc>https://facemaxify.com/facial-harmony-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-harmony-score</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/face-ratio-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/face-symmetry-test</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/looksmax-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/jawline-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/chin-ratio-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/cheekbone-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/midface-ratio-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/lower-third-face-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/eye-area-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/eyebrow-tilt-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/mouth-to-nose-ratio-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/lip-ratio-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/nose-width-ratio-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-harmony-test</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-harmony-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-proportions-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-proportions-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/face-symmetry-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-thirds-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-attractiveness-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-beauty-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/beauty-ratio-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-structure-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/looksmax-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/face-beauty-score-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-balance-test</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/face-balance-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-proportions-test</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/face-proportion-analyzer</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-aesthetics-calculator</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/facial-attractiveness-score</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/ai-face-score</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://facemaxify.com/beauty-score-ai</loc><lastmod>2026-03-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>

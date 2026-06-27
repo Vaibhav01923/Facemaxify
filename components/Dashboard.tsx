@@ -989,7 +989,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <p className="text-slate-400 text-sm mb-2">Discover your seasonal palette, skin undertone, best clothing colors, and a full style guide.</p>
                         <p className="text-indigo-400 text-xs font-medium mb-5">Pro exclusive feature</p>
                         <a
-                          href="/pricing"
+                          href={`/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`}
                           className="block w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-colors"
                         >
                           Upgrade to Pro
@@ -1056,7 +1056,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <p className="text-slate-400 text-sm mb-2">Get recommended, okay, and avoid hairstyles tailored to your exact face shape.</p>
                         <p className="text-indigo-400 text-xs font-medium mb-5">Pro exclusive feature</p>
                         <a
-                          href="/pricing"
+                          href={`/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`}
                           className="block w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-colors"
                         >
                           Upgrade to Pro

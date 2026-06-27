@@ -1,4 +1,5 @@
 import React from "react";
+import { useUser } from "@clerk/clerk-react";
 import { Lock, Sparkles, TrendingUp } from "lucide-react";
 
 interface SkincareTimelineProps {
@@ -18,6 +19,9 @@ export const SkincareTimeline: React.FC<SkincareTimelineProps> = ({
   loading,
   isPaid = false,
 }) => {
+  const { user } = useUser();
+  const checkoutUrl = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+
   const analysis =
     propAnalysis ||
     scans.find((s) => s.id === currentScanId)?.analysis?.skincare;
@@ -55,7 +59,7 @@ export const SkincareTimeline: React.FC<SkincareTimelineProps> = ({
             <p className="text-slate-400 text-sm mb-2">Your personalised softmaxxing routine is generated. Upgrade to unlock your full skincare protocol, morning + night routines, and product recommendations.</p>
             <p className="text-cyan-400 text-xs font-medium mb-5">Pro exclusive feature</p>
             <a
-              href="/pricing"
+              href={checkoutUrl}
               className="block w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-sm font-semibold rounded-xl transition-all"
             >
               Upgrade to Pro

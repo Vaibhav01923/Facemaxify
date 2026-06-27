@@ -104,12 +104,9 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
         {!isPaid && (
           <button
             className="w-full bg-linear-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all flex items-center justify-center gap-2"
-            onClick={() =>
-              window.open(
-                "https://buy.stripe.com/test_8wM6qC6d83U82Zy144",
-                "_blank",
-              )
-            }
+            onClick={() => {
+              window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+            }}
           >
             <span>✨ Upgrade to Pro</span>
           </button>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
@@ -183,49 +183,61 @@ const App: React.FC = () => {
       <Route
         path="/dashboard"
         element={
-          <SignedIn>
-            <>
-              <DashboardSEO />
-              <DashboardHome isPaid={isPaid} />
-            </>
-          </SignedIn>
+          <>
+            <SignedIn>
+              <>
+                <DashboardSEO />
+                <DashboardHome isPaid={isPaid} />
+              </>
+            </SignedIn>
+            <SignedOut><RedirectToSignIn /></SignedOut>
+          </>
         }
       />
 
       <Route
         path="/dashboard/facial-analysis"
         element={
-          <SignedIn>
-            <>
-              <FacialAnalysisSEO />
-              <FacialAnalysis isPaid={isPaid} />
-            </>
-          </SignedIn>
+          <>
+            <SignedIn>
+              <>
+                <FacialAnalysisSEO />
+                <FacialAnalysis isPaid={isPaid} />
+              </>
+            </SignedIn>
+            <SignedOut><RedirectToSignIn /></SignedOut>
+          </>
         }
       />
 
       <Route
         path="/dashboard/guides"
         element={
-          <SignedIn>
-            <>
-              <GuidesSEO />
-              <Guides isPaid={isPaid} />
-            </>
-          </SignedIn>
+          <>
+            <SignedIn>
+              <>
+                <GuidesSEO />
+                <Guides isPaid={isPaid} />
+              </>
+            </SignedIn>
+            <SignedOut><RedirectToSignIn /></SignedOut>
+          </>
         }
       />
 
       <Route
         path="/dashboard/guides/:guideId"
         element={
-          <SignedIn>
-            {isPaid ? (
-              <GuideDetail />
-            ) : (
-              <Navigate to="/dashboard/guides" replace />
-            )}
-          </SignedIn>
+          <>
+            <SignedIn>
+              {isPaid ? (
+                <GuideDetail />
+              ) : (
+                <Navigate to="/dashboard/guides" replace />
+              )}
+            </SignedIn>
+            <SignedOut><RedirectToSignIn /></SignedOut>
+          </>
         }
       />
 

@@ -1,22 +1,23 @@
 import React from "react";
-import { Sparkles, TrendingUp } from "lucide-react";
+import { Lock, Sparkles, TrendingUp } from "lucide-react";
 
 interface SkincareTimelineProps {
   scans: any[];
   currentScanId?: string;
-  analysis?: any; // New prop for direct injection
+  analysis?: any;
   onUploadCheckIn: (file: File) => void;
   loading: boolean;
+  isPaid?: boolean;
 }
 
 export const SkincareTimeline: React.FC<SkincareTimelineProps> = ({
   scans,
   currentScanId,
-  analysis: propAnalysis, // Rename to distinguish
+  analysis: propAnalysis,
   onUploadCheckIn,
   loading,
+  isPaid = false,
 }) => {
-  // Use propAnalysis if available, otherwise find in scans
   const analysis =
     propAnalysis ||
     scans.find((s) => s.id === currentScanId)?.analysis?.skincare;
@@ -28,11 +29,39 @@ export const SkincareTimeline: React.FC<SkincareTimelineProps> = ({
           <Sparkles className="w-8 h-8 text-slate-500" />
         </div>
         <h3 className="text-xl font-bold text-white mb-2">
-          No Skincare Analysis
+          Generating Protocol...
         </h3>
         <p className="text-slate-400 max-w-sm">
-          This scan doesn't have a specific skincare report generated yet.
+          Your personalised softmaxxing routine is being prepared. This may take a moment.
         </p>
+      </div>
+    );
+  }
+
+  if (!isPaid) {
+    return (
+      <div className="relative rounded-2xl overflow-hidden border border-white/10" style={{ minHeight: 420 }}>
+        {/* Blurred content underneath */}
+        <div className="pointer-events-none select-none" style={{ filter: "blur(8px)", opacity: 0.4 }}>
+          <SkincareResults analysis={analysis} />
+        </div>
+        {/* Lock overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30 flex items-center justify-center">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 max-w-sm text-center shadow-2xl mx-4">
+            <div className="w-14 h-14 bg-cyan-500/20 border border-cyan-500/40 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-7 h-7 text-cyan-400" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2">Your Protocol is Ready</h3>
+            <p className="text-slate-400 text-sm mb-2">Your personalised softmaxxing routine is generated. Upgrade to unlock your full skincare protocol, morning + night routines, and product recommendations.</p>
+            <p className="text-cyan-400 text-xs font-medium mb-5">Pro exclusive feature</p>
+            <a
+              href="/pricing"
+              className="block w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-sm font-semibold rounded-xl transition-all"
+            >
+              Upgrade to Pro
+            </a>
+          </div>
+        </div>
       </div>
     );
   }

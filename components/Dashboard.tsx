@@ -424,9 +424,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }).finally(() => setLoadingHairstyle(false));
   };
 
-  // COLOR ANALYSIS — auto-trigger on first visit
+  // COLOR ANALYSIS — auto-trigger on first visit (pro only)
   useEffect(() => {
     if (
+      !isPaid ||
       activeTab !== "style" ||
       styleSubTab !== "colors" ||
       colorAnalysisImage ||
@@ -438,10 +439,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
     runColorAnalysis();
   // eslint-disable-next-line
-  }, [activeTab, styleSubTab, colorAnalysisImage, data, user, scanId, styleAnalysisReady]);
+  }, [activeTab, styleSubTab, colorAnalysisImage, data, user, scanId, styleAnalysisReady, isPaid]);
 
   useEffect(() => {
     if (
+      !isPaid ||
       activeTab !== "style" ||
       styleSubTab !== "hairstyle" ||
       hairstyleImage ||
@@ -453,7 +455,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
     runHairstyleAnalysis();
   // eslint-disable-next-line
-  }, [activeTab, styleSubTab, hairstyleImage, data, user, scanId, styleAnalysisReady]);
+  }, [activeTab, styleSubTab, hairstyleImage, data, user, scanId, styleAnalysisReady, isPaid]);
 
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;
@@ -975,66 +977,66 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {/* Color Analysis */}
             {styleSubTab === "colors" && (
               <div className="animate-fadeIn">
-                {loadingColorAnalysis && (
-                  <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
-                    <div className="w-12 h-12 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-                    <p className="text-slate-400 text-sm animate-pulse">Generating your personal color analysis...</p>
-                    <p className="text-slate-500 text-xs">This takes ~30 seconds. Please don't refresh or switch tabs.</p>
-                  </div>
-                )}
-                {!loadingColorAnalysis && colorAnalysisImage && isPaid && (
-                  <div
-                    className="relative rounded-2xl group cursor-pointer"
-                    onClick={() => setLightboxImage(colorAnalysisImage)}
-                  >
-                    <div className="overflow-hidden rounded-2xl border border-white/10 max-h-[75vh] overflow-y-auto">
-                      <img src={colorAnalysisImage} alt="Personal Color Analysis" className="w-full h-auto" />
-                    </div>
-                    <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 rounded-full p-4 shadow-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {!loadingColorAnalysis && colorAnalysisImage && !isPaid && (
-                  <div className="relative rounded-2xl overflow-hidden border border-white/10 h-[420px]">
-                    <div
-                      className="absolute inset-0 scale-110 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${colorAnalysisImage})`, filter: "blur(22px) saturate(0.7) brightness(0.6)" }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+                {!isPaid ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-white/10 h-[420px] bg-slate-900/50">
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
-                      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-7 max-w-sm shadow-2xl">
+                      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 max-w-sm shadow-2xl">
+                        <div className="text-4xl mb-4">🎨</div>
                         <div className="w-12 h-12 bg-indigo-500/20 border border-indigo-500/40 rounded-full flex items-center justify-center mx-auto mb-4">
                           <Lock className="w-6 h-6 text-indigo-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-white mb-2">Your Color Analysis is Ready</h3>
-                        <p className="text-slate-400 text-sm mb-5">Unlock your personal seasonal palette, undertone, best clothing colors, and style guide.</p>
+                        <h3 className="text-lg font-bold text-white mb-2">Personal Color Analysis</h3>
+                        <p className="text-slate-400 text-sm mb-2">Discover your seasonal palette, skin undertone, best clothing colors, and a full style guide.</p>
+                        <p className="text-indigo-400 text-xs font-medium mb-5">Pro exclusive feature</p>
                         <a
                           href="/pricing"
                           className="block w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-colors"
                         >
-                          Unlock Full Analysis
+                          Upgrade to Pro
                         </a>
                       </div>
                     </div>
                   </div>
-                )}
-                {!loadingColorAnalysis && !colorAnalysisImage && (
-                  <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
-                    <span className="text-5xl mb-4">🎨</span>
-                    <h3 className="text-xl font-bold text-white mb-2">Color Analysis</h3>
-                    <p className="text-slate-400 max-w-sm mb-6">Discover your seasonal palette, best clothing colors, and undertone.</p>
-                    <button
-                      onClick={runColorAnalysis}
-                      className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-medium transition-all"
-                    >
-                      Generate Color Analysis
-                    </button>
-                  </div>
+                ) : (
+                  <>
+                    {loadingColorAnalysis && (
+                      <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
+                        <div className="w-12 h-12 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+                        <p className="text-slate-400 text-sm animate-pulse">Generating your personal color analysis...</p>
+                        <p className="text-slate-500 text-xs">This takes ~30 seconds. Please don't refresh or switch tabs.</p>
+                      </div>
+                    )}
+                    {!loadingColorAnalysis && colorAnalysisImage && (
+                      <div
+                        className="relative rounded-2xl group cursor-pointer"
+                        onClick={() => setLightboxImage(colorAnalysisImage)}
+                      >
+                        <div className="overflow-hidden rounded-2xl border border-white/10 max-h-[75vh] overflow-y-auto">
+                          <img src={colorAnalysisImage} alt="Personal Color Analysis" className="w-full h-auto" />
+                        </div>
+                        <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 rounded-full p-4 shadow-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {!loadingColorAnalysis && !colorAnalysisImage && (
+                      <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
+                        <span className="text-5xl mb-4">🎨</span>
+                        <h3 className="text-xl font-bold text-white mb-2">Color Analysis</h3>
+                        <p className="text-slate-400 max-w-sm mb-6">Discover your seasonal palette, best clothing colors, and undertone.</p>
+                        <button
+                          onClick={runColorAnalysis}
+                          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-medium transition-all"
+                        >
+                          Generate Color Analysis
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -1042,66 +1044,66 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {/* Hairstyle Analysis */}
             {styleSubTab === "hairstyle" && (
               <div className="animate-fadeIn">
-                {loadingHairstyle && (
-                  <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
-                    <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-slate-400 text-sm">Analyzing your hairstyle options...</p>
-                    <p className="text-slate-500 text-xs">This takes ~30 seconds. Please don't refresh or switch tabs.</p>
-                  </div>
-                )}
-                {!loadingHairstyle && hairstyleImage && isPaid && (
-                  <div
-                    className="relative rounded-2xl group cursor-pointer"
-                    onClick={() => setLightboxImage(hairstyleImage)}
-                  >
-                    <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl max-h-[70vh] overflow-y-auto">
-                      <img src={hairstyleImage} alt="Hairstyle Analysis" className="w-full h-auto" />
-                    </div>
-                    <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 rounded-full p-4 shadow-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {!loadingHairstyle && hairstyleImage && !isPaid && (
-                  <div className="relative rounded-2xl overflow-hidden border border-white/10 h-[420px]">
-                    <div
-                      className="absolute inset-0 scale-110 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${hairstyleImage})`, filter: "blur(22px) saturate(0.7) brightness(0.6)" }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+                {!isPaid ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-white/10 h-[420px] bg-slate-900/50">
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
-                      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-7 max-w-sm shadow-2xl">
+                      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 max-w-sm shadow-2xl">
+                        <div className="text-4xl mb-4">✂️</div>
                         <div className="w-12 h-12 bg-indigo-500/20 border border-indigo-500/40 rounded-full flex items-center justify-center mx-auto mb-4">
                           <Lock className="w-6 h-6 text-indigo-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-white mb-2">Your Hairstyle Analysis is Ready</h3>
-                        <p className="text-slate-400 text-sm mb-5">Unlock your recommended, okay, and avoid hairstyles tailored to your face shape.</p>
+                        <h3 className="text-lg font-bold text-white mb-2">Hairstyle Analysis</h3>
+                        <p className="text-slate-400 text-sm mb-2">Get recommended, okay, and avoid hairstyles tailored to your exact face shape.</p>
+                        <p className="text-indigo-400 text-xs font-medium mb-5">Pro exclusive feature</p>
                         <a
                           href="/pricing"
                           className="block w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-colors"
                         >
-                          Unlock Full Analysis
+                          Upgrade to Pro
                         </a>
                       </div>
                     </div>
                   </div>
-                )}
-                {!loadingHairstyle && !hairstyleImage && (
-                  <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
-                    <span className="text-5xl mb-4">✂️</span>
-                    <h3 className="text-xl font-bold text-white mb-2">Hairstyle Analysis</h3>
-                    <p className="text-slate-400 max-w-sm mb-4">Could not generate hairstyle analysis. Try again.</p>
-                    <button
-                      onClick={runHairstyleAnalysis}
-                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors"
-                    >
-                      Generate Hairstyle Analysis
-                    </button>
-                  </div>
+                ) : (
+                  <>
+                    {loadingHairstyle && (
+                      <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
+                        <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                        <p className="text-slate-400 text-sm">Analyzing your hairstyle options...</p>
+                        <p className="text-slate-500 text-xs">This takes ~30 seconds. Please don't refresh or switch tabs.</p>
+                      </div>
+                    )}
+                    {!loadingHairstyle && hairstyleImage && (
+                      <div
+                        className="relative rounded-2xl group cursor-pointer"
+                        onClick={() => setLightboxImage(hairstyleImage)}
+                      >
+                        <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl max-h-[70vh] overflow-y-auto">
+                          <img src={hairstyleImage} alt="Hairstyle Analysis" className="w-full h-auto" />
+                        </div>
+                        <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 rounded-full p-4 shadow-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {!loadingHairstyle && !hairstyleImage && (
+                      <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
+                        <span className="text-5xl mb-4">✂️</span>
+                        <h3 className="text-xl font-bold text-white mb-2">Hairstyle Analysis</h3>
+                        <p className="text-slate-400 max-w-sm mb-4">Could not generate hairstyle analysis. Try again.</p>
+                        <button
+                          onClick={runHairstyleAnalysis}
+                          className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors"
+                        >
+                          Generate Hairstyle Analysis
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -1141,6 +1143,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 analysis={skincareAnalysis}
                 onUploadCheckIn={onUploadSkincare || (() => {})}
                 loading={loadingSkincare}
+                isPaid={isPaid}
               />
             )}
           </div>

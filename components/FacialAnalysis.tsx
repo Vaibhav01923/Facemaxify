@@ -49,7 +49,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
 
   // Initialize MediaPipe  // Load history on mount
   React.useEffect(() => {
-    initializeMediaPipe();
+    initializeMediaPipe().catch((err) => console.warn("MediaPipe init failed:", err));
     const initHistory = async () => {
       if (user?.id && historyData.length === 0) {
         const data = await getScanHistory(user.id);

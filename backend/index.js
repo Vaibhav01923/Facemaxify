@@ -9,6 +9,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import { createClient } from '@supabase/supabase-js';
+import skincareHandler from '../api/generate-skincare.js';
+import recommendationsHandler from '../api/generate-recommendations.js';
+import colorAnalysisHandler from '../api/generate-color-analysis.js';
+import hairstyleAnalysisHandler from '../api/generate-hairstyle-analysis.js';
 
 // Load env vars from parent directory (.env or .env.local)
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -35,6 +39,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 app.get('/checkout', async (req, res) => {
   res.status(501).json({ error: 'Checkout not implemented in this backend. Use Vercel /api/checkout.' });
 });
+
+app.post('/api/generate-skincare', (req, res) => skincareHandler(req, res));
+app.post('/api/generate-recommendations', (req, res) => recommendationsHandler(req, res));
+app.post('/api/generate-color-analysis', (req, res) => colorAnalysisHandler(req, res));
+app.post('/api/generate-hairstyle-analysis', (req, res) => hairstyleAnalysisHandler(req, res));
 
 app.listen(port, () => {
   console.log(`Backend server listening on port ${port}`);

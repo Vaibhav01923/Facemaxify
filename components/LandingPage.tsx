@@ -169,38 +169,12 @@ export const LandingPage: React.FC = () => {
           >
             <button
               onClick={() => {
-                if (!isSignedIn) {
-                  localStorage.setItem("pendingAction", "dashboard");
-                  openSignIn();
-                } else {
-                  window.location.href = "/dashboard";
-                }
+                window.location.href = "/dashboard/facial-analysis";
               }}
               className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
             >
-              <span className="relative z-10">Free analysis</span>
+              <span className="relative z-10">Free Facial & Style Analysis</span>
               <Scan className="w-4 h-4" />
-            </button>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full sm:w-auto"
-          >
-            <button
-              onClick={() => {
-                if (!isSignedIn) {
-                  localStorage.setItem("pendingAction", "purchase");
-                  openSignIn();
-                } else {
-                  window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
-                }
-              }}
-              className="group relative w-full sm:w-auto px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]"
-            >
-              <span className="relative z-10">Purchase Now</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
           </motion.div>
 

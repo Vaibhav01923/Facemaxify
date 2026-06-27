@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles, CheckCircle2 } from "lucide-react";
+import { Sparkles, TrendingUp } from "lucide-react";
 
 interface SkincareTimelineProps {
   scans: any[];
@@ -52,45 +52,37 @@ export const SkincareTimeline: React.FC<SkincareTimelineProps> = ({
 const SkincareResults: React.FC<{ analysis: any }> = ({ analysis }) => {
   return (
     <div className="space-y-8">
-      {/* 1. Progress / Status Card */}
-      <div
-        className={`p-6 rounded-2xl border ${
-          analysis.progress_report?.status === "improved"
-            ? "bg-emerald-950/30 border-emerald-500/30"
-            : analysis.progress_report?.status === "worsened"
-              ? "bg-rose-950/30 border-rose-500/30"
-              : "bg-slate-900/50 border-white/10"
-        }`}
-      >
+      {/* 1. Summary Card */}
+      <div className="p-6 rounded-2xl border bg-slate-900/50 border-white/10">
         <div className="flex items-start gap-4">
-          <div
-            className={`p-3 rounded-xl ${
-              analysis.progress_report?.status === "improved"
-                ? "bg-emerald-500/20 text-emerald-400"
-                : analysis.progress_report?.status === "worsened"
-                  ? "bg-rose-500/20 text-rose-400"
-                  : "bg-indigo-500/20 text-indigo-400"
-            }`}
-          >
-            {analysis.progress_report?.status === "improved" ? (
-              <CheckCircle2 className="w-6 h-6" />
-            ) : (
-              <Sparkles className="w-6 h-6" />
-            )}
+          <div className="p-3 rounded-xl bg-indigo-500/20 text-indigo-400">
+            <Sparkles className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white mb-2">
-              Status:{" "}
-              {analysis.progress_report?.status
-                ?.replace("_", " ")
-                .toUpperCase()}
-            </h3>
+            <h3 className="text-lg font-bold text-white mb-2">Skin Assessment</h3>
             <p className="text-slate-300 leading-relaxed">
-              {analysis.progress_report?.summary}
+              {analysis.analysis?.summary || "Analysis complete."}
             </p>
           </div>
         </div>
       </div>
+
+      {/* 1b. Improvement Areas */}
+      {analysis.improvements?.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+            <TrendingUp className="w-4 h-4" /> Key Improvements
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {analysis.improvements.map((item: any, i: number) => (
+              <div key={i} className="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                <p className="text-white font-semibold text-sm mb-1">{item.area}</p>
+                <p className="text-slate-400 text-xs">{item.advice}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 2. Skin Analysis Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

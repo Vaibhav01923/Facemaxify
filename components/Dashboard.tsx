@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef, startTransition } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
@@ -26,10 +27,14 @@ import {
   updateSkincareAnalysis,
   calculateWebsitePercentile,
   getScanHistory,
+  saveStyleAnalysisImage,
+  loadStyleAnalysis,
 } from "../services/supabase";
 import {
   getAiRecommendations,
   generateSkincareRoutine,
+  generateColorAnalysis,
+  generateHairstyleAnalysis,
 } from "../services/aiService";
 import { calculatePercentile, getPercentileText } from "../utils/percentile";
 
@@ -60,31 +65,33 @@ export const Dashboard: React.FC<DashboardProps> = ({
     (searchParams.get("tab") as "overview" | "front" | "side" | "skincare") ||
     "front";
   const [activeTab, setActiveTabState] = useState<
-    "overview" | "front" | "side" | "skincare"
+    "overview" | "front" | "style" | "skincare"
   >(initialTab);
 
-  const setActiveTab = (tab: "overview" | "front" | "side" | "skincare") => {
+  const setActiveTab = (tab: "overview" | "front" | "style" | "skincare") => {
     setActiveTabState(tab);
-    setSearchParams(
-      (prev) => {
-        prev.set("tab", tab);
-        return prev;
-      },
-      { replace: true },
-    );
+    startTransition(() => {
+      setSearchParams(
+        (prev) => {
+          prev.set("tab", tab);
+          return prev;
+        },
+        { replace: true },
+      );
+    });
   };
 
-  // Sync activeTab with URL params
+  // Sync activeTab with URL params (only on external URL changes, e.g. back/forward)
   useEffect(() => {
     const tab = searchParams.get("tab") as
       | "overview"
       | "front"
-      | "side"
+      | "style"
       | "skincare";
     if (tab && tab !== activeTab) {
       setActiveTabState(tab);
     }
-  }, [searchParams, activeTab]);
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
   // Removed duplicate analysis/loading state here; it's defined later with proper logic
   const [hoveredMetric, setHoveredMetric] = useState<MetricResult | null>(null);
   const [pinnedMetric, setPinnedMetric] = useState<MetricResult | null>(null);
@@ -201,6 +208,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // SKINCARE STATE (Moved up for access)
   const [skincareAnalysis, setSkincareAnalysis] = useState<any>(null);
   const [loadingSkincare, setLoadingSkincare] = useState(false);
+  const skincareAttempted = useRef(false);
+
+  const [styleSubTab, setStyleSubTab] = useState<"colors" | "hairstyle">("colors");
+  const [colorAnalysisImage, setColorAnalysisImage] = useState<string | null>(null);
+  const [loadingColorAnalysis, setLoadingColorAnalysis] = useState(false);
+  const colorAnalysisAttempted = useRef(false);
+
+  const [hairstyleImage, setHairstyleImage] = useState<string | null>(null);
+  const [loadingHairstyle, setLoadingHairstyle] = useState(false);
+  const hairstyleAttempted = useRef(false);
+
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const styleAnalysisChecked = useRef(false);
+  const [styleAnalysisReady, setStyleAnalysisReady] = useState(false);
 
   // Trace latest skincare analysis for async merging
   const skincareAnalysisRef = useRef(skincareAnalysis);
@@ -228,6 +249,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       setSkincareAnalysis(data.analysis.skincare);
     } else {
       setSkincareAnalysis(null);
+      skincareAttempted.current = false;
     }
 
     // Also reset any other scan-specific state if needed
@@ -310,74 +332,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
       if (
         activeTab !== "skincare" ||
         skincareAnalysis ||
-        loadingSkincare ||
+        skincareAttempted.current ||
         !data ||
         !user
       )
         return;
 
+      skincareAttempted.current = true;
       setLoadingSkincare(true);
       console.log("Generating Skincare Analysis...");
 
       try {
-        // 1. Get History for comparison (Use full history if available, else fetch)
-        let history = scans;
-        if (!history || history.length === 0) {
-          history = await getScanHistory(user.id);
-        }
-
-        // Find previous scan (excluding current)
-        const currentScanIndex = history.findIndex(
-          (scan: any) => scan.id === scanId,
-        );
-
-        // SMART COMPARISON LOGIC:
-        // If the immediate previous scan is very recent (< 3 days), try to find one from ~1 week ago
-        // to show more meaningful progress.
-        let comparisonScan = null;
-        let daysSinceLastScan = null;
-
-        if (currentScanIndex !== -1 && currentScanIndex < history.length - 1) {
-          const immediatePrev = history[currentScanIndex + 1];
-          const currentTime = new Date().getTime();
-          const prevTime = new Date(immediatePrev.created_at).getTime();
-          const daysDiff = Math.floor(
-            (currentTime - prevTime) / (1000 * 60 * 60 * 24),
-          );
-
-          if (daysDiff < 4 && history.length > 2) {
-            // Too soon/frequent! Look for a scan closer to 7 days ago
-            const oneWeekAgo = currentTime - 7 * 24 * 60 * 60 * 1000;
-            // Find scan with creation time closest to oneWeekAgo
-            comparisonScan = history
-              .slice(currentScanIndex + 1)
-              .reduce((prev: any, curr: any) => {
-                const prevDiff = Math.abs(
-                  new Date(prev.created_at).getTime() - oneWeekAgo,
-                );
-                const currDiff = Math.abs(
-                  new Date(curr.created_at).getTime() - oneWeekAgo,
-                );
-                return currDiff < prevDiff ? curr : prev;
-              });
-          } else {
-            comparisonScan = immediatePrev;
-          }
-
-          if (comparisonScan) {
-            daysSinceLastScan = Math.floor(
-              (currentTime - new Date(comparisonScan.created_at).getTime()) /
-                (1000 * 60 * 60 * 24),
-            );
-          }
-        }
-
-        // 2. Generate Routine
-        const result = await generateSkincareRoutine(
-          data.frontPhotoUrl,
-          comparisonScan?.front_photo_url || null,
-          daysSinceLastScan,
-        );
+        const result = await generateSkincareRoutine(data.frontPhotoUrl);
 
         if (result) {
           setSkincareAnalysis(result);
@@ -397,7 +363,85 @@ export const Dashboard: React.FC<DashboardProps> = ({
     };
 
     loadSkincare();
-  }, [activeTab, skincareAnalysis, loadingSkincare, data, user, scanId]);
+  }, [activeTab, skincareAnalysis, data, user, scanId]);
+
+  // LOAD SAVED STYLE ANALYSES ON MOUNT
+  useEffect(() => {
+    if (!scanId || !user?.id) {
+      styleAnalysisChecked.current = true;
+      setStyleAnalysisReady(true);
+      return;
+    }
+    loadStyleAnalysis(scanId, user.id).then(({ colorUrl, hairstyleUrl }) => {
+      if (colorUrl) {
+        setColorAnalysisImage(colorUrl);
+        colorAnalysisAttempted.current = true;
+      }
+      if (hairstyleUrl) {
+        setHairstyleImage(hairstyleUrl);
+        hairstyleAttempted.current = true;
+      }
+      styleAnalysisChecked.current = true;
+      setStyleAnalysisReady(true);
+    });
+  }, [scanId, user?.id]);
+
+  const runColorAnalysis = async () => {
+    if (!data?.frontPhotoUrl || !user) return;
+    colorAnalysisAttempted.current = true;
+    setLoadingColorAnalysis(true);
+    setColorAnalysisImage(null);
+    generateColorAnalysis(data.frontPhotoUrl).then(async (image) => {
+      if (image) {
+        setColorAnalysisImage(image);
+        if (scanId && user?.id) await saveStyleAnalysisImage(scanId, user.id, "color", image);
+      }
+    }).finally(() => setLoadingColorAnalysis(false));
+  };
+
+  const runHairstyleAnalysis = async () => {
+    if (!data?.frontPhotoUrl || !user) return;
+    hairstyleAttempted.current = true;
+    setLoadingHairstyle(true);
+    setHairstyleImage(null);
+    generateHairstyleAnalysis(data.frontPhotoUrl).then(async (image) => {
+      if (image) {
+        setHairstyleImage(image);
+        if (scanId && user?.id) await saveStyleAnalysisImage(scanId, user.id, "hairstyle", image);
+      }
+    }).finally(() => setLoadingHairstyle(false));
+  };
+
+  // COLOR ANALYSIS — auto-trigger on first visit
+  useEffect(() => {
+    if (
+      activeTab !== "style" ||
+      styleSubTab !== "colors" ||
+      colorAnalysisImage ||
+      colorAnalysisAttempted.current ||
+      !styleAnalysisChecked.current ||
+      !data?.frontPhotoUrl ||
+      !user
+    ) return;
+
+    runColorAnalysis();
+  // eslint-disable-next-line
+  }, [activeTab, styleSubTab, colorAnalysisImage, data, user, scanId, styleAnalysisReady]);
+
+  useEffect(() => {
+    if (
+      activeTab !== "style" ||
+      styleSubTab !== "hairstyle" ||
+      hairstyleImage ||
+      hairstyleAttempted.current ||
+      !styleAnalysisChecked.current ||
+      !data?.frontPhotoUrl ||
+      !user
+    ) return;
+
+    runHairstyleAnalysis();
+  // eslint-disable-next-line
+  }, [activeTab, styleSubTab, hairstyleImage, data, user, scanId, styleAnalysisReady]);
 
   const overallScore = useMemo(() => {
     if (frontMetrics.length === 0) return 0;
@@ -449,8 +493,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div
               className={`text-right transition-opacity duration-300 ${isPaid ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
-              <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+              <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold flex items-center justify-end gap-1">
                 Facial Harmony
+                <div className="relative group/info inline-block">
+                  <span className="w-3.5 h-3.5 rounded-full border border-slate-500 text-slate-500 text-[8px] flex items-center justify-center cursor-default select-none leading-none">i</span>
+                  <div className="absolute right-0 top-5 w-56 bg-slate-800 border border-white/10 rounded-xl p-3 text-left shadow-xl z-50 opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity text-slate-300 text-[11px] leading-relaxed">
+                    <p className="font-semibold text-white mb-1">How scoring works</p>
+                    <p><span className="text-indigo-400 font-semibold">50 / 100</span> is the average face.</p>
+                    <p className="mt-1">Scoring above 50 means you're <span className="text-green-400 font-semibold">facially above average</span> — don't let any single metric discourage you.</p>
+                  </div>
+                </div>
               </div>
               <div className="text-xl font-bold text-white leading-none">
                 {Math.round(
@@ -474,6 +526,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   </span>
                 )}
               </div>
+              {Math.round(typeof overallScore === "string" ? parseFloat(overallScore) : overallScore * 10) >= 50 && (
+                <div className="mt-1 inline-flex items-center gap-1 bg-green-500/10 border border-green-500/30 text-green-400 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                  <span>✦</span> Above Average Face
+                </div>
+              )}
             </div>
             {onNewScan && (
               <button
@@ -490,7 +547,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-8 border-b border-transparent">
-            {["overview", "front", "side", "skincare"].map((tab) => (
+            {["overview", "front", "style", "skincare"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
@@ -884,21 +941,108 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         )}
         {/* SIDE PROFILE TAB (COMING SOON) */}
-        {activeTab === "side" && (
-          <div className="min-h-[400px] flex flex-col items-center justify-center text-center animate-fadeIn p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
-            <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
-              <span className="text-4xl">👤</span>
+        {activeTab === "style" && (
+          <div className="space-y-6 animate-fadeIn">
+            {/* Style Sub-tabs */}
+            <div className="flex gap-2">
+              {(["colors", "hairstyle"] as const).map((sub) => (
+                <button
+                  key={sub}
+                  onClick={() => setStyleSubTab(sub)}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                    styleSubTab === sub
+                      ? "bg-indigo-600 text-white"
+                      : "bg-slate-800 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {sub === "colors" ? "🎨 Color Analysis" : "✂️ Hairstyle Analysis"}
+                </button>
+              ))}
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">
-              Side Profile Analysis
-            </h2>
-            <p className="text-slate-400 max-w-md mb-6">
-              Advanced side profile metrics including gonial angle, nose
-              projection, and chin recession analysis.
-            </p>
-            <div className="bg-indigo-500/10 text-indigo-300 px-4 py-2 rounded-full text-sm font-medium border border-indigo-500/20">
-              🚀 Coming Soon (Next Week)
-            </div>
+
+            {/* Color Analysis */}
+            {styleSubTab === "colors" && (
+              <div className="animate-fadeIn">
+                {loadingColorAnalysis && (
+                  <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
+                    <div className="w-12 h-12 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+                    <p className="text-slate-400 text-sm animate-pulse">Generating your personal color analysis...</p>
+                  </div>
+                )}
+                {!loadingColorAnalysis && colorAnalysisImage && (
+                  <div
+                    className="relative rounded-2xl group cursor-pointer"
+                    onClick={() => setLightboxImage(colorAnalysisImage)}
+                  >
+                    <div className="overflow-hidden rounded-2xl border border-white/10 max-h-[75vh] overflow-y-auto">
+                      <img src={colorAnalysisImage} alt="Personal Color Analysis" className="w-full h-auto" />
+                    </div>
+                    <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 rounded-full p-4 shadow-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!loadingColorAnalysis && !colorAnalysisImage && (
+                  <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
+                    <span className="text-5xl mb-4">🎨</span>
+                    <h3 className="text-xl font-bold text-white mb-2">Color Analysis</h3>
+                    <p className="text-slate-400 max-w-sm mb-6">Discover your seasonal palette, best clothing colors, and undertone.</p>
+                    <button
+                      onClick={runColorAnalysis}
+                      className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-medium transition-all"
+                    >
+                      Generate Color Analysis
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Hairstyle Analysis */}
+            {styleSubTab === "hairstyle" && (
+              <div className="animate-fadeIn">
+                {loadingHairstyle && (
+                  <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
+                    <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-slate-400 text-sm">Analyzing your hairstyle options...</p>
+                  </div>
+                )}
+                {!loadingHairstyle && hairstyleImage && (
+                  <div
+                    className="relative rounded-2xl group cursor-pointer"
+                    onClick={() => setLightboxImage(hairstyleImage)}
+                  >
+                    <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl max-h-[70vh] overflow-y-auto">
+                      <img src={hairstyleImage} alt="Hairstyle Analysis" className="w-full h-auto" />
+                    </div>
+                    <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 rounded-full p-4 shadow-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!loadingHairstyle && !hairstyleImage && (
+                  <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-slate-900/30 rounded-2xl border border-white/5 border-dashed">
+                    <span className="text-5xl mb-4">✂️</span>
+                    <h3 className="text-xl font-bold text-white mb-2">Hairstyle Analysis</h3>
+                    <p className="text-slate-400 max-w-sm mb-4">Could not generate hairstyle analysis. Try again.</p>
+                    <button
+                      onClick={runHairstyleAnalysis}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors"
+                    >
+                      Generate Hairstyle Analysis
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
         {/* SKINCARE TAB (AI ANALYSIS + ROUTINE) */}
@@ -956,6 +1100,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
             onComplete={handleEditorComplete}
           />
         </div>
+      )}
+
+      {/* Lightbox */}
+      {lightboxImage && createPortal(
+        <div
+          className="fixed inset-0 bg-black/95 flex items-center justify-center p-6"
+          style={{ zIndex: 99999 }}
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
+            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors"
+            onClick={() => setLightboxImage(null)}
+          >
+            ×
+          </button>
+          <img
+            src={lightboxImage}
+            alt="Full view"
+            className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>,
+        document.body
       )}
     </div>
   );

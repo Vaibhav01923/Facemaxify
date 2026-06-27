@@ -34,14 +34,60 @@ export const getAiRecommendations = async (metrics: MetricResult[], frontPhotoUr
   }
 };
 
+export const generateHairstyleAnalysis = async (photoUrl: string): Promise<string | null> => {
+  try {
+    const token = await (window as any).Clerk?.session?.getToken();
+    if (!token) throw new Error('Authentication required');
+
+    const response = await fetch('/api/generate-hairstyle-analysis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ photoUrl }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Failed to generate hairstyle analysis');
+    }
+
+    const data = await response.json();
+    return data.image;
+  } catch (error) {
+    console.error('Hairstyle Analysis Error:', error);
+    return null;
+  }
+};
+
+export const generateColorAnalysis = async (photoUrl: string): Promise<string | null> => {
+  try {
+    const token = await (window as any).Clerk?.session?.getToken();
+    if (!token) throw new Error('Authentication required');
+
+    const response = await fetch('/api/generate-color-analysis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ photoUrl }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Failed to generate color analysis');
+    }
+
+    const data = await response.json();
+    return data.image; // base64 data URL
+  } catch (error) {
+    console.error('Color Analysis Error:', error);
+    return null;
+  }
+};
+
 export const generateSkincareRoutine = async (
-    currentPhotoUrl: string, 
-    previousPhotoUrl: string | null = null, 
-    daysSinceLastScan: number | null = null
+    currentPhotoUrl: string,
 ): Promise<any> => {
   try {
     const token = await (window as any).Clerk?.session?.getToken();
-    
+
     if (!token) {
       throw new Error('Authentication required');
     }
@@ -52,11 +98,7 @@ export const generateSkincareRoutine = async (
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        currentPhotoUrl,
-        previousPhotoUrl,
-        daysSinceLastScan
-      }),
+      body: JSON.stringify({ currentPhotoUrl }),
     });
 
     if (!response.ok) {

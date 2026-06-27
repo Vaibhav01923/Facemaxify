@@ -245,6 +245,67 @@ export const updateScanLandmarks = async (
   }
 };
 
+export const saveStyleAnalysisImage = async (
+  scanId: string,
+  userId: string,
+  type: "color" | "hairstyle",
+  base64Image: string,
+): Promise<string | null> => {
+  try {
+    const base64Data = base64Image.split(",")[1];
+    const buffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+    const path = `${type}_analysis_${scanId}.png`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("scans")
+      .upload(path, buffer, { contentType: "image/png", upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    const column = type === "color" ? "color_analysis_path" : "hairstyle_analysis_path";
+    const { error: dbError } = await supabase
+      .from("scans")
+      .update({ [column]: path })
+      .eq("id", scanId)
+      .eq("user_id", userId);
+
+    if (dbError) throw dbError;
+
+    return supabase.storage.from("scans").getPublicUrl(path).data.publicUrl;
+  } catch (err) {
+    console.error("saveStyleAnalysisImage error:", err);
+    return null;
+  }
+};
+
+export const loadStyleAnalysis = async (
+  scanId: string,
+  userId: string,
+): Promise<{ colorUrl: string | null; hairstyleUrl: string | null }> => {
+  try {
+    const { data, error } = await supabase
+      .from("scans")
+      .select("color_analysis_path, hairstyle_analysis_path")
+      .eq("id", scanId)
+      .eq("user_id", userId)
+      .single();
+
+    if (error || !data) return { colorUrl: null, hairstyleUrl: null };
+
+    const colorUrl = data.color_analysis_path
+      ? supabase.storage.from("scans").getPublicUrl(data.color_analysis_path).data.publicUrl
+      : null;
+    const hairstyleUrl = data.hairstyle_analysis_path
+      ? supabase.storage.from("scans").getPublicUrl(data.hairstyle_analysis_path).data.publicUrl
+      : null;
+
+    return { colorUrl, hairstyleUrl };
+  } catch (err) {
+    console.error("loadStyleAnalysis error:", err);
+    return { colorUrl: null, hairstyleUrl: null };
+  }
+};
+
 /**
  * Calculate website percentile - user's rank compared to all users
  * Returns percentile (0-100) where higher is better

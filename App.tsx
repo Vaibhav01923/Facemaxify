@@ -29,6 +29,27 @@ import { GoldenRatioPage } from "./pages/GoldenRatioPage";
 import { CanthalTiltPage } from "./pages/CanthalTiltPage";
 import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
 
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-8 text-center">
+          <p className="text-red-400 font-mono text-sm mb-2">App crashed — error details:</p>
+          <pre className="text-slate-300 text-xs bg-slate-900 p-4 rounded-xl max-w-xl overflow-auto text-left">{this.state.error.message}{"\n"}{this.state.error.stack}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const App: React.FC = () => {
   const { user, isLoaded } = useUser();
   const [isPaid, setIsPaid] = useState<boolean | null>(null);

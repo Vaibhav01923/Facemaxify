@@ -20,7 +20,7 @@ export const SkincareTimeline: React.FC<SkincareTimelineProps> = ({
   isPaid = false,
 }) => {
   const { user } = useUser();
-  const checkoutUrl = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+  const checkoutUrl = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
 
   const analysis =
     propAnalysis ||

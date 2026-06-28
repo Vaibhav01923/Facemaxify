@@ -27,6 +27,7 @@ import { FacialShapePage } from "./pages/FacialShapePage";
 import { ToolsDirectoryPage } from "./pages/ToolsDirectoryPage";
 import { GoldenRatioPage } from "./pages/GoldenRatioPage";
 import { CanthalTiltPage } from "./pages/CanthalTiltPage";
+import { FaceSymmetryPage } from "./pages/FaceSymmetryPage";
 import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
@@ -245,6 +246,7 @@ const App: React.FC = () => {
       <Route path="/tools/facial-shape" element={<FacialShapePage />} />
       <Route path="/tools/golden-ratio" element={<GoldenRatioPage />} />
       <Route path="/tools/canthal-tilt" element={<CanthalTiltPage />} />
+      <Route path="/tools/face-symmetry" element={<FaceSymmetryPage />} />
       <Route path="/:slug" element={<SeoLandingPageRoute />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />

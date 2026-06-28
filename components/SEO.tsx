@@ -16,9 +16,9 @@ interface SEOProps {
  * Usage: <SEO title="Page Title" description="Page description" />
  */
 export const SEO: React.FC<SEOProps> = ({
-  title = "Free Facial Harmony Analysis : with Mathematical data tailored to your face and AI",
-  description = "Instantly calculate your facial symmetry for free based on your facial ratios calculated mathematically. Get personalized LooksMax recommendations with mathematical precision.",
-  keywords = "free face analyzer, AI face rating, facial symmetry analyzer, beauty score calculator, looksmax AI, face analysis free, golden ratio face",
+  title = "Free Facial Analysis AI — Face Rating, Golden Ratio & Looksmaxxing Score | Facemaxify",
+  description = "Get a free AI facial analysis in seconds. Upload your photo for an instant face rating, golden ratio score, PSL looksmaxxing rating, and personalised improvement plan. No signup needed.",
+  keywords = "facial analysis, face rating ai, psl face rating, looksmaxxing face rating, ai facial analysis, facial analysis ai, free facial analysis, qoves facial analysis free, facial symmetry analysis, golden ratio facial analysis",
   image = "https://facemaxify.com/og-image.png",
   type = "website",
   canonicalUrl,
@@ -60,12 +60,15 @@ export const SEO: React.FC<SEOProps> = ({
     updateMetaTag("og:image", image, true);
     updateMetaTag("og:url", currentUrl, true);
     updateMetaTag("og:type", type, true);
+    updateMetaTag("og:site_name", "Facemaxify", true);
+    updateMetaTag("og:locale", "en_US", true);
 
     // Twitter Card tags
     updateMetaTag("twitter:title", title);
     updateMetaTag("twitter:description", description);
     updateMetaTag("twitter:image", image);
     updateMetaTag("twitter:card", "summary_large_image");
+    updateMetaTag("twitter:site", "@facemaxify");
 
     // Update canonical link
     let canonicalLink = document.querySelector(

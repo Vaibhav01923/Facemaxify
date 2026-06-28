@@ -74,7 +74,7 @@ export const LandingPage: React.FC = () => {
     if (isSignedIn && pendingAction) {
       localStorage.removeItem("pendingAction");
       if (pendingAction === "purchase") {
-        window.location.href = `/api/checkout?products=98df164f-7f50-4df1-bba7-0a24d340f60c&customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+        window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
       } else if (pendingAction === "dashboard") {
         window.location.href = "/dashboard";
       }
@@ -465,6 +465,64 @@ export const LandingPage: React.FC = () => {
 
       {/* FAQ Section for SEO */}
       <FAQ />
+
+      {/* SEO Content Section — 600 words targeting facial analysis keywords */}
+      <section className="py-20 px-6 bg-slate-950/60 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <div className="prose prose-invert max-w-none">
+            <h2 className="text-3xl font-bold text-white mb-6 tracking-tight">
+              Free Facial Analysis AI — The Most Accurate Face Rating Tool Online
+            </h2>
+
+            <p className="text-slate-400 leading-relaxed mb-6">
+              What if you could see your face the way researchers, aesthetic practitioners, and beauty experts do? Facemaxify's free <strong className="text-white">facial analysis</strong> tool makes that possible — delivering a complete mathematical breakdown of your facial structure, golden ratio scores, and looksmaxxing rating from a single photo upload. No appointments, no waitlists, no cost.
+            </p>
+
+            <h3 className="text-xl font-bold text-white mt-10 mb-4">What Is Facial Analysis?</h3>
+            <p className="text-slate-400 leading-relaxed mb-6">
+              Facial analysis is the scientific measurement of facial proportions, symmetry, and geometric ratios. Using 68+ detected landmarks across your face, our <strong className="text-white">AI facial analysis</strong> engine calculates everything from the spacing of your eyes to the balance of your facial thirds — then benchmarks each measurement against the golden ratio (phi ≈ 1.618) to produce an objective <strong className="text-white">face rating</strong>. This is the same methodology used by aesthetic clinics and platforms like Qoves, now available as a completely free facial analysis tool.
+            </p>
+
+            <h3 className="text-xl font-bold text-white mt-10 mb-4">Face Rating AI: How Facemaxify Scores Your Face</h3>
+            <p className="text-slate-400 leading-relaxed mb-4">
+              Our <strong className="text-white">face rating AI</strong> doesn't just hand you a number — it explains exactly why you scored the way you did. Every metric is calculated independently and weighted by its impact on overall facial aesthetics:
+            </p>
+            <ul className="text-slate-400 space-y-2 mb-6 list-none pl-0">
+              {[
+                ["Canthal Tilt", "The angle of your outer eye corners. A positive canthal tilt is one of the strongest predictors of a high PSL face rating."],
+                ["Facial Thirds", "Your face divided into three equal horizontal zones. Ideal harmony means each third is balanced."],
+                ["Golden Ratio Checkpoints", "Nose width, mouth width, inter-eye distance, and jaw width — all measured against phi."],
+                ["Jawline & Chin Projection", "Key determinants in any looksmaxxing face rating and structural masculinity/femininity score."],
+                ["Facial Symmetry", "Left-right comparison across all major landmarks. Minor asymmetry is normal; large deviations affect your score."],
+              ].map(([title, desc]) => (
+                <li key={title as string} className="flex items-start gap-3 p-3 bg-slate-900/40 rounded-xl border border-white/5">
+                  <span className="text-indigo-400 font-bold text-sm mt-0.5 shrink-0">→</span>
+                  <span><strong className="text-white">{title}:</strong> {desc}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h3 className="text-xl font-bold text-white mt-10 mb-4">PSL Face Rating vs. AI Facial Analysis</h3>
+            <p className="text-slate-400 leading-relaxed mb-6">
+              The <strong className="text-white">PSL face rating</strong> (Pretty, Sexy, Lovable) is a community-driven scale used across looksmaxxing communities to rate facial attractiveness from 1–10. While PSL ratings reflect subjective consensus, <strong className="text-white">AI facial analysis</strong> provides objective mathematical data. Facemaxify bridges both — our score is calibrated to correlate with community PSL ratings, but backed by measurable geometry. You get the cultural context of a <strong className="text-white">looksmaxxing face rating</strong> with the rigour of scientific measurement.
+            </p>
+
+            <h3 className="text-xl font-bold text-white mt-10 mb-4">Free Facial Analysis vs. Qoves Facial Analysis</h3>
+            <p className="text-slate-400 leading-relaxed mb-6">
+              Platforms like Qoves offer paid facial analysis reports with manual expert review. <strong className="text-white">Qoves facial analysis free</strong> alternatives are limited, and paid reports can take days. Facemaxify delivers <strong className="text-white">free facial analysis</strong> results in under 30 seconds — fully automated, available 24/7, with no human bottleneck. Pro users additionally unlock a personal colour analysis, AI hairstyle recommendations, and a full softmaxxing skincare protocol tailored to their detected skin type and facial structure.
+            </p>
+
+            <h3 className="text-xl font-bold text-white mt-10 mb-4">How to Get Your Free Facial Analysis</h3>
+            <p className="text-slate-400 leading-relaxed mb-6">
+              Getting started takes less than one minute. Upload a front-facing photo in even lighting (no extreme angles), let Facemaxify's <strong className="text-white">facial analysis AI</strong> detect your landmarks, and review your full report. You'll see your score breakdown across every major facial metric, AI-generated commentary on your strongest and weakest features, and a personalised looksmaxxing roadmap. No account required to start. Your photos are processed securely and never stored without your consent.
+            </p>
+
+            <p className="text-slate-500 text-sm leading-relaxed mt-8 pt-8 border-t border-white/5">
+              Whether you're curious about your facial structure, optimising for a looksmaxxing transformation, or simply want the most accurate <strong className="text-slate-400">free facial analysis</strong> available online — Facemaxify gives you the data you need to understand your face mathematically and take action with confidence.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* CSS for custom animations (inline for simplicity) */}
       <style>{`

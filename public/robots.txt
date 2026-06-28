@@ -1,15 +1,18 @@
-# Robots.txt for Facemaxify
-# Allow all search engines to crawl the site
+# robots.txt — Facemaxify
+# https://facemaxify.com
 
 User-agent: *
 Allow: /
 
-# Disallow admin and private areas
+# Block server-side API routes and private dashboard
 Disallow: /api/
 Disallow: /dashboard/
+Disallow: /dashboard
 
-# Sitemap location
+# Allow key crawlable assets
+Allow: /og-image.png
+Allow: /twitter-image.png
+Allow: /favicon.png
+
+# Sitemap
 Sitemap: https://facemaxify.com/sitemap.xml
-
-# Crawl-delay (optional, helps prevent server overload)
-Crawl-delay: 1

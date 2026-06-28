@@ -28,6 +28,25 @@ import { ToolsDirectoryPage } from "./pages/ToolsDirectoryPage";
 import { GoldenRatioPage } from "./pages/GoldenRatioPage";
 import { CanthalTiltPage } from "./pages/CanthalTiltPage";
 import { FaceSymmetryPage } from "./pages/FaceSymmetryPage";
+import { FacialThirdsPage } from "./pages/FacialThirdsPage";
+import { EyeSpacingPage } from "./pages/EyeSpacingPage";
+import { JawlineScorePage } from "./pages/JawlineScorePage";
+import { NoseRatioPage } from "./pages/NoseRatioPage";
+import { LipRatioPage } from "./pages/LipRatioPage";
+import { HunterEyesPage } from "./pages/HunterEyesPage";
+import { FacialWidthHeightPage } from "./pages/FacialWidthHeightPage";
+import { CheekboneWidthPage } from "./pages/CheekboneWidthPage";
+import { MidfaceRatioPage } from "./pages/MidfaceRatioPage";
+import { ForeheadRatioPage } from "./pages/ForeheadRatioPage";
+import { PhiltrumRatioPage } from "./pages/PhiltrumRatioPage";
+import { BrowPositionPage } from "./pages/BrowPositionPage";
+import { ChinRatioPage } from "./pages/ChinRatioPage";
+import { LowerThirdPage } from "./pages/LowerThirdPage";
+import { LooksmaxScorePage } from "./pages/LooksmaxScorePage";
+import { PslRatingPage } from "./pages/PslRatingPage";
+import { FaceRatingPage } from "./pages/FaceRatingPage";
+import { AttractivenessScorePage } from "./pages/AttractivenessScorePage";
+import { HarmonyScorePage } from "./pages/HarmonyScorePage";
 import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
@@ -247,6 +266,25 @@ const App: React.FC = () => {
       <Route path="/tools/golden-ratio" element={<GoldenRatioPage />} />
       <Route path="/tools/canthal-tilt" element={<CanthalTiltPage />} />
       <Route path="/tools/face-symmetry" element={<FaceSymmetryPage />} />
+      <Route path="/tools/facial-thirds" element={<FacialThirdsPage />} />
+      <Route path="/tools/eye-spacing" element={<EyeSpacingPage />} />
+      <Route path="/tools/jawline-score" element={<JawlineScorePage />} />
+      <Route path="/tools/nose-ratio" element={<NoseRatioPage />} />
+      <Route path="/tools/lip-ratio" element={<LipRatioPage />} />
+      <Route path="/tools/hunter-eyes" element={<HunterEyesPage />} />
+      <Route path="/tools/facial-width-height" element={<FacialWidthHeightPage />} />
+      <Route path="/tools/cheekbone-width" element={<CheekboneWidthPage />} />
+      <Route path="/tools/midface-ratio" element={<MidfaceRatioPage />} />
+      <Route path="/tools/forehead-ratio" element={<ForeheadRatioPage />} />
+      <Route path="/tools/philtrum-ratio" element={<PhiltrumRatioPage />} />
+      <Route path="/tools/brow-position" element={<BrowPositionPage />} />
+      <Route path="/tools/chin-ratio" element={<ChinRatioPage />} />
+      <Route path="/tools/lower-third" element={<LowerThirdPage />} />
+      <Route path="/tools/looksmax-score" element={<LooksmaxScorePage />} />
+      <Route path="/tools/psl-rating" element={<PslRatingPage />} />
+      <Route path="/tools/face-rating" element={<FaceRatingPage />} />
+      <Route path="/tools/attractiveness-score" element={<AttractivenessScorePage />} />
+      <Route path="/tools/harmony-score" element={<HarmonyScorePage />} />
       <Route path="/:slug" element={<SeoLandingPageRoute />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />

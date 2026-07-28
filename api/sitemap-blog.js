@@ -38,14 +38,19 @@ export default async function handler(req, res) {
     return res.status(500).send("Failed to generate sitemap");
   }
 
-  const urls = (posts || [])
-    .map((post) => {
-      const lastmod = (post.published_at || new Date().toISOString()).slice(0, 10);
-      return `  <url>\n    <loc>https://facemaxify.com/blog/${escapeXml(post.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-    })
-    .join("\n");
+  const urlEntries = (posts || []).map((post) => {
+    const lastmod = (post.published_at || new Date().toISOString()).slice(0, 10);
+    return `  <url>\n    <loc>https://facemaxify.com/blog/${escapeXml(post.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+  });
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  // An <urlset> with zero <url> children is technically valid per the sitemap protocol,
+  // but Google Search Console flags it as an error ("Missing XML tag: url") rather than
+  // just reporting 0 discovered URLs. Self-resolves once the first post is published;
+  // this just keeps the markup itself clean either way.
+  const xml =
+    urlEntries.length > 0
+      ? `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlEntries.join("\n")}\n</urlset>\n`
+      : `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>\n`;
 
   res.setHeader("Cache-Control", "public, max-age=0, s-maxage=300, stale-while-revalidate=600");
   return res.status(200).send(xml);

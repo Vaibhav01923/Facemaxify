@@ -9,6 +9,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import * as esbuild from "esbuild";
+import { renderHtmlWithMeta } from "../api/_lib/htmlMeta.js";
 
 const rootDir = path.resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 const distDir = path.join(rootDir, "dist");
@@ -17,6 +18,7 @@ const template = readFileSync(path.join(distDir, "index.html"), "utf8");
 // --- 1. Tool pages: metadata lives inline in each page component's <SEO .../> tag ---
 const toolPages = [
   ["/tools", "pages/ToolsDirectoryPage.tsx"],
+  ["/blog", "pages/BlogListingPage.tsx"],
   ["/tools/facial-shape", "pages/FacialShapePage.tsx"],
   ["/tools/golden-ratio", "pages/GoldenRatioPage.tsx"],
   ["/tools/canthal-tilt", "pages/CanthalTiltPage.tsx"],
@@ -94,37 +96,11 @@ for (const page of dataModule.seoLandingPages) {
 }
 
 // --- 3. Inject per-route metadata into a copy of the built index.html ---
-function escapeHtml(s) {
-  return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-function renderHtml({ title, description, keywords, canonicalUrl }) {
-  let html = template;
-  const t = escapeHtml(title);
-  const d = escapeHtml(description);
-
-  html = html.replace(/<title>[^<]*<\/title>/, `<title>${t}</title>`);
-  html = html.replace(/(<meta name="title" content=")[^"]*(")/, `$1${t}$2`);
-  html = html.replace(/(<meta name="description" content=")[^"]*(")/, `$1${d}$2`);
-  if (keywords) {
-    const k = escapeHtml(keywords);
-    html = html.replace(/(<meta name="keywords" content=")[^"]*(")/, `$1${k}$2`);
-  }
-  html = html.replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${canonicalUrl}$2`);
-  html = html.replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${canonicalUrl}$2`);
-  html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${t}$2`);
-  html = html.replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${d}$2`);
-  html = html.replace(/(<meta name="twitter:url" content=")[^"]*(")/, `$1${canonicalUrl}$2`);
-  html = html.replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${t}$2`);
-  html = html.replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${d}$2`);
-  return html;
-}
-
 let written = 0;
 for (const meta of routes) {
   const outDir = path.join(distDir, meta.route.replace(/^\//, ""));
   mkdirSync(outDir, { recursive: true });
-  writeFileSync(path.join(outDir, "index.html"), renderHtml(meta));
+  writeFileSync(path.join(outDir, "index.html"), renderHtmlWithMeta(template, meta));
   written++;
 }
 

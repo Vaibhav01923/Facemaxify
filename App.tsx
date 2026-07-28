@@ -48,6 +48,8 @@ import { FaceRatingPage } from "./pages/FaceRatingPage";
 import { AttractivenessScorePage } from "./pages/AttractivenessScorePage";
 import { HarmonyScorePage } from "./pages/HarmonyScorePage";
 import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
+import { BlogListingPage } from "./pages/BlogListingPage";
+import { BlogPostPage } from "./pages/BlogPostPage";
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
   constructor(props: any) {
@@ -262,6 +264,8 @@ const App: React.FC = () => {
       />
 
       <Route path="/tools" element={<ToolsDirectoryPage />} />
+      <Route path="/blog" element={<BlogListingPage />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
       <Route path="/tools/facial-shape" element={<FacialShapePage />} />
       <Route path="/tools/golden-ratio" element={<GoldenRatioPage />} />
       <Route path="/tools/canthal-tilt" element={<CanthalTiltPage />} />

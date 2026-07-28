@@ -107,6 +107,10 @@ export const Navbar: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            <a href="/blog" className="text-slate-300 hover:text-white font-medium transition-colors">
+              Blog
+            </a>
           </div>
 
           {/* Right Side - Auth */}

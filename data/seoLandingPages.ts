@@ -1,6 +1,32 @@
-import type { RatioMetricKey } from "../services/ratioCalculator";
+import { RATIO_CONFIGS, type RatioMetricKey } from "../services/ratioCalculator";
 
 type PageCategory = "feature" | "high-intent" | "adjacent";
+
+// Renders a real, per-metric benchmark section from services/ratioCalculator.ts so every
+// generated landing page carries genuinely unique, factual content instead of shared
+// boilerplate — this is what keeps 30+ near-duplicate-titled pages from reading as
+// duplicate content to search engines.
+const benchmarkSection = (keys: RatioMetricKey[]): PageSection => ({
+  title: "Ideal ranges for these metrics",
+  paragraphs: [
+    keys
+      .map((key) => {
+        const cfg = RATIO_CONFIGS[key];
+        const low = (cfg.ideal - cfg.range).toFixed(2).replace(/\.?0+$/, "");
+        const high = (cfg.ideal + cfg.range).toFixed(2).replace(/\.?0+$/, "");
+        return `${cfg.name} is scored against an ideal of ${cfg.ideal}${cfg.unit} (roughly ${low}${cfg.unit}–${high}${cfg.unit} before the score starts dropping).`;
+      })
+      .join(" "),
+    "These are the same benchmark values Facemaxify's scoring engine uses internally, not rounded marketing numbers — so a preview here lines up with what the full report would tell you about the same metric.",
+  ],
+});
+
+const metricPhrase = (keys: RatioMetricKey[]) => {
+  const names = keys.map((key) => RATIO_CONFIGS[key].name);
+  if (names.length <= 1) return names.join("");
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+};
 
 interface PageSection {
   title: string;
@@ -56,16 +82,20 @@ const featurePage = (config: {
   heroTitle: config.heroTitle,
   heroDescription: config.toolHook,
   intro: [
-    `${config.heroTitle} pages work best when they show a real measurement instead of vague advice. This tool uses the same MediaPipe-based facial landmark flow as Facemaxify's front analysis, but keeps the output focused on one feature at a time.`,
-    "That makes the page useful enough to rank and useful enough to convert, while the full premium tool still keeps the larger multi-metric report, score context, and deeper guidance.",
+    `${config.heroTitle} pages work best when they show a real measurement instead of vague advice. This tool uses the same MediaPipe-based facial landmark flow as Facemaxify's front analysis, focused specifically on ${metricPhrase(config.unlockedMetricKeys)}.`,
+    config.lockedMetricKeys?.length
+      ? `${metricPhrase(config.lockedMetricKeys)} — the companion metric${config.lockedMetricKeys.length > 1 ? "s" : ""} most people ask about alongside this one — stay${config.lockedMetricKeys.length > 1 ? "" : "s"} inside the full premium report, where it's shown together with everything else that affects the same region of the face.`
+      : "That makes the page useful enough to rank and useful enough to convert, while the full premium tool still keeps the larger multi-metric report, score context, and deeper guidance.",
   ],
   bullets: [
-    "Upload a front-facing photo and get a real feature-specific measurement.",
-    "Only the lead metric is shown publicly so the page stays useful without leaking the full report.",
-    "Locked companion metrics push users into the main premium analysis.",
+    `Upload a front-facing photo and get a real ${metricPhrase(config.unlockedMetricKeys)} measurement, not a guess.`,
+    config.lockedMetricKeys?.length
+      ? `${metricPhrase(config.lockedMetricKeys)} ${config.lockedMetricKeys.length > 1 ? "stay" : "stays"} locked here and ${config.lockedMetricKeys.length > 1 ? "unlock" : "unlocks"} in the full premium report.`
+      : "Only the lead metric is shown publicly so the page stays useful without leaking the full report.",
+    "Benchmarked against the same ideal ranges Facemaxify's scoring engine uses internally.",
     "The full Facemaxify tool still gives the broader 25+ ratio context.",
   ],
-  sections: config.sections,
+  sections: [...config.sections, benchmarkSection(config.lockedMetricKeys?.length ? [...config.unlockedMetricKeys, ...config.lockedMetricKeys] : config.unlockedMetricKeys)],
   faqs: config.faqs,
   analyzer: {
     title: `${config.heroTitle} Tool`,
@@ -98,16 +128,16 @@ const clusterPage = (config: {
   heroDescription:
     "Upload a photo, run a real landmark-based preview, and then use the full Facemaxify tool for the deeper premium breakdown.",
   intro: [
-    `${config.heroTitle} searches are high intent because people want a result, not generic beauty content. This page uses a real preview built from the same front-analysis pipeline as the main product.`,
-    "The public version stays intentionally lighter than the premium product. It gives users enough signal to trust the page, then pushes them into the full analysis for the rest of the story.",
+    `${config.heroTitle} searches are high intent because people want a result, not generic beauty content. This page runs a real preview of ${metricPhrase(config.unlockedMetricKeys)} from the same front-analysis pipeline as the main product.`,
+    `The full aggregate view also weighs ${metricPhrase(config.aggregateMetricKeys)} together — the public preview here only unlocks ${config.unlockedMetricKeys.length} of those ${config.aggregateMetricKeys.length} metrics, giving you enough signal to trust the page before moving into the full analysis for the rest.`,
   ],
   bullets: [
-    "Real photo-based preview using facial landmarks.",
-    "Small subset of true metrics instead of a fake slider tool.",
-    "Clear upgrade path into the premium Facemaxify analysis.",
-    "Built to rank for non-branded search while protecting the full system.",
+    `Real photo-based preview of ${metricPhrase(config.unlockedMetricKeys)}, not a fake slider tool.`,
+    `${config.aggregateMetricKeys.length - config.unlockedMetricKeys.length} related metric${config.aggregateMetricKeys.length - config.unlockedMetricKeys.length === 1 ? "" : "s"} from the same cluster stay locked for the premium report.`,
+    "Scored against the same ideal ranges Facemaxify's engine uses internally.",
+    "Built to answer one specific search intent instead of competing with Facemaxify's own homepage.",
   ],
-  sections: config.sections,
+  sections: [...config.sections, benchmarkSection(config.aggregateMetricKeys)],
   faqs: config.faqs,
   analyzer: {
     title: `${config.heroTitle} Tool`,

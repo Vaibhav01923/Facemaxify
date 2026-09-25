@@ -3,9 +3,15 @@ import { FaceMesh } from "@mediapipe/face_mesh";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { Upload, Loader2, AlertCircle, ArrowRight } from "lucide-react";
 
+/** The analysed photo and its MediaPipe landmarks, for tools that draw on top of the result. */
+export interface PhotoContext {
+  image: string;
+  landmarks: any[];
+}
+
 interface Props {
   onAnalyze: (landmarks: any[]) => any;
-  renderResults: (result: any, reset: () => void) => React.ReactNode;
+  renderResults: (result: any, reset: () => void, context: PhotoContext) => React.ReactNode;
   analyzeLabel?: string;
   uploadHint?: string;
 }
@@ -21,6 +27,7 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<any | null>(null);
+  const [landmarks, setLandmarks] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,6 +65,7 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
           }
           try {
             const res = onAnalyze(results.multiFaceLandmarks[0]);
+            setLandmarks(results.multiFaceLandmarks[0]);
             setResult(res);
             resolve();
           } catch (calcErr: any) {
@@ -73,7 +81,7 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
     }
   };
 
-  const reset = () => { setResult(null); setSelectedImage(null); setError(null); };
+  const reset = () => { setResult(null); setLandmarks([]); setSelectedImage(null); setError(null); };
 
   const goFull = () => {
     if (isSignedIn) { window.location.href = "/dashboard/facial-analysis"; return; }
@@ -118,7 +126,7 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
         </div>
       ) : (
         <div className="space-y-6">
-          {renderResults(result, reset)}
+          {renderResults(result, reset, { image: selectedImage ?? "", landmarks })}
           <div className="bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-indigo-500/30 rounded-3xl p-6 flex flex-col sm:flex-row items-center gap-4">
             <div className="flex-1">
               <h3 className="text-white font-bold text-lg mb-1">Get Your Full Facial Analysis</h3>

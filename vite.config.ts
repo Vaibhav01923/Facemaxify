@@ -9,7 +9,8 @@ export default defineConfig(({ mode }) => {
         port: 3000,
         host: '0.0.0.0',
         proxy: {
-          '/api': {
+          // API calls go to the backend; /api/_lib/* are shared modules the app itself imports.
+          '^/api/(?!_lib/)': {
             target: 'http://localhost:4000',
             changeOrigin: true,
           },

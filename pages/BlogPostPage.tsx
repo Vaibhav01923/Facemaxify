@@ -4,7 +4,7 @@ import Markdown from "markdown-to-jsx";
 import { Navbar } from "../components/Navbar";
 import { SEO } from "../components/SEO";
 import { supabase } from "../services/supabase";
-import { blogPostTitle, initialBlogData, markdownOptions } from "../api/_lib/blogShared.js";
+import { blogPostTitle, initialBlogData, markdownOptions, postBody } from "../api/_lib/blogShared.js";
 
 interface BlogPost {
   slug: string;
@@ -74,7 +74,7 @@ export const BlogPostPage: React.FC = () => {
 
   const canonicalUrl = `https://facemaxify.com/blog/${post.slug}`;
   const description =
-    post.description || post.content.replace(/[#*`_>\-]/g, "").slice(0, 155).trim() + "…";
+    post.description || postBody(post.content).replace(/[#*`_>\-]/g, "").slice(0, 155).trim() + "…";
   const schema = [
     {
       "@context": "https://schema.org",
@@ -140,7 +140,7 @@ export const BlogPostPage: React.FC = () => {
             )}
 
             <div className="prose-invert">
-              <Markdown options={markdownOptions}>{post.content}</Markdown>
+              <Markdown options={markdownOptions}>{postBody(post.content)}</Markdown>
             </div>
           </article>
         </main>

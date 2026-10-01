@@ -1,6 +1,17 @@
 // Shared by the blog pages (pages/Blog*.tsx, in the browser) and the functions that
 // server-render them (api/blog-index.js, api/blog-post.js), so the HTML crawlers receive
 // and the page React renders are built from the same Markdown settings and metadata.
+import { createElement } from "react";
+
+// Comparison tables are wider than the article column on phones, so they scroll sideways
+// inside a bordered box instead of squeezing every cell into a few characters.
+function Table({ children, ...props }) {
+  return createElement(
+    "div",
+    { className: "my-8 overflow-x-auto rounded-xl border border-white/10" },
+    createElement("table", { ...props, className: "w-full min-w-[36rem] border-collapse text-left text-sm" }, children),
+  );
+}
 
 // Raw HTML inside a post is shown as text instead of being parsed: the server writes this
 // markup straight into the page, where a <script> would run. RankOnGeo sends plain Markdown.
@@ -23,8 +34,19 @@ export const markdownOptions = {
     code: { props: { className: "bg-slate-900 px-1.5 py-0.5 rounded text-amber-300 text-sm" } },
     img: { props: { className: "rounded-2xl border border-white/10 my-6 w-full" } },
     strong: { props: { className: "text-white font-semibold" } },
+    table: { component: Table },
+    thead: { props: { className: "bg-white/5" } },
+    tr: { props: { className: "border-b border-white/10 last:border-0" } },
+    th: { props: { className: "px-4 py-3 font-semibold text-white align-bottom border-b border-white/10" } },
+    td: { props: { className: "px-4 py-3 text-slate-300 align-top leading-relaxed" } },
   },
 };
+
+// Posts from RankOnGeo arrived with their "# Title" line at the top of the content, and
+// the page already prints the title as its <h1>, so it showed twice. Drops that first line.
+export function postBody(content) {
+  return (content || "").replace(/^\s*#[ \t]+[^\n]*(?:\n+|$)/, "");
+}
 
 export const blogIndexMeta = {
   title: "Facemaxify Blog — Facial Analysis, Golden Ratio & Looksmaxxing Guides",

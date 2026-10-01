@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { renderHtmlWithMeta } from "./_lib/htmlMeta.js";
-import { blogPostTitle, blogPostUrl } from "./_lib/blogShared.js";
+import { blogPostTitle, blogPostUrl, postBody } from "./_lib/blogShared.js";
 import { loadTemplate, renderPostPage, withRootContent } from "./_lib/blogRender.js";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
   const canonicalUrl = blogPostUrl(post.slug);
   const description =
     post.description ||
-    post.content.replace(/[#*`_>[\]()-]/g, "").slice(0, 155).trim() + "…";
+    postBody(post.content).replace(/[#*`_>[\]()-]/g, "").slice(0, 155).trim() + "…";
 
   let html = renderHtmlWithMeta(template, {
     title: blogPostTitle(post.title),

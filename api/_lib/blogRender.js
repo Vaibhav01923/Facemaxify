@@ -6,7 +6,7 @@
 import { compiler } from "markdown-to-jsx";
 import { renderToStaticMarkup } from "react-dom/server";
 import { escapeHtml } from "./htmlMeta.js";
-import { markdownOptions } from "./blogShared.js";
+import { markdownOptions, postBody } from "./blogShared.js";
 
 // The deployed spa.html is the empty page shell: it carries the built CSS/JS asset links.
 // (index.html is the prerendered homepage — see scripts/prerender.mjs.)
@@ -44,7 +44,7 @@ export function renderPostPage(post) {
   const cover = post.image_url
     ? `<img src="${escapeHtml(post.image_url)}" alt="${escapeHtml(post.title)}" class="rounded-2xl border border-white/10 w-full mb-10" />`
     : "";
-  const body = renderToStaticMarkup(compiler(post.content, markdownOptions));
+  const body = renderToStaticMarkup(compiler(postBody(post.content), markdownOptions));
   return pageShell(
     `<article class="mx-auto max-w-3xl">` +
       `<a href="/blog" class="text-sm text-slate-500 hover:text-slate-300 mb-6 inline-block">← Back to blog</a>` +

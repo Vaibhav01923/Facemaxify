@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/clerk-react";
 import { BrowserRouter } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
+import { captureToolArticles } from "./components/tools/ToolArticle";
 import "./index.css";
 
 function showFatalError(msg: string) {
@@ -42,6 +43,9 @@ class RootErrorBoundary extends React.Component<{ children: React.ReactNode }, {
     return this.props.children;
   }
 }
+
+// Keep the prerendered tool-page article before React replaces #root (see ToolArticle.tsx).
+captureToolArticles();
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(

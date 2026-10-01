@@ -38,6 +38,13 @@ export function blogPostUrl(slug) {
   return `https://facemaxify.com/blog/${slug}`;
 }
 
+// Search results cut titles off at ~60 characters, so the brand suffix is only added when
+// it fits — otherwise it just pushes the post's own words out of view.
+export function blogPostTitle(postTitle) {
+  const branded = `${postTitle} | Facemaxify Blog`;
+  return branded.length <= 60 ? branded : postTitle;
+}
+
 // The server-rendered blog pages embed the data they were built from as
 // window.__BLOG_DATA__ ({ posts } on /blog, { post } on a post), so the app can show it on
 // its first render instead of a loading state.

@@ -1,6 +1,7 @@
 import React from "react";
 import { SEO } from "../components/SEO";
 import { Navbar } from "../components/Navbar";
+import { ToolArticle } from "../components/tools/ToolArticle";
 import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
@@ -79,18 +80,9 @@ const Results = ({ result: r, reset }: any) => {
 };
 
 export const PslRatingPage: React.FC = () => {
-  const faq = {
-    "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: [
-      { "@type": "Question", name: "What does PSL stand for in face rating?", acceptedAnswer: { "@type": "Answer", text: "PSL stands for Prettyscale, Sluthate, and Lookism — three online forums where facial attractiveness ratings on a 1–10 scale were popularized. Today 'PSL rating' broadly refers to any systematic 1–10 facial attractiveness rating based on measurable geometric metrics used in the looksmaxxing community, particularly focusing on features like canthal tilt, jawline, symmetry, facial proportions, and eye shape." } },
-      { "@type": "Question", name: "What is a good PSL rating?", acceptedAnswer: { "@type": "Answer", text: "PSL ratings follow a bell curve: 7+ is considered high tier and highly attractive. 8+ is very high tier, rare. 9+ approaches the theoretical maximum. Most people score 5–6.5. A PSL rating below 5 is considered below average. A rating of 7+ significantly improves social outcomes and perceived attractiveness in most contexts." } },
-      { "@type": "Question", name: "What metrics are used in PSL rating?", acceptedAnswer: { "@type": "Answer", text: "This PSL calculator measures five factors: facial symmetry (25%), jawline definition (25%), canthal tilt (20%), eye compactness (15%), and facial thirds proportion (15%). These correspond to the metrics most consistently discussed in PSL rating communities as the most impactful on overall facial score." } },
-      { "@type": "Question", name: "Can you increase your PSL rating?", acceptedAnswer: { "@type": "Answer", text: "Yes. The most impactful improvements for PSL rating are: body fat reduction (reveals bone structure and jawline), mewing and tongue posture, skincare (texture, clarity), hairstyle optimization, and for larger gains — aesthetic procedures targeting the jawline, eyes, or nose. The Facemaxify full analysis identifies your specific improvement priorities." } },
-    ]
-  };
   return (
     <>
-      <SEO title="PSL Face Rating Calculator — Free AI PSL Score Tool | Facemaxify" description="Get your PSL face rating free with AI. Calculate your PSL score on the classic 1–10 scale based on facial symmetry, canthal tilt, jawline, eye shape, and facial proportions." keywords="psl rating, psl face rating, psl score calculator, psl rating calculator, psl face score, looksmaxxing psl, psl 1-10 rating" canonicalUrl="https://facemaxify.com/tools/psl-rating" schema={[faq, { "@context": "https://schema.org", "@type": "WebApplication", name: "PSL Face Rating Calculator", url: "https://facemaxify.com/tools/psl-rating", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
+      <SEO title="PSL Face Rating Calculator — Free AI PSL Score Tool | Facemaxify" description="Get your PSL face rating free with AI. Calculate your PSL score on the classic 1–10 scale based on facial symmetry, canthal tilt, jawline, eye shape, and facial proportions." keywords="psl rating, psl face rating, psl score calculator, psl rating calculator, psl face score, looksmaxxing psl, psl 1-10 rating" canonicalUrl="https://facemaxify.com/tools/psl-rating" schema={[{ "@context": "https://schema.org", "@type": "WebApplication", name: "PSL Face Rating Calculator", url: "https://facemaxify.com/tools/psl-rating", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
       <div className="min-h-screen bg-[#050510] text-white">
         <Navbar />
         <section className="max-w-4xl mx-auto px-4 pt-14 pb-4 text-center">
@@ -99,23 +91,7 @@ export const PslRatingPage: React.FC = () => {
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">Upload your photo to get your PSL rating — a 1–10 face score calculated from symmetry, canthal tilt, jawline definition, eye shape, and facial proportions.</p>
         </section>
         <PhotoAnalyzerShell onAnalyze={calculate} renderResults={(r, reset) => <Results result={r} reset={reset} />} analyzeLabel="Get My PSL Rating" />
-        <section className="bg-slate-950/60 border-t border-white/5 py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-5">What Is a PSL Rating?</h2>
-            <p className="text-slate-400 mb-5 leading-relaxed">The <strong className="text-white">PSL rating</strong> is a 1–10 facial attractiveness score used in looksmaxxing communities. The scale originated from online forums where users rated face photos based on measurable aesthetic criteria rather than subjective opinion. Today, a PSL score has become a shorthand for any structured facial attractiveness assessment based on geometric metrics.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">The PSL 1–10 Scale</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">The scale follows a bell curve: 5–6 is average, 7+ is high tier, 8+ is very attractive, 9–10 is exceptional. PSL forums typically award higher scores for strong canthal tilt (hunter eyes), defined jawline, facial symmetry, and short/compact midface. The model-level appearance typically scores 8–9.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">Why Geometric Metrics Matter</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">Subjective ratings vary widely between raters — but geometric measurements don't. By grounding the PSL rating in actual landmark distances and ratios, this calculator removes rater bias and gives you a consistent, reproducible score. This makes it possible to track improvement over time as you pursue looksmaxxing goals.</p>
-            <h2 className="text-2xl font-bold text-white mt-10 mb-5">FAQ</h2>
-            {[
-              { q: "Is a 7 PSL rating attractive?", a: "Yes — a PSL rating of 7 is considered high tier and significantly above average. Most highly attractive people in everyday life score 7–8. Professional models typically score 7.5–9." },
-              { q: "What are the most important PSL metrics?", a: "Jawline definition and facial symmetry carry the highest weight (25% each). Canthal tilt (positive tilt = hunter eyes) is third. Eye compactness and facial proportions round out the score." },
-              { q: "How do I improve my PSL rating?", a: "The highest-leverage improvements: body fat reduction (jawline), mewing, sleep quality (eye appearance), skincare. For larger jumps: chin/jaw fillers, rhinoplasty, or jawline augmentation. The full Facemaxify analysis identifies your specific opportunities." },
-              { q: "Is the PSL calculator free?", a: "Yes — completely free with no account needed." },
-            ].map(({ q, a }) => <div key={q} className="mb-4 p-5 bg-slate-900/40 rounded-2xl border border-white/5"><h4 className="text-white font-bold mb-2">{q}</h4><p className="text-slate-400 text-sm">{a}</p></div>)}
-          </div>
-        </section>
+        <ToolArticle slug="psl-rating" />
       </div>
     </>
   );

@@ -4,6 +4,6 @@
     { "source": "/sitemap-blog.xml", "destination": "/api/sitemap-blog" },
     { "source": "/blog", "destination": "/api/blog-index" },
     { "source": "/blog/:slug", "destination": "/api/blog-post?slug=:slug" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/spa.html" }
   ]
 }

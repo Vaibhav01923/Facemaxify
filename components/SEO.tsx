@@ -16,7 +16,7 @@ interface SEOProps {
  * Usage: <SEO title="Page Title" description="Page description" />
  */
 export const SEO: React.FC<SEOProps> = ({
-  title = "Free Facial Analysis AI — Face Rating, Golden Ratio & Looksmaxxing Score | Facemaxify",
+  title = "Free Facial Analysis AI & Face Rating | Facemaxify",
   description = "Get a free AI facial analysis in seconds. Upload your photo for an instant face rating, golden ratio score, PSL looksmaxxing rating, and personalised improvement plan. No signup needed.",
   keywords = "facial analysis, face rating ai, psl face rating, looksmaxxing face rating, ai facial analysis, facial analysis ai, free facial analysis, qoves facial analysis free, facial symmetry analysis, golden ratio facial analysis",
   image = "https://facemaxify.com/og-image.png",

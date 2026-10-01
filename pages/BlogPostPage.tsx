@@ -4,7 +4,7 @@ import Markdown from "markdown-to-jsx";
 import { Navbar } from "../components/Navbar";
 import { SEO } from "../components/SEO";
 import { supabase } from "../services/supabase";
-import { initialBlogData, markdownOptions } from "../api/_lib/blogShared.js";
+import { blogPostTitle, initialBlogData, markdownOptions } from "../api/_lib/blogShared.js";
 
 interface BlogPost {
   slug: string;
@@ -92,7 +92,7 @@ export const BlogPostPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#050510] text-white">
       <SEO
-        title={`${post.title} | Facemaxify Blog`}
+        title={blogPostTitle(post.title)}
         description={description}
         keywords={post.keyword || undefined}
         canonicalUrl={canonicalUrl}

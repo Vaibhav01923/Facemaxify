@@ -14,9 +14,9 @@ export const Navbar: React.FC = () => {
               alt="Facemaxify Logo"
               className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20"
             />
-            <h1 className="text-lg font-bold tracking-tight text-white">
+            <span className="text-lg font-bold tracking-tight text-white">
               Facemaxify
-            </h1>
+            </span>
           </a>
 
           {/* Desktop Navigation */}

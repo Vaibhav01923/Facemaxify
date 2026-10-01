@@ -1,6 +1,7 @@
 import React from "react";
 import { SEO } from "../components/SEO";
 import { Navbar } from "../components/Navbar";
+import { ToolArticle } from "../components/tools/ToolArticle";
 import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
@@ -48,18 +49,9 @@ const Results = ({ result: r, reset }: any) => {
 };
 
 export const BrowPositionPage: React.FC = () => {
-  const faq = {
-    "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: [
-      { "@type": "Question", name: "What is ideal brow position?", acceptedAnswer: { "@type": "Answer", text: "The ideal brow sits approximately one eye-width's worth of gap above the upper eyelid, or roughly 1–1.2cm above the orbital rim. In aesthetic medicine, the brow tail (outer end) should be at or above the level of the brow head (inner end) for women. For men, a flatter, lower brow is generally preferred for a masculine appearance." } },
-      { "@type": "Question", name: "What is a low brow vs high brow?", acceptedAnswer: { "@type": "Answer", text: "A low brow sits close to or overhangs the upper eyelid, creating a heavy, hooded appearance. This is common with ptosis (drooping brow) and can make the eye area appear smaller. A high brow creates a wide, open eye zone — often associated with youth. The ideal is a balanced middle ground where the brow is clearly above the lid but not excessively high." } },
-      { "@type": "Question", name: "Can brow position be changed?", acceptedAnswer: { "@type": "Answer", text: "Yes. Brow lift surgery (direct, coronal, or endoscopic) raises brow position. Botox can be used to raise brows (by relaxing the depressor muscles) or lower them (by weakening the frontalis). Makeup and brow grooming can also visually alter perceived brow position — filling below the natural brow lowers it visually; filling above raises it." } },
-      { "@type": "Question", name: "Is the brow position analyzer free?", acceptedAnswer: { "@type": "Answer", text: "Yes — free and instant, no account required." } },
-    ]
-  };
   return (
     <>
-      <SEO title="Brow Position Analyzer — Free AI Eyebrow Height Calculator | Facemaxify" description="Analyze your brow position free with AI. Measure your brow-to-eye gap ratio to find out if you have a low brow, ideal brow, or high brow position and what it means aesthetically." keywords="brow position analyzer, eyebrow height calculator, brow position test, low brow test, high brow test, eyebrow position ratio, brow height analyzer" canonicalUrl="https://facemaxify.com/tools/brow-position" schema={[faq, { "@context": "https://schema.org", "@type": "WebApplication", name: "Brow Position Analyzer", url: "https://facemaxify.com/tools/brow-position", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
+      <SEO title="Brow Position Analyzer — Free AI Eyebrow Height Calculator | Facemaxify" description="Analyze your brow position free with AI. Measure your brow-to-eye gap ratio to find out if you have a low brow, ideal brow, or high brow position and what it means aesthetically." keywords="brow position analyzer, eyebrow height calculator, brow position test, low brow test, high brow test, eyebrow position ratio, brow height analyzer" canonicalUrl="https://facemaxify.com/tools/brow-position" schema={[{ "@context": "https://schema.org", "@type": "WebApplication", name: "Brow Position Analyzer", url: "https://facemaxify.com/tools/brow-position", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
       <div className="min-h-screen bg-[#050510] text-white">
         <Navbar />
         <section className="max-w-4xl mx-auto px-4 pt-14 pb-4 text-center">
@@ -68,23 +60,7 @@ export const BrowPositionPage: React.FC = () => {
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">Upload your photo to measure your brow-to-eye gap ratio. Find out if you have a low brow, high brow, or ideal brow position — and what each means for your facial aesthetics.</p>
         </section>
         <PhotoAnalyzerShell onAnalyze={calculate} renderResults={(r, reset) => <Results result={r} reset={reset} />} analyzeLabel="Analyze My Brow Position" />
-        <section className="bg-slate-950/60 border-t border-white/5 py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-5">Eyebrow Position and Facial Aesthetics</h2>
-            <p className="text-slate-400 mb-5 leading-relaxed">The vertical position of the eyebrows relative to the upper eyelid has a profound effect on the entire face's perceived expression, age, and attractiveness. <strong className="text-white">Brow position</strong> is measured as the gap between the upper eyelid and the eyebrow, normalized by eye width. The ideal position balances between too low (heavy, sleepy, or angry appearance) and too high (perpetually surprised look).</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">Low Brow: The Hunter Brow Effect</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">In male aesthetics, a slightly low brow position (close to the orbital rim) is often desired — it projects dominance and intensity without looking tired. This connects to the hunter eyes concept, where hooded lids and close brows create a focused, powerful eye appearance. For women, a slightly higher brow with a gentle arch is generally preferred.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">Brow Position and Aging</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">Brow descent is one of the first signs of facial aging. As the frontalis muscle weakens and forehead skin loses elasticity, the brows drop — often below the orbital rim in older individuals. Brow lift procedures are among the most effective anti-aging interventions because restoring brow position opens the entire eye zone and refreshes the face's expression.</p>
-            <h2 className="text-2xl font-bold text-white mt-10 mb-5">FAQ</h2>
-            {[
-              { q: "Does brow position affect attractiveness?", a: "Significantly. Brow position shapes the perceived emotion of the face at rest — the 'resting expression.' A well-positioned brow creates a neutral, approachable resting face. Too low creates a stern/angry appearance; too high creates a perpetually surprised one." },
-              { q: "What is the ideal brow arch for women?", a: "For women, a brow that peaks approximately two-thirds along its length (above the outer edge of the iris) with a slight upward arch is considered ideal. The tail should end at the same height as or slightly above the inner brow head." },
-              { q: "How does brow position relate to hunter eyes?", a: "Hunter eyes (compact, hooded) are enhanced by a slightly lower brow position. High, arched brows create the opposite — a more open, expressive 'prey eyes' effect. Brow position and canthal tilt work together to define eye shape." },
-              { q: "Is the brow analyzer free?", a: "Yes — upload a photo, get your brow position score instantly. No account needed." },
-            ].map(({ q, a }) => <div key={q} className="mb-4 p-5 bg-slate-900/40 rounded-2xl border border-white/5"><h4 className="text-white font-bold mb-2">{q}</h4><p className="text-slate-400 text-sm">{a}</p></div>)}
-          </div>
-        </section>
+        <ToolArticle slug="brow-position" />
       </div>
     </>
   );

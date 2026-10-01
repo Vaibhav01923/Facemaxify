@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   try {
     template = await loadTemplate(req);
   } catch (err) {
-    console.error("Failed to load index.html template:", err);
+    console.error("Failed to load the page shell template:", err);
     return res.status(500).send("Internal Server Error");
   }
 

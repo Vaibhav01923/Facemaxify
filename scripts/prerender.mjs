@@ -1,14 +1,16 @@
-// Post-build step: bakes per-route <title>/<meta description>/<link canonical>/OG/Twitter
-// tags into static HTML files so crawlers get correct signals on the very first HTML
-// response, without waiting for client-side JS (see components/SEO.tsx) to run.
+// Post-build step: turns each public route into a static HTML file that already carries the
+// page's content and its own <title>/<meta description>/<link canonical>/OG/Twitter tags,
+// so crawlers get the real page on the very first HTML response, without waiting for
+// client-side JS to run.
 //
-// Vercel serves a matching static file ahead of the `/(.*) -> /index.html` rewrite in
-// vercel.json, so writing dist/<route>/index.html is enough to override the SPA shell
-// for that route.
+// Vercel serves a matching static file ahead of the `/(.*) -> /spa.html` rewrite in
+// vercel.json, so writing dist/<route>/index.html is enough to override the SPA shell for
+// that route. The shell itself is kept as dist/spa.html, since dist/index.html becomes the
+// prerendered homepage.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
-import * as esbuild from "esbuild";
+import { build, loadEnv } from "vite";
 import { renderHtmlWithMeta } from "../api/_lib/htmlMeta.js";
 
 const rootDir = path.resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
@@ -73,20 +75,72 @@ for (const [route, file] of toolPages) {
   routes.push({ route, ...meta });
 }
 
-// --- 2. Programmatic landing pages: metadata lives in data/seoLandingPages.ts ---
-// Bundled (not just transformed) because this file now pulls real metric benchmarks in
-// from services/ratioCalculator.ts at runtime, not just types.
-const bundle = await esbuild.build({
-  entryPoints: [path.join(rootDir, "data/seoLandingPages.ts")],
-  bundle: true,
-  format: "esm",
-  platform: "neutral",
-  write: false,
-});
-const code = bundle.outputFiles[0].text;
-const dataModule = await import(`data:text/javascript,${encodeURIComponent(code)}`);
+// --- 2. Build the app for Node, so pages can be rendered to HTML ---
+// Clerk and MediaPipe only run in a browser, so this build swaps in stand-ins for them
+// (scripts/ssr/). services/supabase.ts creates its client on import and throws without a
+// URL; rendering never queries it, so a placeholder covers builds that lack the env vars.
+const env = loadEnv("production", rootDir, "VITE_");
+process.env.VITE_SUPABASE_URL = env.VITE_SUPABASE_URL || "https://prerender.invalid";
+process.env.VITE_SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY || "prerender";
 
-for (const page of dataModule.seoLandingPages) {
+const ssrOutDir = path.join(rootDir, "node_modules/.cache/prerender");
+await build({
+  root: rootDir,
+  configFile: path.join(rootDir, "vite.config.ts"),
+  logLevel: "warn",
+  resolve: {
+    alias: [
+      { find: /^@clerk\/clerk-react$/, replacement: path.join(rootDir, "scripts/ssr/clerk-stub.tsx") },
+      { find: /^@mediapipe\/.+$/, replacement: path.join(rootDir, "scripts/ssr/mediapipe-stub.ts") },
+    ],
+  },
+  build: {
+    ssr: path.join(rootDir, "scripts/ssr/entry-server.tsx"),
+    outDir: ssrOutDir,
+    emptyOutDir: true,
+    copyPublicDir: false,
+  },
+});
+const { render, seoLandingPages, articles } = await import(
+  pathToFileURL(path.join(ssrOutDir, "entry-server.js")).href
+);
+
+// FAQPage structured data built from a tool article's "## Frequently asked questions"
+// section, so it always matches the questions shown on the page.
+function plainText(markdown) {
+  return markdown
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*`>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function faqJsonLd(markdown) {
+  const section = markdown.split(/^## /m).find((s) => /^frequently asked questions/i.test(s));
+  if (!section) return null;
+  const mainEntity = section
+    .split(/^### /m)
+    .slice(1)
+    .map((block) => {
+      const [question, ...answer] = block.split("\n");
+      return {
+        "@type": "Question",
+        name: question.trim(),
+        acceptedAnswer: { "@type": "Answer", text: plainText(answer.join("\n")) },
+      };
+    });
+  const json = JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity });
+  return `<script type="application/ld+json" id="faq-json-ld">${json.replace(/</g, "\\u003c")}</script>`;
+}
+
+function withFaq(html, route) {
+  const markdown = articles[route.replace(/^\/tools\//, "")];
+  const script = route.startsWith("/tools/") && markdown && faqJsonLd(markdown);
+  return script ? html.replace("</head>", () => `${script}\n  </head>`) : html;
+}
+
+// --- 3. Programmatic landing pages: metadata lives in data/seoLandingPages.ts ---
+for (const page of seoLandingPages) {
   routes.push({
     route: `/${page.slug}`,
     title: page.title,
@@ -96,13 +150,35 @@ for (const page of dataModule.seoLandingPages) {
   });
 }
 
-// --- 3. Inject per-route metadata into a copy of the built index.html ---
-let written = 0;
+// --- 4. Write each route's HTML: its metadata in <head>, its rendered page in #root ---
+const EMPTY_ROOT = '<div id="root"></div>';
+let withContent = 0;
+
+function renderInto(html, route) {
+  if (!html.includes(EMPTY_ROOT)) throw new Error(`[prerender] template has no empty #root`);
+  try {
+    const page = render(route);
+    withContent++;
+    return html.replace(EMPTY_ROOT, () => `<div id="root">${page}</div>`);
+  } catch (err) {
+    // Still ship the metadata; the app renders the page in the browser as before.
+    console.warn(`[prerender] could not render ${route}, writing metadata only:`, err);
+    return html;
+  }
+}
+
+// The untouched shell serves every route without a static file (dashboard, blog, ...).
+writeFileSync(path.join(distDir, "spa.html"), template);
+writeFileSync(path.join(distDir, "index.html"), renderInto(template, "/"));
+
 for (const meta of routes) {
   const outDir = path.join(distDir, meta.route.replace(/^\//, ""));
   mkdirSync(outDir, { recursive: true });
-  writeFileSync(path.join(outDir, "index.html"), renderHtmlWithMeta(template, meta));
-  written++;
+  const html = renderInto(withFaq(renderHtmlWithMeta(template, meta), meta.route), meta.route);
+  writeFileSync(path.join(outDir, "index.html"), html);
 }
 
-console.log(`[prerender] wrote ${written}/${routes.length} static route(s) with unique <head> metadata into dist/`);
+console.log(
+  `[prerender] wrote ${routes.length + 1} static page(s) with unique <head> metadata into dist/, ` +
+    `${withContent} with the page content rendered in`,
+);

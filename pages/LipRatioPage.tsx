@@ -1,6 +1,7 @@
 import React from "react";
 import { SEO } from "../components/SEO";
 import { Navbar } from "../components/Navbar";
+import { ToolArticle } from "../components/tools/ToolArticle";
 import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
@@ -55,18 +56,9 @@ const Results = ({ result: r, reset }: any) => {
 };
 
 export const LipRatioPage: React.FC = () => {
-  const faq = {
-    "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: [
-      { "@type": "Question", name: "What is the ideal lip ratio?", acceptedAnswer: { "@type": "Answer", text: "The ideal lip ratio is approximately 1:1.6 (upper lip to lower lip height), meaning the lower lip should be about 1.5 to 1.6 times the height of the upper lip. This is related to the golden ratio and creates the 'full yet balanced' look considered most attractive across multiple cultures. Mouths that are too even (1:1) can look flat, while too uneven (1:3+) can look imbalanced." } },
-      { "@type": "Question", name: "What is ideal mouth width?", acceptedAnswer: { "@type": "Answer", text: "Classically, the ideal mouth width is approximately 1.5 times the inter-eye distance — the gap between the inner eye corners. This creates balance between the eye zone and lip zone. A mouth that is too narrow relative to the eyes can appear pinched; too wide can appear disproportionate." } },
-      { "@type": "Question", name: "How can I improve my lip ratio?", acceptedAnswer: { "@type": "Answer", text: "Lip filler injections can increase upper or lower lip volume to achieve a better ratio. Lip blushing (permanent makeup) can enhance the appearance of the upper lip. Contouring techniques using lip liner above the natural lip line can visually enhance upper lip fullness without procedures." } },
-      { "@type": "Question", name: "Is the lip ratio analyzer free?", acceptedAnswer: { "@type": "Answer", text: "Yes — completely free, no account needed. Upload a photo and get your lip ratio score instantly." } },
-    ]
-  };
   return (
     <>
-      <SEO title="Lip Ratio Analyzer — Free AI Lip Proportion Calculator | Facemaxify" description="Analyze your lip ratio free with AI. Measure your upper-to-lower lip ratio and mouth width proportion. Find out if your lips match the golden ratio aesthetic standard." keywords="lip ratio analyzer, lip ratio calculator, lip proportion analyzer, lip harmony, upper lower lip ratio, mouth width ratio, ideal lip ratio" canonicalUrl="https://facemaxify.com/tools/lip-ratio" schema={[faq, { "@context": "https://schema.org", "@type": "WebApplication", name: "Lip Ratio Analyzer", url: "https://facemaxify.com/tools/lip-ratio", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
+      <SEO title="Lip Ratio Analyzer — Free AI Lip Proportion Calculator | Facemaxify" description="Analyze your lip ratio free with AI. Measure your upper-to-lower lip ratio and mouth width proportion. Find out if your lips match the golden ratio aesthetic standard." keywords="lip ratio analyzer, lip ratio calculator, lip proportion analyzer, lip harmony, upper lower lip ratio, mouth width ratio, ideal lip ratio" canonicalUrl="https://facemaxify.com/tools/lip-ratio" schema={[{ "@context": "https://schema.org", "@type": "WebApplication", name: "Lip Ratio Analyzer", url: "https://facemaxify.com/tools/lip-ratio", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
       <div className="min-h-screen bg-[#050510] text-white">
         <Navbar />
         <section className="max-w-4xl mx-auto px-4 pt-14 pb-4 text-center">
@@ -75,23 +67,7 @@ export const LipRatioPage: React.FC = () => {
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">Upload your photo to measure your upper-to-lower lip ratio and mouth width proportion — and see how they compare to the golden ratio lip standard.</p>
         </section>
         <PhotoAnalyzerShell onAnalyze={calculate} renderResults={(r, reset) => <Results result={r} reset={reset} />} analyzeLabel="Analyze My Lip Ratio" />
-        <section className="bg-slate-950/60 border-t border-white/5 py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-5">What Is the Lip Ratio?</h2>
-            <p className="text-slate-400 mb-5 leading-relaxed">The <strong className="text-white">lip ratio</strong> measures the proportional relationship between the height of the upper lip and the height of the lower lip. The aesthetic standard — supported by both classical proportion theory and modern cosmetic surgery research — is that the lower lip should be approximately 1.5 to 1.6 times the height of the upper lip. This proportion appears repeatedly across faces rated as highly attractive, creating that balance of "full yet defined."</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">Upper Lip, Lower Lip, and the Golden Ratio</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">The 1:1.618 ratio (phi, the golden ratio) appears in lip proportions just as it does elsewhere on the face. A lower lip that is 1.6× the height of the upper lip matches this ratio precisely. Lips that trend 1:1 (even) can appear flat; ratios beyond 1:2.5 (very dominant lower lip) can look unbalanced. Most highly desired lip shapes fall in the 1:1.4 to 1:1.8 range.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">Mouth Width Proportion</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">Beyond the lip ratio itself, mouth width is crucial. The ideal mouth is approximately 1.5× the inter-eye distance. This creates horizontal balance between the eye zone and lip zone, anchoring the lower face. A narrow mouth relative to wide-set eyes can look pinched; an overly wide mouth relative to close-set eyes can look disproportionate.</p>
-            <h2 className="text-2xl font-bold text-white mt-10 mb-5">FAQ</h2>
-            {[
-              { q: "What is an ideal upper-to-lower lip ratio?", a: "The most attractive ratio is upper:lower of approximately 0.65 (or 1:1.5). The lower lip should be meaningfully fuller. Ratios from 0.55 to 0.80 are generally considered well-proportioned." },
-              { q: "Do lip proportions affect attractiveness?", a: "Significantly — studies show fuller lips are consistently rated as more attractive, but balance matters too. A very full upper lip with a thin lower lip, or vice versa, scores lower than balanced fullness." },
-              { q: "How does this connect to the full analysis?", a: "Lip ratio is one of 15+ measurements in the full Facemaxify report. The complete analysis includes golden ratio, symmetry, canthal tilt, jawline, and a full improvement plan." },
-              { q: "Is the lip analyzer free?", a: "Yes — free, instant, no signup required." },
-            ].map(({ q, a }) => <div key={q} className="mb-4 p-5 bg-slate-900/40 rounded-2xl border border-white/5"><h4 className="text-white font-bold mb-2">{q}</h4><p className="text-slate-400 text-sm">{a}</p></div>)}
-          </div>
-        </section>
+        <ToolArticle slug="lip-ratio" />
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 import React from "react";
 import { SEO } from "../components/SEO";
 import { Navbar } from "../components/Navbar";
+import { ToolArticle } from "../components/tools/ToolArticle";
 import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
@@ -81,18 +82,9 @@ const Results = ({ result: r, reset }: any) => {
 };
 
 export const FaceRatingPage: React.FC = () => {
-  const faq = {
-    "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: [
-      { "@type": "Question", name: "How does AI face rating work?", acceptedAnswer: { "@type": "Answer", text: "AI face rating uses computer vision to detect facial landmarks — specific points on the face like eye corners, jaw angles, nose tip, and lip borders. It then measures geometric relationships between these points: ratios, distances, and angles. These measurements are compared to aesthetic standards derived from attractiveness research to produce a numerical score." } },
-      { "@type": "Question", name: "Is face rating AI accurate?", acceptedAnswer: { "@type": "Answer", text: "AI face rating based on geometric landmarks is highly consistent and reproducible — the same photo will always give the same score. It accurately captures measurable facial structure. However, real-world attractiveness also involves skin texture, hair, grooming, expression, and personality — which landmark-based AI cannot fully capture. Think of it as a measure of facial structure quality, not a comprehensive attractiveness verdict." } },
-      { "@type": "Question", name: "What is a good face rating score?", acceptedAnswer: { "@type": "Answer", text: "Scores above 88 are exceptional — top 5% of facial structure. 76–87 is very attractive. 63–75 is attractive and above average. 50–62 is average. Most people score between 55 and 72." } },
-      { "@type": "Question", name: "Is the face rating AI free?", acceptedAnswer: { "@type": "Answer", text: "Yes — free, instant, no account required. Upload your photo and get your face rating in seconds." } },
-    ]
-  };
   return (
     <>
-      <SEO title="Face Rating AI — Free AI Face Score Calculator | Facemaxify" description="Get your face rating from AI. Our face rating tool measures symmetry, golden ratio, jawline, facial thirds, and nose ratio for a scientifically-grounded face score. Free, instant." keywords="face rating ai, ai face rating, face rating test, face score calculator, rate my face ai, face rating calculator, ai face score, face attractiveness rater" canonicalUrl="https://facemaxify.com/tools/face-rating" schema={[faq, { "@context": "https://schema.org", "@type": "WebApplication", name: "Face Rating AI", url: "https://facemaxify.com/tools/face-rating", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
+      <SEO title="Face Rating AI — Free AI Face Score Calculator | Facemaxify" description="Get your face rating from AI. Our face rating tool measures symmetry, golden ratio, jawline, facial thirds, and nose ratio for a scientifically-grounded face score. Free, instant." keywords="face rating ai, ai face rating, face rating test, face score calculator, rate my face ai, face rating calculator, ai face score, face attractiveness rater" canonicalUrl="https://facemaxify.com/tools/face-rating" schema={[{ "@context": "https://schema.org", "@type": "WebApplication", name: "Face Rating AI", url: "https://facemaxify.com/tools/face-rating", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
       <div className="min-h-screen bg-[#050510] text-white">
         <Navbar />
         <section className="max-w-4xl mx-auto px-4 pt-14 pb-4 text-center">
@@ -101,30 +93,7 @@ export const FaceRatingPage: React.FC = () => {
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">Upload your photo for an AI face rating based on 5 geometric metrics: symmetry, golden ratio, jawline, facial thirds, and nose proportion. Get a score out of 100 and a detailed breakdown.</p>
         </section>
         <PhotoAnalyzerShell onAnalyze={calculate} renderResults={(r, reset) => <Results result={r} reset={reset} />} analyzeLabel="Rate My Face" />
-        <section className="bg-slate-950/60 border-t border-white/5 py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-5">How AI Face Rating Works</h2>
-            <p className="text-slate-400 mb-5 leading-relaxed">Our <strong className="text-white">face rating AI</strong> uses Google's MediaPipe FaceMesh to detect 468 facial landmarks from your photo, then applies geometric calculations across 5 aesthetic domains. Unlike social media face rating apps that use subjective crowd-sourced opinions, this system uses measurable facial geometry that is consistent, reproducible, and bias-free.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">The 5 Factors in Our Face Score</h3>
-            <p className="text-slate-400 mb-4 leading-relaxed">The face score is a weighted composite:</p>
-            <ul className="text-slate-400 space-y-2 mb-6 list-disc pl-6">
-              <li><strong className="text-white">Symmetry (30%)</strong> — left-right balance across 8 facial zones</li>
-              <li><strong className="text-white">Jawline (25%)</strong> — jaw-to-cheekbone ratio and chin definition</li>
-              <li><strong className="text-white">Golden Ratio (20%)</strong> — face width to height approximation of phi (1.618)</li>
-              <li><strong className="text-white">Facial Thirds (15%)</strong> — balance between forehead, midface, and lower face</li>
-              <li><strong className="text-white">Nose Ratio (10%)</strong> — nose width to face width harmony</li>
-            </ul>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">What the Score Doesn't Measure</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">The face rating AI measures structural geometry — bone structure, facial proportions, and symmetry. It does not measure skin quality, hair, grooming, expression warmth, personal style, or charisma. These factors significantly affect real-world attractiveness. The score is best understood as a measurement of facial structure quality, which is one important component of overall appearance.</p>
-            <h2 className="text-2xl font-bold text-white mt-10 mb-5">FAQ</h2>
-            {[
-              { q: "How do I get a high face rating?", a: "The highest-impact improvements to face rating score are: improving jawline (fat loss, mewing, procedures), improving symmetry perception (posture, less sleeping on one side), and overall facial structure maintenance (skincare, sleep, hydration)." },
-              { q: "What is the most important factor in face rating?", a: "Symmetry (30% of score) and jawline (25%) together account for 55% of the total score. These are the highest-leverage features for face rating improvement." },
-              { q: "What does my face rating percentile mean?", a: "A score of 88+ is top 5%. 76+ is top 20%. 63+ is above average. 50-62 is average. Most people score between 55 and 72." },
-              { q: "Is the face rating AI free?", a: "Yes — 100% free, no signup, instant result." },
-            ].map(({ q, a }) => <div key={q} className="mb-4 p-5 bg-slate-900/40 rounded-2xl border border-white/5"><h4 className="text-white font-bold mb-2">{q}</h4><p className="text-slate-400 text-sm">{a}</p></div>)}
-          </div>
-        </section>
+        <ToolArticle slug="face-rating" />
       </div>
     </>
   );

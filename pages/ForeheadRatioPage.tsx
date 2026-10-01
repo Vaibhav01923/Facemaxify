@@ -1,6 +1,7 @@
 import React from "react";
 import { SEO } from "../components/SEO";
 import { Navbar } from "../components/Navbar";
+import { ToolArticle } from "../components/tools/ToolArticle";
 import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
@@ -54,18 +55,9 @@ const Results = ({ result: r, reset }: any) => {
 };
 
 export const ForeheadRatioPage: React.FC = () => {
-  const faq = {
-    "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: [
-      { "@type": "Question", name: "What is a normal forehead size?", acceptedAnswer: { "@type": "Answer", text: "A balanced forehead should be approximately one-third of total face height — the same proportion as the middle third (brow to nose) and lower third (nose to chin). In terms of face width, the forehead typically narrows slightly from cheekbone width, with an ideal forehead width of approximately 80–90% of cheekbone width." } },
-      { "@type": "Question", name: "What is a high forehead?", acceptedAnswer: { "@type": "Answer", text: "A high forehead has a forehead height greater than 40% of total face height — significantly larger than the ideal one-third. This typically results from a high hairline or receding hairline. It can make the face appear longer and more top-heavy." } },
-      { "@type": "Question", name: "Can I change my forehead ratio?", acceptedAnswer: { "@type": "Answer", text: "Hairline-lowering surgery (anterior hairline advancement) can reduce forehead height. Hairstyling — particularly bangs, fringe, or styles that cover part of the forehead — creates the visual impression of a lower hairline. Contouring can shade the upper forehead to reduce its visual dominance." } },
-      { "@type": "Question", name: "Is the forehead ratio calculator free?", acceptedAnswer: { "@type": "Answer", text: "Yes — completely free, no account required." } },
-    ]
-  };
   return (
     <>
-      <SEO title="Forehead Ratio Calculator — Free AI Forehead Size Analyzer | Facemaxify" description="Calculate your forehead ratio free with AI. Measure your forehead height and width proportions to see if you have a high, low, or balanced forehead relative to your face." keywords="forehead ratio calculator, forehead width ratio, forehead size calculator, high forehead test, forehead proportion analyzer, forehead height calculator" canonicalUrl="https://facemaxify.com/tools/forehead-ratio" schema={[faq, { "@context": "https://schema.org", "@type": "WebApplication", name: "Forehead Ratio Calculator", url: "https://facemaxify.com/tools/forehead-ratio", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
+      <SEO title="Forehead Ratio Calculator — Free AI Forehead Size Analyzer | Facemaxify" description="Calculate your forehead ratio free with AI. Measure your forehead height and width proportions to see if you have a high, low, or balanced forehead relative to your face." keywords="forehead ratio calculator, forehead width ratio, forehead size calculator, high forehead test, forehead proportion analyzer, forehead height calculator" canonicalUrl="https://facemaxify.com/tools/forehead-ratio" schema={[{ "@context": "https://schema.org", "@type": "WebApplication", name: "Forehead Ratio Calculator", url: "https://facemaxify.com/tools/forehead-ratio", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
       <div className="min-h-screen bg-[#050510] text-white">
         <Navbar />
         <section className="max-w-4xl mx-auto px-4 pt-14 pb-4 text-center">
@@ -74,23 +66,7 @@ export const ForeheadRatioPage: React.FC = () => {
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">Upload your photo to measure your forehead height and width proportions. Find out if you have a high forehead, low forehead, or the balanced ideal — and what it means aesthetically.</p>
         </section>
         <PhotoAnalyzerShell onAnalyze={calculate} renderResults={(r, reset) => <Results result={r} reset={reset} />} analyzeLabel="Analyze My Forehead" />
-        <section className="bg-slate-950/60 border-t border-white/5 py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-5">Forehead Ratio and Facial Balance</h2>
-            <p className="text-slate-400 mb-5 leading-relaxed">The <strong className="text-white">forehead ratio</strong> is measured in two dimensions: height and width. Forehead height is the vertical distance from the hairline to the eyebrows, expressed as a percentage of total face height. Forehead width is the horizontal span of the forehead, compared to the maximum face width at the cheekbones. Together, these proportions determine whether the upper third of your face is in harmony with the middle and lower thirds.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">High Forehead vs Low Forehead</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">A <strong className="text-white">high forehead</strong> (above 40% of face height) makes the face appear elongated and top-heavy. It is most commonly caused by a naturally high hairline or hairline recession. Hairline-lowering surgery, hair transplants, or styling with bangs can visually correct this. A <strong className="text-white">low forehead</strong> (below 27%) makes the face appear compressed in the upper zone and can make the eyebrows appear to be very close to the hairline.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">Forehead Width and Face Shape</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">A forehead that is approximately 80–90% of cheekbone width creates a natural widening effect from forehead to cheeks, then tapering to the jaw — the heart or oval face shape considered most attractive in many aesthetic frameworks. A very wide forehead (over 95% of cheekbone width) creates a square or rectangular shape.</p>
-            <h2 className="text-2xl font-bold text-white mt-10 mb-5">FAQ</h2>
-            {[
-              { q: "Is a large forehead unattractive?", a: "Not necessarily — high foreheads are associated with intelligence and are considered attractive in many contexts. The issue is proportional balance. A forehead significantly larger than the middle or lower third creates visual imbalance." },
-              { q: "What hairstyles help a high forehead?", a: "Side-swept bangs, curtain bangs, or any style that brings hair partially over the forehead reduces the apparent height. Avoiding styles that pull all hair back exposes the full forehead." },
-              { q: "Does the forehead ratio affect the face rating?", a: "Yes — the forehead contributes to facial thirds balance, which is one metric in the full Facemaxify analysis. The complete report includes all facial thirds, ratios, and a personalized improvement plan." },
-              { q: "Is the forehead analyzer free?", a: "Yes — completely free, no signup needed." },
-            ].map(({ q, a }) => <div key={q} className="mb-4 p-5 bg-slate-900/40 rounded-2xl border border-white/5"><h4 className="text-white font-bold mb-2">{q}</h4><p className="text-slate-400 text-sm">{a}</p></div>)}
-          </div>
-        </section>
+        <ToolArticle slug="forehead-ratio" />
       </div>
     </>
   );

@@ -143,19 +143,19 @@ export const LandingPage: React.FC = () => {
           </div>
         </motion.div>
         {/* Hero Text */}
-        <motion.h1
+        <motion.p
           variants={item}
           className="text-6xl sm:text-8xl font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-slate-500"
         >
           Facemaxify
-        </motion.h1>
+        </motion.p>
 
-        <motion.p
+        <motion.h1
           variants={item}
           className="text-lg sm:text-2xl text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed font-medium"
         >
-          Facial Analysis and guides without BS and cope
-        </motion.p>
+          Free AI facial analysis and face rating, plus guides without BS and cope
+        </motion.h1>
 
         {/* CTAs */}
         <motion.div

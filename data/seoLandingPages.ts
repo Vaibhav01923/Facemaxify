@@ -76,7 +76,7 @@ const featurePage = (config: {
 }): SeoLandingPageConfig => ({
   slug: config.slug,
   category: "feature",
-  title: `${config.heroTitle} - Free Photo-Based ${config.heroTitle}`,
+  title: `${config.heroTitle} - Free Photo-Based Tool`,
   description: config.description,
   keywords: config.keywords,
   heroTitle: config.heroTitle,

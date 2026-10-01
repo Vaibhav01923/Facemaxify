@@ -8,11 +8,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { escapeHtml } from "./htmlMeta.js";
 import { markdownOptions } from "./blogShared.js";
 
-// The deployed index.html is the page shell: it carries the built CSS/JS asset links.
+// The deployed spa.html is the empty page shell: it carries the built CSS/JS asset links.
+// (index.html is the prerendered homepage — see scripts/prerender.mjs.)
 export async function loadTemplate(req) {
   const proto = req.headers["x-forwarded-proto"] || "https";
-  const res = await fetch(`${proto}://${req.headers.host}/index.html`);
-  if (!res.ok) throw new Error(`index.html returned ${res.status}`);
+  const res = await fetch(`${proto}://${req.headers.host}/spa.html`);
+  if (!res.ok) throw new Error(`spa.html returned ${res.status}`);
   return res.text();
 }
 

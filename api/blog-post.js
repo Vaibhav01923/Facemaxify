@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { renderHtmlWithMeta } from "./_lib/htmlMeta.js";
-import { blogPostUrl } from "./_lib/blogShared.js";
+import { blogPostTitle, blogPostUrl } from "./_lib/blogShared.js";
 import { loadTemplate, renderPostPage, withRootContent } from "./_lib/blogRender.js";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   try {
     template = await loadTemplate(req);
   } catch (err) {
-    console.error("Failed to load index.html template:", err);
+    console.error("Failed to load the page shell template:", err);
     return res.status(500).send("Internal Server Error");
   }
 
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     post.content.replace(/[#*`_>[\]()-]/g, "").slice(0, 155).trim() + "…";
 
   let html = renderHtmlWithMeta(template, {
-    title: `${post.title} | Facemaxify Blog`,
+    title: blogPostTitle(post.title),
     description,
     keywords: post.keyword || undefined,
     canonicalUrl,

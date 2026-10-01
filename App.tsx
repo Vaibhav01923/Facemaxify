@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SignedIn, SignedOut, UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
 import { LandmarkEditor } from "./components/LandmarkEditor";
@@ -74,6 +74,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
 
 const App: React.FC = () => {
   const { user, isLoaded } = useUser();
+  const { pathname } = useLocation();
   const [isPaid, setIsPaid] = useState<boolean | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
 
@@ -177,7 +178,10 @@ const App: React.FC = () => {
   const isDeterminingAccess =
     !isLoaded || checkingPayment || (user && isPaid === null);
 
-  if (isDeterminingAccess) {
+  // Only the dashboard depends on auth and payment state. Public pages ship prerendered in
+  // the HTML (scripts/prerender.mjs), so they render straight away instead of swapping that
+  // content for a spinner while Clerk loads.
+  if (isDeterminingAccess && pathname.startsWith("/dashboard")) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -192,12 +196,7 @@ const App: React.FC = () => {
         element={
           <>
             <SEO />
-            <SignedOut>
-              <LandingPage />
-            </SignedOut>
-            <SignedIn>
-              <Navigate to="/dashboard" replace />
-            </SignedIn>
+            {isLoaded && user ? <Navigate to="/dashboard" replace /> : <LandingPage />}
           </>
         }
       />

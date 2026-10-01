@@ -1,6 +1,7 @@
 import React from "react";
 import { SEO } from "../components/SEO";
 import { Navbar } from "../components/Navbar";
+import { ToolArticle } from "../components/tools/ToolArticle";
 import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
@@ -63,18 +64,9 @@ const Results = ({ result: r, reset }: any) => {
 };
 
 export const JawlineScorePage: React.FC = () => {
-  const faq = {
-    "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: [
-      { "@type": "Question", name: "What makes a good jawline?", acceptedAnswer: { "@type": "Answer", text: "A well-defined jawline typically has a jaw width that is 75-85% of the cheekbone width (creating a tapered, V-shaped lower face), a sharp chin angle (under 90 degrees measured from the jaw angles through the chin), and clear definition between the neck and jaw. Strong cheekbones combined with a defined jaw is one of the most sought-after facial structures." } },
-      { "@type": "Question", name: "How is the jawline score calculated?", acceptedAnswer: { "@type": "Answer", text: "The score combines two measurements: the jaw-to-cheekbone width ratio (jaw width divided by cheekbone width, ideal around 0.75-0.85) and the chin sharpness angle (the geometric angle formed at the chin point between the two jaw angle landmarks). A sharper, more acute angle contributes to a higher definition score." } },
-      { "@type": "Question", name: "Can I improve my jawline score?", acceptedAnswer: { "@type": "Answer", text: "Jawline definition can be improved through reducing body fat (revealing existing bone structure), mewing (correct tongue posture can reshape the jaw over time), chewing hard foods, and targeted exercises. Clinical options include Botox masseter reduction, chin augmentation, or genioplasty for bone reshaping." } },
-      { "@type": "Question", name: "Is the jawline analyzer free?", acceptedAnswer: { "@type": "Answer", text: "Yes — completely free, no account or credit card required. Upload a photo and get your jawline score instantly." } },
-    ]
-  };
   return (
     <>
-      <SEO title="Jawline Score Analyzer — Free AI Jawline Rating Tool | Facemaxify" description="Get your jawline score free with AI. Our analyzer measures jaw-to-cheekbone ratio and chin sharpness to rate your jawline definition. Instant result, no signup needed." keywords="jawline score, jawline analyzer, jawline rating, jawline test, jawline calculator, jawline definition score, ai jawline analyzer" canonicalUrl="https://facemaxify.com/tools/jawline-score" schema={[faq, { "@context": "https://schema.org", "@type": "WebApplication", name: "Jawline Score Analyzer", url: "https://facemaxify.com/tools/jawline-score", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
+      <SEO title="Jawline Score Analyzer — Free AI Jawline Rating Tool | Facemaxify" description="Get your jawline score free with AI. Our analyzer measures jaw-to-cheekbone ratio and chin sharpness to rate your jawline definition. Instant result, no signup needed." keywords="jawline score, jawline analyzer, jawline rating, jawline test, jawline calculator, jawline definition score, ai jawline analyzer" canonicalUrl="https://facemaxify.com/tools/jawline-score" schema={[{ "@context": "https://schema.org", "@type": "WebApplication", name: "Jawline Score Analyzer", url: "https://facemaxify.com/tools/jawline-score", isAccessibleForFree: true, offers: { "@type": "Offer", price: "0" } }] as any} />
       <div className="min-h-screen bg-[#050510] text-white">
         <Navbar />
         <section className="max-w-4xl mx-auto px-4 pt-14 pb-4 text-center">
@@ -83,23 +75,7 @@ export const JawlineScorePage: React.FC = () => {
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">Upload your photo to get an instant jawline score. We measure your jaw-to-cheekbone ratio and chin angle to rate your jawline definition from 0 to 100.</p>
         </section>
         <PhotoAnalyzerShell onAnalyze={calculate} renderResults={(r, reset) => <Results result={r} reset={reset} />} analyzeLabel="Analyze My Jawline" />
-        <section className="bg-slate-950/60 border-t border-white/5 py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-5">What Is the Jawline Score?</h2>
-            <p className="text-slate-400 mb-5 leading-relaxed">The <strong className="text-white">jawline score</strong> quantifies how defined and aesthetically balanced your jawline is based on two landmark measurements: your jaw-to-cheekbone width ratio and your chin angle sharpness. A strong jawline — one of the most sought-after facial features in both male and female aesthetics — combines prominent cheekbones with a tapered jaw and a well-defined chin point.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">The Jaw-to-Cheekbone Ratio</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">Ideal facial structure has cheekbones that are wider than the jaw. The optimal ratio is approximately 0.75–0.85 (jaw is 75–85% of cheekbone width). This creates the classic tapered, V-shaped lower face that is strongly associated with attractiveness in both genders. Ratios above 0.90 indicate a wide, square jaw; ratios below 0.65 indicate a very narrow jaw.</p>
-            <h3 className="text-xl font-bold text-white mb-3 mt-8">Chin Angle and Jawline Definition</h3>
-            <p className="text-slate-400 mb-5 leading-relaxed">The sharpness of the angle at the chin point — formed between the two jaw angles (gonion) and the chin (gnathion) — determines how "pointy" or defined the chin appears. A more acute angle (60–85 degrees) creates a sharper, more defined look. A very obtuse angle (over 110 degrees) creates a rounded, softer jawline profile.</p>
-            <h2 className="text-2xl font-bold text-white mt-10 mb-5">FAQ</h2>
-            {[
-              { q: "What makes a strong jawline?", a: "A strong jawline has cheekbones wider than the jaw (ratio ~0.78), a sharp chin angle under 90°, and clear neck-to-jaw definition. These features project confidence and are consistently rated highly in attractiveness research." },
-              { q: "How can I get a better jawline?", a: "Body fat reduction, mewing, chewing exercises, and proper posture can improve jawline definition over time. Medical options include jaw fillers, Botox masseter slimming, chin augmentation, and genioplasty." },
-              { q: "Does jawline matter for attractiveness?", a: "Yes — especially for men. A defined jawline is one of the strongest predictors of male facial attractiveness in research studies. For women, a softer but still well-defined jaw is typically preferred." },
-              { q: "Is the jawline analyzer free?", a: "Yes — upload a photo and get your result instantly, no account needed." },
-            ].map(({ q, a }) => <div key={q} className="mb-4 p-5 bg-slate-900/40 rounded-2xl border border-white/5"><h4 className="text-white font-bold mb-2">{q}</h4><p className="text-slate-400 text-sm">{a}</p></div>)}
-          </div>
-        </section>
+        <ToolArticle slug="jawline-score" />
       </div>
     </>
   );

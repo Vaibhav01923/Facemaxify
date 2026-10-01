@@ -4,6 +4,7 @@ import Markdown from "markdown-to-jsx";
 import { Navbar } from "../components/Navbar";
 import { SEO } from "../components/SEO";
 import { supabase } from "../services/supabase";
+import { initialBlogData, markdownOptions } from "../api/_lib/blogShared.js";
 
 interface BlogPost {
   slug: string;
@@ -16,28 +17,14 @@ interface BlogPost {
   published_at: string | null;
 }
 
-const markdownOverrides = {
-  h1: { props: { className: "text-3xl font-black text-white mt-10 mb-4" } },
-  h2: { props: { className: "text-2xl font-bold text-white mt-10 mb-4" } },
-  h3: { props: { className: "text-xl font-bold text-white mt-8 mb-3" } },
-  p: { props: { className: "text-slate-300 leading-relaxed mb-5" } },
-  a: { props: { className: "text-amber-400 hover:text-amber-300 underline underline-offset-2" } },
-  ul: { props: { className: "list-disc pl-6 text-slate-300 mb-5 space-y-2" } },
-  ol: { props: { className: "list-decimal pl-6 text-slate-300 mb-5 space-y-2" } },
-  li: { props: { className: "leading-relaxed" } },
-  blockquote: {
-    props: {
-      className: "border-l-4 border-amber-400/50 pl-4 italic text-slate-400 my-6",
-    },
-  },
-  code: { props: { className: "bg-slate-900 px-1.5 py-0.5 rounded text-amber-300 text-sm" } },
-  img: { props: { className: "rounded-2xl border border-white/10 my-6 w-full" } },
-  strong: { props: { className: "text-white font-semibold" } },
-};
-
 export const BlogPostPage: React.FC = () => {
   const { slug } = useParams();
-  const [post, setPost] = useState<BlogPost | null | undefined>(undefined);
+  // A server-rendered visit arrives with this post embedded by api/blog-post.js, so it can
+  // be shown right away; the fetch below still refreshes it.
+  const [post, setPost] = useState<BlogPost | null | undefined>(() => {
+    const embedded = initialBlogData()?.post as BlogPost | undefined;
+    return embedded && embedded.slug === slug ? embedded : undefined;
+  });
 
   useEffect(() => {
     if (!slug) return;
@@ -51,7 +38,8 @@ export const BlogPostPage: React.FC = () => {
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error || !data) {
-          setPost(null);
+          // A failed refresh shouldn't replace a post that is already showing.
+          setPost((current) => (current && current.slug === slug ? current : null));
           return;
         }
         setPost(data as BlogPost);
@@ -152,7 +140,7 @@ export const BlogPostPage: React.FC = () => {
             )}
 
             <div className="prose-invert">
-              <Markdown options={{ overrides: markdownOverrides }}>{post.content}</Markdown>
+              <Markdown options={markdownOptions}>{post.content}</Markdown>
             </div>
           </article>
         </main>

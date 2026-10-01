@@ -16,9 +16,10 @@ const distDir = path.join(rootDir, "dist");
 const template = readFileSync(path.join(distDir, "index.html"), "utf8");
 
 // --- 1. Tool pages: metadata lives inline in each page component's <SEO .../> tag ---
+// /blog is deliberately not here: api/blog-index.js renders it per request so it can list
+// posts published after the deploy, and a static dist/blog/index.html would shadow that.
 const toolPages = [
   ["/tools", "pages/ToolsDirectoryPage.tsx"],
-  ["/blog", "pages/BlogListingPage.tsx"],
   ["/tools/facial-shape", "pages/FacialShapePage.tsx"],
   ["/tools/golden-ratio", "pages/GoldenRatioPage.tsx"],
   ["/tools/canthal-tilt", "pages/CanthalTiltPage.tsx"],

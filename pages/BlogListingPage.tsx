@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { SEO } from "../components/SEO";
 import { supabase } from "../services/supabase";
+import { blogIndexMeta, initialBlogData } from "../api/_lib/blogShared.js";
 
 interface BlogPostSummary {
   slug: string;
@@ -14,7 +15,11 @@ interface BlogPostSummary {
 }
 
 export const BlogListingPage: React.FC = () => {
-  const [posts, setPosts] = useState<BlogPostSummary[] | null>(null);
+  // A server-rendered visit arrives with the list embedded by api/blog-index.js, so it can
+  // be shown right away; the fetch below still refreshes it.
+  const [posts, setPosts] = useState<BlogPostSummary[] | null>(
+    () => (initialBlogData()?.posts as BlogPostSummary[] | undefined) ?? null,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -27,7 +32,7 @@ export const BlogListingPage: React.FC = () => {
         if (cancelled) return;
         if (error) {
           console.error("Failed to load blog posts:", error);
-          setPosts([]);
+          setPosts((current) => current ?? []);
           return;
         }
         setPosts(data || []);
@@ -39,12 +44,7 @@ export const BlogListingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#050510] text-white">
-      <SEO
-        title="Facemaxify Blog — Facial Analysis, Golden Ratio & Looksmaxxing Guides"
-        description="Read the latest articles on facial analysis, golden ratio scoring, facial symmetry, and looksmaxxing from the Facemaxify team."
-        keywords="facial analysis blog, looksmaxxing guides, golden ratio articles, facial aesthetics blog"
-        canonicalUrl="https://facemaxify.com/blog"
-      />
+      <SEO {...blogIndexMeta} />
 
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.12),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.10),transparent_28%)]" />

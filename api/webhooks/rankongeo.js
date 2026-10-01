@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { blogPostUrl } from "../_lib/blogShared.js";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -68,11 +69,43 @@ export default async function handler(req, res) {
   const imageUrl = typeof body.image_url === "string" && body.image_url.trim() ? body.image_url.trim() : null;
 
   try {
+    // RankOnGeo's Autopilot sends an improved version of a post it published earlier as
+    // { action: "update", external_id: <the id returned below> }. Overwrite that post in
+    // place (same slug, so the URL it has been indexed under keeps working), and keep any
+    // existing field the update leaves empty.
+    if (body.action === "update") {
+      const externalId = typeof body.external_id === "string" ? body.external_id.trim() : "";
+      if (!externalId) {
+        return res.status(400).json({ ok: false, error: "external_id is required for an update" });
+      }
+      const changes = {
+        title,
+        content,
+        ...(keyword ? { keyword } : {}),
+        ...(description ? { description } : {}),
+        ...(tags.length ? { tags } : {}),
+        ...(imageUrl ? { image_url: imageUrl } : {}),
+      };
+      const { data: updated, error } = await supabase
+        .from("blog_posts")
+        .update(changes)
+        .eq("id", externalId)
+        .select("id, slug")
+        .maybeSingle();
+      if (error) throw error;
+      if (!updated) {
+        return res.status(404).json({ ok: false, error: `No post with id ${externalId}` });
+      }
+      return res.status(200).json({ ok: true, id: String(updated.id), url: blogPostUrl(updated.slug) });
+    }
+
     const baseSlug = slugify(title);
     const slug = await uniqueSlug(baseSlug);
     const now = new Date().toISOString();
 
-    const { error } = await supabase.from("blog_posts").insert({
+    // RankOnGeo stores the returned id and url: the url to measure the post in Search
+    // Console, the id to send improved versions back as updates.
+    const { data: created, error } = await supabase.from("blog_posts").insert({
       slug,
       title,
       content,
@@ -84,11 +117,11 @@ export default async function handler(req, res) {
       source: typeof body.source === "string" ? body.source : "rankongeo",
       created_at: now,
       published_at: now,
-    });
+    }).select("id, slug").single();
 
     if (error) throw error;
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, id: String(created.id), url: blogPostUrl(created.slug) });
   } catch (err) {
     console.error("Failed to publish RankOnGeo post:", err);
     return res.status(500).json({

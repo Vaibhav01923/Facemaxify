@@ -11,28 +11,30 @@ export function escapeHtml(s) {
 }
 
 export function renderHtmlWithMeta(template, { title, description, keywords, canonicalUrl, image }) {
+  // Function replacers throughout: a "$" in a title (e.g. "under $100") would otherwise be
+  // read as a replacement pattern and corrupt the tag.
   let html = template;
   const t = escapeHtml(title);
   const d = escapeHtml(description);
 
-  html = html.replace(/<title>[^<]*<\/title>/, `<title>${t}</title>`);
-  html = html.replace(/(<meta name="title" content=")[^"]*(")/, `$1${t}$2`);
-  html = html.replace(/(<meta name="description" content=")[^"]*(")/, `$1${d}$2`);
+  html = html.replace(/<title>[^<]*<\/title>/, () => `<title>${t}</title>`);
+  html = html.replace(/(<meta name="title" content=")[^"]*(")/, (_, open, close) => open + t + close);
+  html = html.replace(/(<meta name="description" content=")[^"]*(")/, (_, open, close) => open + d + close);
   if (keywords) {
     const k = escapeHtml(keywords);
-    html = html.replace(/(<meta name="keywords" content=")[^"]*(")/, `$1${k}$2`);
+    html = html.replace(/(<meta name="keywords" content=")[^"]*(")/, (_, open, close) => open + k + close);
   }
-  html = html.replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${canonicalUrl}$2`);
-  html = html.replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${canonicalUrl}$2`);
-  html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${t}$2`);
-  html = html.replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${d}$2`);
-  html = html.replace(/(<meta name="twitter:url" content=")[^"]*(")/, `$1${canonicalUrl}$2`);
-  html = html.replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${t}$2`);
-  html = html.replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${d}$2`);
+  html = html.replace(/(<link rel="canonical" href=")[^"]*(")/, (_, open, close) => open + canonicalUrl + close);
+  html = html.replace(/(<meta property="og:url" content=")[^"]*(")/, (_, open, close) => open + canonicalUrl + close);
+  html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, (_, open, close) => open + t + close);
+  html = html.replace(/(<meta property="og:description" content=")[^"]*(")/, (_, open, close) => open + d + close);
+  html = html.replace(/(<meta name="twitter:url" content=")[^"]*(")/, (_, open, close) => open + canonicalUrl + close);
+  html = html.replace(/(<meta name="twitter:title" content=")[^"]*(")/, (_, open, close) => open + t + close);
+  html = html.replace(/(<meta name="twitter:description" content=")[^"]*(")/, (_, open, close) => open + d + close);
   if (image) {
     const img = escapeHtml(image);
-    html = html.replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${img}$2`);
-    html = html.replace(/(<meta name="twitter:image" content=")[^"]*(")/, `$1${img}$2`);
+    html = html.replace(/(<meta property="og:image" content=")[^"]*(")/, (_, open, close) => open + img + close);
+    html = html.replace(/(<meta name="twitter:image" content=")[^"]*(")/, (_, open, close) => open + img + close);
   }
   return html;
 }

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { FaceMesh } from "@mediapipe/face_mesh";
 import { Camera } from "@mediapipe/camera_utils";
+import { trackFunnel } from "../../services/funnel";
 import {
   Upload,
   Camera as CameraIcon,
@@ -54,6 +55,7 @@ export const FacialShapeAnalyzer: React.FC = () => {
   // Analyze face shape
   const analyzeFaceShape = async () => {
     if (!selectedImage) return;
+    trackFunnel("photo_submitted");
 
     setIsAnalyzing(true);
     setError(null);

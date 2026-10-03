@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { FaceMesh } from "@mediapipe/face_mesh";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { Upload, Loader2, AlertCircle, ArrowRight } from "lucide-react";
+import { trackFunnel } from "../../services/funnel";
 
 /** The analysed photo and its MediaPipe landmarks, for tools that draw on top of the result. */
 export interface PhotoContext {
@@ -47,6 +48,7 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
 
   const runAnalysis = async () => {
     if (!selectedImage) return;
+    trackFunnel("photo_submitted");
     setIsAnalyzing(true);
     setError(null);
     try {

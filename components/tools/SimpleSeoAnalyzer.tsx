@@ -16,6 +16,7 @@ import {
 } from "../../services/ratioCalculator";
 import { detectLandmarksInstant } from "../../services/mediaPipeService";
 import { standardizeImage } from "../../utils/imageProcessing";
+import { trackFunnel } from "../../services/funnel";
 
 interface SimpleSeoAnalyzerProps {
   page: SeoLandingPageConfig;
@@ -64,6 +65,7 @@ export const SimpleSeoAnalyzer: React.FC<SimpleSeoAnalyzerProps> = ({
 
   const analyzePhoto = async () => {
     if (!selectedImage) return;
+    trackFunnel("photo_submitted");
 
     setIsAnalyzing(true);
     setError(null);

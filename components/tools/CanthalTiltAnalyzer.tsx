@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaceMesh } from "@mediapipe/face_mesh";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { Upload, Loader2, CheckCircle, AlertCircle, Info } from "lucide-react";
+import { trackFunnel } from "../../services/funnel";
 import {
   calculateCanthalTilt,
   type CanthalTiltResult,
@@ -122,6 +123,7 @@ export const CanthalTiltAnalyzer: React.FC = () => {
 
   const analyzeFace = async () => {
     if (!selectedImage) return;
+    trackFunnel("photo_submitted");
 
     setIsAnalyzing(true);
     setError(null);

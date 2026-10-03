@@ -12,6 +12,7 @@ import {
 } from "./services/mediaPipeService";
 import { standardizeImage } from "./utils/imageProcessing";
 import { supabase } from "./services/supabase";
+import { trackPageView } from "./services/funnel";
 
 import { DashboardHome } from "./components/DashboardHome";
 import { FacialAnalysis } from "./components/FacialAnalysis";
@@ -51,6 +52,7 @@ import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
 import { BlogListingPage } from "./pages/BlogListingPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { MethodologyPage } from "./pages/MethodologyPage";
+import { StatsPage } from "./pages/StatsPage";
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
   constructor(props: any) {
@@ -76,6 +78,11 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
 const App: React.FC = () => {
   const { user, isLoaded } = useUser();
   const { pathname } = useLocation();
+
+  // Funnel views for /stats (only counted on tool pages — see services/funnel.ts).
+  React.useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
   const [isPaid, setIsPaid] = useState<boolean | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
 
@@ -264,6 +271,7 @@ const App: React.FC = () => {
       />
 
       <Route path="/methodology" element={<MethodologyPage />} />
+      <Route path="/stats" element={<StatsPage />} />
       <Route path="/tools" element={<ToolsDirectoryPage />} />
       <Route path="/blog" element={<BlogListingPage />} />
       <Route path="/blog/:slug" element={<BlogPostPage />} />

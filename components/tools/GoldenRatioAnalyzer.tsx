@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaceMesh } from "@mediapipe/face_mesh";
 import { useUser, useClerk } from "@clerk/clerk-react";
+import { trackFunnel } from "../../services/funnel";
 import {
   Upload,
   Loader2,
@@ -109,6 +110,7 @@ export const GoldenRatioAnalyzer: React.FC = () => {
 
   const analyzeFace = async () => {
     if (!selectedImage) return;
+    trackFunnel("photo_submitted");
 
     setIsAnalyzing(true);
     setError(null);

@@ -3,6 +3,7 @@ import { FaceMesh } from "@mediapipe/face_mesh";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { Upload, Loader2, CheckCircle, AlertCircle, ArrowRight } from "lucide-react";
 import { calculateFaceSymmetry, FaceSymmetryResult } from "../../utils/faceSymmetryCalculator";
+import { trackFunnel } from "../../services/funnel";
 
 export const FaceSymmetryAnalyzer: React.FC = () => {
   const { isSignedIn } = useUser();
@@ -29,6 +30,7 @@ export const FaceSymmetryAnalyzer: React.FC = () => {
 
   const analyzeImage = async () => {
     if (!selectedImage) return;
+    trackFunnel("photo_submitted");
     setIsAnalyzing(true);
     setError(null);
 

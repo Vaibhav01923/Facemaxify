@@ -17,6 +17,7 @@ import {
   calculateWeightedTotalScore,
 } from "../services/ratioCalculator";
 import { AnalysisHistory } from "./AnalysisHistory";
+import { MAIN_TOOL_PATH, MAIN_TOOL_SKIN_CHECK, trackFunnel } from "../services/funnel";
 
 export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
   isPaid = false,
@@ -113,6 +114,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
     file: File,
     mode: "full" | "skincare" = "full",
   ) => {
+    trackFunnel("photo_submitted", mode === "skincare" ? MAIN_TOOL_SKIN_CHECK : MAIN_TOOL_PATH);
     setLoading(true);
     setError(null);
     try {

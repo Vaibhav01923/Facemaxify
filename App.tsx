@@ -50,6 +50,7 @@ import { HarmonyScorePage } from "./pages/HarmonyScorePage";
 import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
 import { BlogListingPage } from "./pages/BlogListingPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
+import { MethodologyPage } from "./pages/MethodologyPage";
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
   constructor(props: any) {
@@ -262,6 +263,7 @@ const App: React.FC = () => {
         }
       />
 
+      <Route path="/methodology" element={<MethodologyPage />} />
       <Route path="/tools" element={<ToolsDirectoryPage />} />
       <Route path="/blog" element={<BlogListingPage />} />
       <Route path="/blog/:slug" element={<BlogPostPage />} />

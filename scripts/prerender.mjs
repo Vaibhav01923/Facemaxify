@@ -21,6 +21,7 @@ const template = readFileSync(path.join(distDir, "index.html"), "utf8");
 // /blog is deliberately not here: api/blog-index.js renders it per request so it can list
 // posts published after the deploy, and a static dist/blog/index.html would shadow that.
 const toolPages = [
+  ["/methodology", "pages/MethodologyPage.tsx"],
   ["/tools", "pages/ToolsDirectoryPage.tsx"],
   ["/tools/facial-shape", "pages/FacialShapePage.tsx"],
   ["/tools/golden-ratio", "pages/GoldenRatioPage.tsx"],
@@ -133,9 +134,13 @@ function faqJsonLd(markdown) {
   return `<script type="application/ld+json" id="faq-json-ld">${json.replace(/</g, "\\u003c")}</script>`;
 }
 
+// Pages outside /tools/ that render an article from content/pages/, by route.
+const pageArticles = { "/methodology": "methodology" };
+
 function withFaq(html, route) {
-  const markdown = articles[route.replace(/^\/tools\//, "")];
-  const script = route.startsWith("/tools/") && markdown && faqJsonLd(markdown);
+  const slug = route.startsWith("/tools/") ? route.slice("/tools/".length) : pageArticles[route];
+  const markdown = slug && articles[slug];
+  const script = markdown && faqJsonLd(markdown);
   return script ? html.replace("</head>", () => `${script}\n  </head>`) : html;
 }
 

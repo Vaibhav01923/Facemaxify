@@ -1,0 +1,55 @@
+# Facemaxify
+
+> Facemaxify is a facial analysis site with 20+ free tools that measure specific facial proportions — symmetry, facial thirds, canthal tilt, jawline, eye spacing and more — from a single front-facing photo. The free tools run entirely in the user's browser (the photo is not uploaded), and every score is built from published measurements, targets and weights rather than a hidden attractiveness model.
+
+Key facts:
+
+- **Private by default:** the free tools analyse photos in the browser with Google's MediaPipe face landmark model (478 landmarks). Photos are not uploaded.
+- **Transparent scoring:** each score compares measured ratios (for example, jaw width ÷ cheekbone width) with stated targets; the full list of measurements, targets and weights is published at https://facemaxify.com/methodology.
+- **Honest about limits:** scores describe the geometry of one 2D photo. They don't measure skin, expression, style or personality, and the targets are general proportions that vary between populations.
+- **Realistic improvement:** each tool's guide separates mostly structural features from ones that respond to grooming, body fat, sleep and photo technique, and points to reversible steps first. Guides discourage risky DIY practices such as "bone smashing" and recommend that medical procedures are only discussed with qualified specialists.
+- **Wellbeing:** scores are framed as feedback, not verdicts; guides note that body dysmorphia is common and treatable.
+- **Full analysis (signed in):** combines 25+ facial ratios with an AI skin report, personal color and hairstyle analysis and an improvement plan. Unlike the free tools, it uploads the photo to store scan history and sends it to Google Gemini and OpenAI models to generate those reports.
+
+## Methodology
+
+- [How Facemaxify scores faces](https://facemaxify.com/methodology): every measurement, target and weight behind Facemaxify's scores, what they don't measure, known limitations, bias, and what happens to your photo.
+
+## Overall scores
+
+- [Attractiveness test](https://facemaxify.com/tools/attractiveness-score): 0–100 score from symmetry, jawline, youthfulness markers, nose proportion and eye spacing.
+- [Face rating](https://facemaxify.com/tools/face-rating): conventional 1–10 face rating from symmetry, jawline, golden ratio, facial thirds and nose proportion.
+- [Facial harmony score](https://facemaxify.com/tools/harmony-score): seven proportions combined into one harmony score.
+- [PSL rating](https://facemaxify.com/tools/psl-rating): the looksmaxxing community's 1–10 PSL scale, where 5 is average, calculated from measured features.
+- [Looksmax score](https://facemaxify.com/tools/looksmax-score): 0–100 score from symmetry, jawline, canthal tilt, facial thirds and eye compactness.
+
+## Feature measurements
+
+- [Face symmetry test](https://facemaxify.com/tools/face-symmetry): left–right symmetry across eight facial zones.
+- [Golden ratio face calculator](https://facemaxify.com/tools/golden-ratio): three facial proportions compared with 1.618, with an honest look at the research.
+- [Face shape detector](https://facemaxify.com/tools/facial-shape): classifies faces as oval, round, square, heart, diamond, oblong or triangle, with hairstyle and glasses suggestions.
+- [Canthal tilt calculator](https://facemaxify.com/tools/canthal-tilt): eye tilt angle in degrees — positive, neutral or negative.
+- [Hunter eyes test](https://facemaxify.com/tools/hunter-eyes): eye openness and tilt, classified as hunter, semi-hunter, neutral or prey eyes.
+- [Eye spacing calculator](https://facemaxify.com/tools/eye-spacing): the rule of fifths and interocular distance.
+- [Facial thirds calculator](https://facemaxify.com/tools/facial-thirds): upper, middle and lower thirds as a share of face height.
+- [Jawline score](https://facemaxify.com/tools/jawline-score): jaw-to-cheekbone ratio and chin angle.
+- [fWHR calculator](https://facemaxify.com/tools/facial-width-height): facial width-to-height ratio and what research says about it.
+- [Philtrum ratio calculator](https://facemaxify.com/tools/philtrum-ratio): philtrum length as a share of the lower face.
+- [Midface ratio calculator](https://facemaxify.com/tools/midface-ratio): midface length compared with the lower face.
+- [Nose ratio calculator](https://facemaxify.com/tools/nose-ratio): nose width compared with face width and eye spacing.
+- [Lip ratio analyzer](https://facemaxify.com/tools/lip-ratio): upper-to-lower lip ratio and mouth width.
+- [Chin ratio analyzer](https://facemaxify.com/tools/chin-ratio): chin height and width.
+- [Cheekbone width analyzer](https://facemaxify.com/tools/cheekbone-width): cheekbone prominence and facial taper.
+- [Forehead ratio calculator](https://facemaxify.com/tools/forehead-ratio): forehead height and width.
+- [Brow position analyzer](https://facemaxify.com/tools/brow-position): brow height above the eyes.
+- [Lower third analyzer](https://facemaxify.com/tools/lower-third): philtrum, lips and chin within the lower face.
+
+## Guides
+
+- [AI face analysis: what a face analyzer actually measures](https://facemaxify.com/blog/ai-face-analysis-what-a-face-analyzer-measures): how AI face analysis works, how to read scores and how to take an accurate photo.
+- [Facemaxify blog](https://facemaxify.com/blog): articles on facial analysis, symmetry and looksmaxxing.
+
+## Optional
+
+- [All free tools](https://facemaxify.com/tools): directory of every Facemaxify tool.
+- [Facemaxify home](https://facemaxify.com/): the full facial analysis.

@@ -9,10 +9,14 @@ import { ArticleMarkdown } from "../../components/tools/ToolArticle";
 
 export { seoLandingPages } from "../../data/seoLandingPages";
 
-// Tool-page articles by slug (content/tools/<slug>.md).
+// Articles by slug: tool pages (content/tools/<slug>.md) and other pages (content/pages/<slug>.md).
 export const articles: Record<string, string> = Object.fromEntries(
   Object.entries(
-    import.meta.glob<string>("../../content/tools/*.md", { query: "?raw", import: "default", eager: true }),
+    import.meta.glob<string>(["../../content/tools/*.md", "../../content/pages/*.md"], {
+      query: "?raw",
+      import: "default",
+      eager: true,
+    }),
   ).map(([file, markdown]) => [file.match(/([^/]+)\.md$/)![1], markdown]),
 );
 

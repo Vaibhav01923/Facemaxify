@@ -183,6 +183,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
           await detectLandmarksInstant(standardized, "front");
         setFrontLandmarks(finalLandmarks);
         setFrontBox(finalBox);
+        trackFunnel("analysis_succeeded", mode === "skincare" ? MAIN_TOOL_SKIN_CHECK : MAIN_TOOL_PATH);
 
         if (mode === "skincare") {
           // SKIP EDITOR: Auto-save and jump to results
@@ -226,6 +227,7 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
       };
       reader.readAsDataURL(file);
     } catch (err) {
+      trackFunnel("analysis_failed", mode === "skincare" ? MAIN_TOOL_SKIN_CHECK : MAIN_TOOL_PATH, err instanceof Error ? err.message : undefined);
       setError(err instanceof Error ? err.message : "Failed to process image");
       setLoading(false);
     }

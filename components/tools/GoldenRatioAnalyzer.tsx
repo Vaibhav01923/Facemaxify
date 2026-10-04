@@ -160,7 +160,9 @@ export const GoldenRatioAnalyzer: React.FC = () => {
       });
 
       faceMesh.close();
+      trackFunnel("analysis_succeeded");
     } catch (err: any) {
+      trackFunnel("analysis_failed", undefined, err?.message);
       console.error(err);
       setError(err.message || "Analysis failed.");
     } finally {

@@ -103,7 +103,9 @@ export const SimpleSeoAnalyzer: React.FC<SimpleSeoAnalyzerProps> = ({
         overallScore,
         resultLabel: getResultLabel(overallScore, page.analyzer.resultPrefix),
       });
+      trackFunnel("analysis_succeeded");
     } catch (analysisError: any) {
+      trackFunnel("analysis_failed", undefined, analysisError?.message);
       setError(
         analysisError?.message ||
           "Analysis failed. Try a clearer front-facing photo with a neutral expression.",

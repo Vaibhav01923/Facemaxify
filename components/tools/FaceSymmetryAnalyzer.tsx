@@ -57,7 +57,9 @@ export const FaceSymmetryAnalyzer: React.FC = () => {
         });
         faceMesh.send({ image: imgEl }).catch(reject);
       });
+      trackFunnel("analysis_succeeded");
     } catch (err: any) {
+      trackFunnel("analysis_failed", undefined, err?.message);
       setError(err.message || "Analysis failed. Please try a different photo.");
     } finally {
       setIsAnalyzing(false);

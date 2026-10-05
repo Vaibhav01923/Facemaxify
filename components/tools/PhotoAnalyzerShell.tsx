@@ -133,11 +133,13 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
           {renderResults(result, reset, { image: selectedImage ?? "", landmarks })}
           <div className="bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-indigo-500/30 rounded-3xl p-6 flex flex-col sm:flex-row items-center gap-4">
             <div className="flex-1">
-              <h3 className="text-white font-bold text-lg mb-1">Get Your Full Facial Analysis</h3>
-              <p className="text-slate-400 text-sm">This is one metric. The complete Facemaxify report covers 15+ ratios — symmetry, golden ratio, canthal tilt, jawline score, color analysis, hairstyle recommendations, and a personalised improvement plan.</p>
+              <h3 className="text-white font-bold text-lg mb-1">Want the most accurate analysis?</h3>
+              <p className="text-slate-400 text-sm">
+                Upload your photo to the full Facemaxify report: <span className="text-slate-200">20+ facial ratios</span> like jaw angle, jaw width and facial width-to-height ratio, plus your overall <span className="text-slate-200">facial attractiveness score</span>.
+              </p>
             </div>
             <button onClick={goFull} className="shrink-0 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-2xl font-bold transition-all whitespace-nowrap">
-              Full Report <ArrowRight className="w-4 h-4" />
+              Get my full report <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           <button onClick={reset} className="text-slate-500 hover:text-slate-300 text-sm transition-colors">← Analyze another photo</button>

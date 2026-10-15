@@ -75,7 +75,8 @@ face rather than a bare score. Tap or hover a row of the results and its measure
   `<LayerRow layer="…">`. A new engine = a few layer builders plus a `photo` block of short label texts.
 - Layers recompute their numbers from the same landmarks and formulas as the score, so the label on the photo
   equals the number in the row (spot-checked on a test photo: the face-shape ratios and chin angle, the
-  golden-ratio ratios, eye openness). Tilt labels carry no number on purpose: see "Things to know".
+  golden-ratio ratios, eye openness). The tilt label carries no number (the layer only draws lines); the
+  tilt row's number is the real angle now, so the label could show it.
 - **Keep label texts short** (about 12 Japanese characters or 25 Latin ones). They sit beside the face on a
   canvas that is roughly twice the face's width; a longer label is lifted above its line instead of beside it.
 - `overlay/geometry.ts` holds the landmark index lists and `SYMMETRY_PAIRS` (copied from the English
@@ -148,10 +149,13 @@ Not covered (yet): Clerk's emails, the dashboard UI, the 25+ metric names and th
     calculation, crop one photo square and 3:4 without rescaling it (e.g.
     `helperimages/outer_corner_where_eyelids_meet.png`: x 225–675 with y 10–460 against y 0–600) and compare
     the two on `/tools/facial-shape` and `/tools/hunter-eyes`.
-- **The hunter-eyes "canthal tilt" is not in degrees.** `pages/HunterEyesPage.tsx` multiplies the sine of the
-  tilt by 180 instead of 180/π, so the number it shows (and the "ideal: > 3°" next to it) is about 3.14×
-  the real angle. The translated page copies it so the languages agree, and the photo label for tilt shows
-  no number. Fixing it means changing the English page and the score thresholds together.
+- **The hunter-eyes tilt score runs on a different scale than the tilt it shows.** The page shows the real
+  angle in degrees (the same number as `/tools/canthal-tilt`; it used to show `180 × sin(tilt)`, about 3.14×
+  too much), but the score was tuned on that old scale, so `calculate` keeps scoring on it (`tiltPoints`).
+  That is deliberate: every score is exactly what it was. It also means the constants in `tiltScore` (4, 3,
+  7, 10) are not degrees; if you re-tune the tilt score, convert them (the full tilt score is reached from
+  about 3.2° of real tilt, which is why "ideal: > 3°" is the right label). The translated pages show the
+  same number, from the same `calculate`.
 - **The face-shape "confidence" is left out** of the translated results: the classifier returns a fixed
   number per shape (92, 88, …) rather than something measured.
 - **Funnel tracking** records `/es/…` and `/ja/…` page views and photo submissions like the English tools,

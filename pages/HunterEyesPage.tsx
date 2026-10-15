@@ -5,6 +5,8 @@ import { ToolArticle } from "../components/tools/ToolArticle";
 import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
+// One eye's tilt in degrees (positive when the outer corner is higher), measured like /tools/canthal-tilt.
+function tiltDegrees(inner: any, outer: any) { return Math.atan2(inner.y - outer.y, Math.abs(inner.x - outer.x)) * (180 / Math.PI); }
 
 export function calculate(lm: any[]) {
   // Eye openness (vertical / horizontal)
@@ -14,11 +16,14 @@ export function calculate(lm: any[]) {
   // Canthal tilt (positive = hunter, inner higher than outer in y)
   const leftTilt = (lm[133].y - lm[33].y) / dist(lm[33], lm[133]);
   const rightTilt = (lm[362].y - lm[263].y) / dist(lm[263], lm[362]);
-  const avgTilt = ((leftTilt + rightTilt) / 2) * 180;
+  // The tilt score is tuned on 180 x sin(tilt), about 3.14 x the angle in degrees (this page used to show that
+  // number as "degrees"). It stays on that scale so no score changes; the number shown is the real angle.
+  const tiltPoints = ((leftTilt + rightTilt) / 2) * 180;
+  const avgTilt = (tiltDegrees(lm[133], lm[33]) + tiltDegrees(lm[362], lm[263])) / 2;
   // Hunter eyes = compact (low openness) + positive tilt
   const opennessScore = avgOpenness < 0.22 ? 100 : avgOpenness < 0.30 ? Math.round(100 - (avgOpenness - 0.22) * 800) :
     avgOpenness < 0.40 ? Math.round(40 - (avgOpenness - 0.30) * 200) : Math.max(0, Math.round(20 - (avgOpenness - 0.40) * 100));
-  const tiltScore = avgTilt > 4 ? Math.min(100, 70 + avgTilt * 3) : avgTilt > 0 ? 40 + avgTilt * 7 : Math.max(0, 40 + avgTilt * 10);
+  const tiltScore = tiltPoints > 4 ? Math.min(100, 70 + tiltPoints * 3) : tiltPoints > 0 ? 40 + tiltPoints * 7 : Math.max(0, 40 + tiltPoints * 10);
   const score = Math.round(opennessScore * 0.55 + tiltScore * 0.45);
   const eyeType = score >= 80 ? "Hunter Eyes" : score >= 60 ? "Semi-Hunter Eyes" : score >= 40 ? "Neutral Eyes" : "Prey Eyes";
   const classification = eyeType;

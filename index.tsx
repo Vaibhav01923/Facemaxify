@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
 import { captureToolArticles } from "./components/tools/ToolArticle";
 import { clerkLocalizationFor } from "./i18n/clerk";
+import { initTrafficTracking } from "./services/trafficSource";
 import "./index.css";
 
 function showFatalError(msg: string) {
@@ -47,6 +48,10 @@ class RootErrorBoundary extends React.Component<{ children: React.ReactNode }, {
 
 // Keep the prerendered tool-page article before React replaces #root (see ToolArticle.tsx).
 captureToolArticles();
+
+// Remember where this visitor came from (UTM tags / referrer) before the router or Clerk's sign-in redirect
+// replaces the landing URL. Shown in /stats → Traffic sources.
+initTrafficTracking();
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(

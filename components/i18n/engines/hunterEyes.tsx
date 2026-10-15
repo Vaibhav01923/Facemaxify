@@ -1,6 +1,9 @@
 import React from "react";
 import { calculate } from "../../../pages/HunterEyesPage";
 import type { Locale } from "../../../i18n/types";
+import { canthalLayer, opennessLayer } from "../overlay/layers";
+import { AnnotatedResult } from "../overlay/AnnotatedResult";
+import { LayerDot, LayerRow } from "../overlay/selection";
 import { formatNumber, Note, pickTier, ScoreCard, TONES, type Engine, type ResultsProps } from "./common";
 
 // Same measurement as /tools/hunter-eyes (eye openness 55 % + canthal tilt 45 %).
@@ -16,6 +19,8 @@ const T: Record<
     tiltIdeal: string;
     idealLabel: string;
     note: string;
+    // Short texts drawn on the photo.
+    photo: { openness: (percent: string) => string; tilt: string };
   }
 > = {
   es: {
@@ -50,6 +55,7 @@ const T: Record<
     tiltIdeal: "> 3°",
     idealLabel: "ideal:",
     note: "Hazte la foto con la cara relajada: entrecerrar los ojos o sonreír estrecha el ojo y sube las comisuras, y eso infla el resultado.",
+    photo: { openness: (percent) => `Apertura ${percent} %`, tilt: "Inclinación cantal" },
   },
   ja: {
     tiers: [
@@ -77,15 +83,20 @@ const T: Record<
     tiltIdeal: "3°超",
     idealLabel: "目安:",
     note: "表情はリラックスした状態で撮影してください。目を細めたり笑ったりすると目が細くなり目尻も上がるため、結果が高めに出ます。",
+    photo: { openness: (percent) => `目の開き ${percent}%`, tilt: "目尻の傾き" },
   },
 };
 
-const Results: React.FC<ResultsProps> = ({ result: r, locale }) => {
+const Results: React.FC<ResultsProps> = ({ result: r, locale, context }) => {
   const t = T[locale];
   const tone = r.score >= 80 ? TONES.green : r.score >= 60 ? TONES.indigo : r.score >= 40 ? TONES.amber : TONES.orange;
   const measurements = [
-    { label: t.openness, value: `${formatNumber(r.avgOpenness, locale)}%`, ideal: t.opennessIdeal, good: r.avgOpenness < 30 },
-    { label: t.tilt, value: `${formatNumber(r.avgTilt, locale)}°`, ideal: t.tiltIdeal, good: r.avgTilt > 2 },
+    { layer: "openness", label: t.openness, value: `${formatNumber(r.avgOpenness, locale)}%`, ideal: t.opennessIdeal, good: r.avgOpenness < 30 },
+    { layer: "tilt", label: t.tilt, value: `${formatNumber(r.avgTilt, locale)}°`, ideal: t.tiltIdeal, good: r.avgTilt > 2 },
+  ];
+  const layers = [
+    opennessLayer({ id: "openness", label: t.photo.openness }),
+    canthalLayer({ id: "tilt", label: t.photo.tilt }),
   ];
 
   return (
@@ -93,20 +104,29 @@ const Results: React.FC<ResultsProps> = ({ result: r, locale }) => {
       <ScoreCard locale={locale} value={r.score} unit="/100" tone={tone} label={pickTier(r.score, t.tiers)}>
         {pickTier(r.score, t.descriptions)}
       </ScoreCard>
-      <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6">
-        <h3 className="text-white font-bold mb-4">{t.heading}</h3>
-        {measurements.map((m) => (
-          <div key={m.label} className="flex justify-between gap-4 py-3 border-b border-white/5 last:border-0">
-            <span className="text-slate-400 text-sm">{m.label}</span>
-            <div className="text-right shrink-0">
-              <span className={`font-bold text-sm ${m.good ? "text-emerald-400" : "text-amber-400"}`}>{m.value}</span>
-              <span className="text-slate-600 text-xs ml-2">
-                {t.idealLabel} {m.ideal}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+      <AnnotatedResult context={context} locale={locale} layers={layers}>
+        <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-4 sm:p-5">
+          <h3 className="text-white font-bold mb-2 px-3">{t.heading}</h3>
+          {measurements.map((m) => (
+            <LayerRow key={m.layer} layer={m.layer} className="block px-3 py-3">
+              <div className="flex justify-between gap-4">
+                <span className="text-slate-300 text-sm flex items-start gap-2">
+                  <span className="mt-1.5">
+                    <LayerDot layer={m.layer} />
+                  </span>
+                  {m.label}
+                </span>
+                <div className="text-right shrink-0">
+                  <span className={`font-bold text-sm ${m.good ? "text-emerald-400" : "text-amber-400"}`}>{m.value}</span>
+                  <span className="text-slate-500 text-xs ml-2">
+                    {t.idealLabel} {m.ideal}
+                  </span>
+                </div>
+              </div>
+            </LayerRow>
+          ))}
+        </div>
+      </AnnotatedResult>
       <Note>{t.note}</Note>
     </div>
   );

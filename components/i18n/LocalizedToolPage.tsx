@@ -8,6 +8,7 @@ import type { LocalizedPage } from "../../i18n/types";
 import { ENGINES } from "./engines";
 import { LocalizedFooter, RelatedTools } from "./LocalizedFooter";
 import { LocalizedNavbar } from "./LocalizedNavbar";
+import { toSquareSpace } from "./overlay/geometry";
 import { useFullReport } from "./useFullReport";
 
 // One translated tool page: hero, the tool itself (reusing the English tool's calculation),
@@ -53,7 +54,8 @@ export const LocalizedToolPage: React.FC<{ page: LocalizedPage }> = ({ page }) =
         </section>
 
         <PhotoAnalyzerShell
-          onAnalyze={engine.calculate}
+          // Measure in true proportions: a portrait photo would otherwise look wider than it is.
+          onAnalyze={(landmarks, size) => engine.calculate(toSquareSpace(landmarks, size))}
           renderResults={(result, reset, context) => (
             <engine.Results result={result} reset={reset} context={context} locale={locale} />
           )}

@@ -6,6 +6,9 @@ import {
   type FaceShapeResult,
 } from "../../../utils/faceShapeClassifier";
 import type { Locale } from "../../../i18n/types";
+import { chinAngleLayer, contourLayer, foreheadJawLayer, lengthWidthLayer } from "../overlay/layers";
+import { AnnotatedResult } from "../overlay/AnnotatedResult";
+import { LayerDot, LayerRow } from "../overlay/selection";
 import { engineStrings, formatNumber, Note, type Engine, type ResultsProps } from "./common";
 
 // Same measurement as /tools/facial-shape. The classifier returns English text, so shape
@@ -33,6 +36,12 @@ interface Copy {
   celebrities: string;
   celebritiesIntro: (shape: string) => string;
   note: string;
+  // Short texts drawn on the photo.
+  photo: {
+    lengthWidth: (ratio: string) => string;
+    foreheadJaw: (ratio: string) => string;
+    chinAngle: (degrees: string) => string;
+  };
   shapes: Record<FaceShape, ShapeCopy>;
 }
 
@@ -50,6 +59,11 @@ const T: Partial<Record<Locale, Copy>> = {
     celebrities: "⭐ Famosos con tu tipo de rostro",
     celebritiesIntro: (shape) => `Famosos con el mismo tipo de rostro (${shape.toLowerCase()}):`,
     note: "Si tu resultado está en el límite entre dos formas, es normal: muchos rostros comparten rasgos de dos tipos. Prueba con otra foto con el pelo recogido y la cabeza recta.",
+    photo: {
+      lengthWidth: (ratio) => `Largo/ancho ${ratio}`,
+      foreheadJaw: (ratio) => `Frente/mandíbula ${ratio}`,
+      chinAngle: (degrees) => `Barbilla ${degrees}°`,
+    },
     shapes: {
       oval: {
         name: "Ovalado",
@@ -234,6 +248,11 @@ const T: Partial<Record<Locale, Copy>> = {
     celebrities: "⭐ 同じ顔型の有名人",
     celebritiesIntro: (shape) => `${shape}タイプの有名人:`,
     note: "結果が2つの顔型の境目にあたる場合もあります。多くの人が2タイプの特徴を併せ持っているので自然なことです。髪をまとめて顔をまっすぐにした別の写真でも試してみてください。",
+    photo: {
+      lengthWidth: (ratio) => `縦÷横 ${ratio}`,
+      foreheadJaw: (ratio) => `額÷あご ${ratio}`,
+      chinAngle: (degrees) => `あご ${degrees}°`,
+    },
     shapes: {
       oval: {
         name: "卵型",
@@ -423,16 +442,22 @@ const TipList: React.FC<{ title: string; items: string[] }> = ({ title, items })
   </div>
 );
 
-const Results: React.FC<ResultsProps> = ({ result, locale }) => {
+const Results: React.FC<ResultsProps> = ({ result, locale, context }) => {
   const t = engineStrings(T, locale, "face-shape");
   const r = result as FaceShapeResult;
   const shape = t.shapes[r.shape];
   const m = r.measurements;
   const tiles = [
-    { label: t.lengthWidth, value: `${formatNumber(m.lengthToWidthRatio, locale, 2)} : 1` },
-    { label: t.foreheadJaw, value: `${formatNumber(m.foreheadToJawRatio, locale, 2)} : 1` },
-    { label: t.chinAngle, value: `${formatNumber(m.chinAngle, locale, 0)}°` },
-    { label: t.shapeLabel, value: shape.name, accent: true },
+    { layer: "lengthWidth", label: t.lengthWidth, value: `${formatNumber(m.lengthToWidthRatio, locale, 2)} : 1` },
+    { layer: "foreheadJaw", label: t.foreheadJaw, value: `${formatNumber(m.foreheadToJawRatio, locale, 2)} : 1` },
+    { layer: "chinAngle", label: t.chinAngle, value: `${formatNumber(m.chinAngle, locale, 0)}°` },
+    { layer: "shape", label: t.shapeLabel, value: shape.name, accent: true },
+  ];
+  const layers = [
+    lengthWidthLayer({ id: "lengthWidth", label: t.photo.lengthWidth }),
+    foreheadJawLayer({ id: "foreheadJaw", label: t.photo.foreheadJaw }),
+    chinAngleLayer({ id: "chinAngle", label: t.photo.chinAngle }),
+    contourLayer({ id: "shape", label: shape.name }),
   ];
 
   return (
@@ -442,17 +467,26 @@ const Results: React.FC<ResultsProps> = ({ result, locale }) => {
         <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed">{shape.reasoning}</p>
       </div>
 
-      <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">{t.measurementsHeading}</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {tiles.map((tile) => (
-            <div key={tile.label} className="bg-slate-800/50 rounded-xl p-4">
-              <p className="text-slate-400 text-sm mb-1">{tile.label}</p>
-              <p className={`text-xl sm:text-2xl font-bold ${tile.accent ? "text-indigo-400" : "text-white"}`}>{tile.value}</p>
-            </div>
-          ))}
+      <AnnotatedResult context={context} locale={locale} layers={layers} defaultLayer="shape">
+        <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-4 sm:p-5">
+          <h3 className="text-xl font-semibold text-white mb-3 px-1">{t.measurementsHeading}</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {tiles.map((tile) => (
+              <LayerRow key={tile.layer} layer={tile.layer} className="block p-1">
+                <div className="bg-slate-800/50 rounded-lg p-3.5 h-full">
+                  <p className="text-slate-400 text-sm mb-1 flex items-start gap-2">
+                    <span className="mt-1.5">
+                      <LayerDot layer={tile.layer} />
+                    </span>
+                    {tile.label}
+                  </p>
+                  <p className={`text-xl sm:text-2xl font-bold ${tile.accent ? "text-indigo-400" : "text-white"}`}>{tile.value}</p>
+                </div>
+              </LayerRow>
+            ))}
+          </div>
         </div>
-      </div>
+      </AnnotatedResult>
 
       <div className="grid md:grid-cols-2 gap-5">
         <TipList title={t.hairstyles} items={shape.hairstyles} />

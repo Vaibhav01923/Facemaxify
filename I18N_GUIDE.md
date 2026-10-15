@@ -2,7 +2,8 @@
 
 Facemaxify has native-language versions of its most-searched tools under `/es/…` and `/ja/…`. They are
 **written around the keyword people search in that language**, not translated word for word, and they reuse
-the English tools' calculations, so a photo scores the same everywhere. English pages are unchanged.
+the English tools' calculations (with the photo-shape correction described under "Things to know"). English
+pages are unchanged.
 
 ## What exists
 
@@ -32,6 +33,7 @@ Spanish volumes are worldwide Spanish; Japanese is Japan. Other languages looked
 | Interface text per language (nav, upload box, disclaimers) | `i18n/strings.tsx` |
 | Long article under each tool (ends with the FAQ) | `content/i18n/<locale>/<slug>.md`, hub: `hub.md` |
 | Results view per engine and language | `components/i18n/engines/*.tsx` |
+| The user's photo with outlines and measurements drawn on it | `components/i18n/overlay/*` (see "The photo with outlines") |
 | Page components | `components/i18n/Localized*.tsx` |
 | Routes | `App.tsx` (generated from the registry) |
 | Prerendered HTML, hreflang, JSON-LD, `sitemap-i18n.xml` | `scripts/prerender.mjs`, `scripts/i18nHead.mjs` |
@@ -57,6 +59,27 @@ inconsistent — nothing ships half-translated.
 3. Add pages and engine strings as above. TypeScript flags every `Record<Locale, …>` that still needs a `de` entry.
 4. Don't auto-redirect by browser language — it hides pages from Google. The language switcher in every
    navbar is the link between versions.
+
+## The photo with outlines
+
+Every translated result shows the visitor's own photo, cropped to the face, with the face outlined (face,
+eyes, brows, lips, nose) and the measurements drawn on top, so the result reads as an analysis of *their*
+face rather than a bare score. Tap or hover a row of the results and its measurement lights up on the photo
+(with the number, e.g. `あご幅 82%`); the other measurements fade back. Nothing leaves the browser: it is a
+`<canvas>` drawn from the photo and the landmarks the tool already has.
+
+- `overlay/AnnotatedResult.tsx` is the layout (photo card next to the result rows; stacked on phones, where
+  tapping a row scrolls the photo back into view) and holds which measurement is selected.
+- Each engine's `Results` builds a list of **layers** (`overlay/layers.ts`: `jawLayer`, `thirdsLayer`,
+  `canthalLayer`, `pairLayer`, …) and gives each result row a `layer` id (`BreakdownCard` rows) or wraps it in
+  `<LayerRow layer="…">`. A new engine = a few layer builders plus a `photo` block of short label texts.
+- Layers recompute their numbers from the same landmarks and formulas as the score, so the label on the photo
+  equals the number in the row (spot-checked on a test photo: the face-shape ratios and chin angle, the
+  golden-ratio ratios, eye openness). Tilt labels carry no number on purpose: see "Things to know".
+- **Keep label texts short** (about 12 Japanese characters or 25 Latin ones). They sit beside the face on a
+  canvas that is roughly twice the face's width; a longer label is lifted above its line instead of beside it.
+- `overlay/geometry.ts` holds the landmark index lists and `SYMMETRY_PAIRS` (copied from the English
+  calculators: update both if a calculator changes its pairs).
 
 ## From free tool to paid sale
 
@@ -100,6 +123,20 @@ Not covered (yet): Clerk's emails, the dashboard UI, the 25+ metric names and th
   test photo I ran scored 83/100, i.e. 偏差値 66), so 偏差値 may come out high for ordinary faces. To make it
   a real population measure, run 50–100 varied photos through the engine and replace the 56 / 0.6 in
   `engines/faceRating.tsx` with the sample's mean and spread. The page says plainly that it's an estimate.
+- **Translated pages correct for the shape of the photo; the English tools don't (yet).** MediaPipe gives
+  every landmark's x and y as a fraction of the photo's width and height *separately*, so on a portrait
+  photo any measurement that mixes the two axes (face length ÷ width, eye height ÷ width, the chin angle) is
+  stretched. The same face, cropped square and cropped 3:4, came out as `1.18 / 111° / square` and
+  `0.89 / 125° / oval` on the old code. `PhotoAnalyzerShell` now passes the photo's size to `onAnalyze`, and
+  `LocalizedToolPage` runs `toSquareSpace` (`overlay/geometry.ts`) first; after that both crops give
+  identical numbers. Because of this, a portrait photo can score a little differently on `/es`/`/ja` than on
+  the English page. The English pages can take the same one-line fix (`onAnalyze={(lm, size) =>
+  calculate(toSquareSpace(lm, size))}`); `FacialShapeAnalyzer`, `GoldenRatioAnalyzer` and `CanthalTilt` don't
+  use the shell and would need it applied separately.
+- **The hunter-eyes "canthal tilt" is not in degrees.** `pages/HunterEyesPage.tsx` multiplies the sine of the
+  tilt by 180 instead of 180/π, so the number it shows (and the "ideal: > 3°" next to it) is about 3.14×
+  the real angle. The translated page copies it so the languages agree, and the photo label for tilt shows
+  no number. Fixing it means changing the English page and the score thresholds together.
 - **The face-shape "confidence" is left out** of the translated results: the classifier returns a fixed
   number per shape (92, 88, …) rather than something measured.
 - **Funnel tracking** records `/es/…` and `/ja/…` page views and photo submissions like the English tools,

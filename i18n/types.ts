@@ -89,6 +89,8 @@ export interface UiStrings {
   fullReportNote: string;
   languageNavLabel: string;
   shell: ShellStrings;
+  // The annotated photo shown with the results (components/i18n/overlay/AnnotatedResult.tsx).
+  photo: { alt: string; hint: string };
   // The "what's in the full report" section on the hub pages (components/i18n/FullReportSection.tsx).
   fullReport: {
     heading: string;

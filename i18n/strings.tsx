@@ -39,6 +39,10 @@ export const UI: Record<Locale, UiStrings> = {
       another: "← Analizar otra foto",
       footnote: "Tu foto no se sube: el análisis se hace en tu propio navegador.",
     },
+    photo: {
+      alt: "Tu foto con el contorno del rostro y las medidas dibujadas encima",
+      hint: "Toca una medida de la lista para ver dónde se mide en tu foto.",
+    },
     fullReport: {
       heading: "El informe completo de Facemaxify",
       intro:
@@ -92,6 +96,10 @@ export const UI: Record<Locale, UiStrings> = {
       ctaButton: "フルレポートを見る",
       another: "← 別の写真を診断する",
       footnote: "写真はアップロードされません。診断はお使いのブラウザ内で行われます。",
+    },
+    photo: {
+      alt: "顔の輪郭と測定位置を重ねたあなたの写真",
+      hint: "項目をタップすると、写真のどこを測っているかが表示されます。",
     },
     fullReport: {
       heading: "Facemaxify フルレポート",

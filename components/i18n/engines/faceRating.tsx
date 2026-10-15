@@ -1,6 +1,9 @@
 import React from "react";
 import { calculate } from "../../../pages/FaceRatingPage";
 import type { Locale } from "../../../i18n/types";
+import { SYMMETRY_PAIRS } from "../overlay/geometry";
+import { faceRectLayer, jawLayer, noseLayer, symmetryLayer, thirdsLayer } from "../overlay/layers";
+import { AnnotatedResult } from "../overlay/AnnotatedResult";
 import {
   BreakdownCard,
   engineStrings,
@@ -29,6 +32,15 @@ const T: Partial<
       heading: string;
       rows: [string, string, string, string, string]; // symmetry, jaw, golden ratio, thirds, nose
       note: string;
+      // Short texts drawn on the photo.
+      photo: {
+        symmetry: string;
+        cheek: string;
+        jaw: (percent: string) => string;
+        face: (ratio: string) => string;
+        thirds: (index: 0 | 1 | 2, percent: string) => string;
+        nose: (percent: string) => string;
+      };
     }
   >
 > = {
@@ -46,14 +58,30 @@ const T: Partial<
     heading: "スコアの内訳",
     rows: ["左右対称性(30%)", "フェイスライン(25%)", "黄金比(20%)", "顔の三分割(15%)", "鼻の比率(10%)"],
     note: "偏差値は、このツールの「平均的」ゾーン(50〜62点)の中心にあたる56点を偏差値50とし、10点ごとに6を加減した換算値です。実際の人口を調べた統計ではないため、あくまで目安として楽しんでください。",
+    photo: {
+      symmetry: "左右対称性",
+      cheek: "頬骨の幅",
+      jaw: (percent) => `あご幅 ${percent}%`,
+      face: (ratio) => `縦÷横 ${ratio}(理想 1.62)`,
+      thirds: (index, percent) => `${["額〜眉", "眉〜鼻下", "鼻下〜あご"][index]} ${percent}%`,
+      nose: (percent) => `鼻幅 ${percent}%`,
+    },
   },
 };
 
-const Results: React.FC<ResultsProps> = ({ result: r, locale }) => {
+const Results: React.FC<ResultsProps> = ({ result: r, locale, context }) => {
   const t = engineStrings(T, locale, "face-rating");
   const tone =
     r.score >= 88 ? TONES.gold : r.score >= 76 ? TONES.green : r.score >= 63 ? TONES.indigo : r.score >= 50 ? TONES.amber : TONES.red;
   const scores = [r.sym, r.jaw, r.golden, r.thirds, r.nose] as number[];
+  const keys = ["sym", "jaw", "golden", "thirds", "nose"];
+  const layers = [
+    symmetryLayer({ id: "sym", pairs: SYMMETRY_PAIRS, label: t.photo.symmetry }),
+    jawLayer({ id: "jaw", cheek: t.photo.cheek, jaw: t.photo.jaw }),
+    faceRectLayer({ id: "golden", label: t.photo.face }),
+    thirdsLayer({ id: "thirds", name: t.photo.thirds }),
+    noseLayer({ id: "nose", label: t.photo.nose }),
+  ];
 
   return (
     <div className="space-y-5">
@@ -61,7 +89,12 @@ const Results: React.FC<ResultsProps> = ({ result: r, locale }) => {
         <p>{t.body}</p>
         <p className="mt-2 text-slate-400">{t.scoreLine(r.score, r.rating)}</p>
       </ScoreCard>
-      <BreakdownCard title={t.heading} rows={t.rows.map((label, i) => ({ label, score: scores[i] }))} />
+      <AnnotatedResult context={context} locale={locale} layers={layers}>
+        <BreakdownCard
+          title={t.heading}
+          rows={t.rows.map((label, i) => ({ label, score: scores[i], layer: keys[i] }))}
+        />
+      </AnnotatedResult>
       <Note>{t.note}</Note>
     </div>
   );

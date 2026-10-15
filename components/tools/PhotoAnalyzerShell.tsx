@@ -12,8 +12,16 @@ export interface PhotoContext {
   landmarks: any[];
 }
 
+/** Width and height of the analysed photo, in pixels. */
+export interface ImageSize {
+  width: number;
+  height: number;
+}
+
 interface Props {
-  onAnalyze: (landmarks: any[]) => any;
+  // MediaPipe's landmark x and y are fractions of the photo's width and height separately, so a
+  // calculation that mixes the two axes needs the photo's size to correct for its shape.
+  onAnalyze: (landmarks: any[], size: ImageSize) => any;
   renderResults: (result: any, reset: () => void, context: PhotoContext) => React.ReactNode;
   analyzeLabel?: string;
   uploadHint?: string;
@@ -95,7 +103,8 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
             return;
           }
           try {
-            const res = onAnalyze(results.multiFaceLandmarks[0]);
+            const size = { width: imgEl.naturalWidth || imgEl.width, height: imgEl.naturalHeight || imgEl.height };
+            const res = onAnalyze(results.multiFaceLandmarks[0], size);
             setLandmarks(results.multiFaceLandmarks[0]);
             setResult(res);
             resolve();

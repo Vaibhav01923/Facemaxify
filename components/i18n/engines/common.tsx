@@ -1,9 +1,11 @@
 import React from "react";
 import type { PhotoContext } from "../../tools/PhotoAnalyzerShell";
 import type { Locale } from "../../../i18n/types";
+import { LayerDot, LayerRow } from "../overlay/selection";
 
 // What every translated tool page needs from a measuring engine: the calculation (reused from
-// the English tool, so scores match across languages) and a results view in the page's language.
+// the English tool; LocalizedToolPage first corrects the landmarks for the photo's shape) and a
+// results view in the page's language.
 export interface ResultsProps {
   result: any;
   reset: () => void;
@@ -85,18 +87,22 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ locale, value, unit, tone,
 
 interface BreakdownProps {
   title: string;
-  rows: { label: string; score: number }[];
+  // `layer` ties a row to its measurement on the annotated photo (see overlay/AnnotatedResult).
+  rows: { label: string; score: number; layer?: string }[];
   scoreSuffix?: string;
 }
 
 export const BreakdownCard: React.FC<BreakdownProps> = ({ title, rows, scoreSuffix = "/100" }) => (
-  <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6">
-    <h3 className="text-white font-bold mb-4">{title}</h3>
-    {rows.map(({ label, score }) => (
-      <div key={label} className="mb-3">
-        <div className="flex justify-between text-sm mb-1">
-          <span className="text-slate-300">{label}</span>
-          <span className={scoreColor(score)}>
+  <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-4 sm:p-5">
+    <h3 className="text-white font-bold mb-2 px-3">{title}</h3>
+    {rows.map(({ label, score, layer }) => (
+      <LayerRow key={label} layer={layer} className="block px-3 py-2.5">
+        <div className="flex justify-between gap-3 text-sm mb-1.5">
+          <span className="text-slate-300 flex items-center gap-2">
+            <LayerDot layer={layer} />
+            {label}
+          </span>
+          <span className={`shrink-0 ${scoreColor(score)}`}>
             {score}
             {scoreSuffix}
           </span>
@@ -104,7 +110,7 @@ export const BreakdownCard: React.FC<BreakdownProps> = ({ title, rows, scoreSuff
         <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
           <div className={`h-full rounded-full ${barColor(score)}`} style={{ width: `${score}%` }} />
         </div>
-      </div>
+      </LayerRow>
     ))}
   </div>
 );

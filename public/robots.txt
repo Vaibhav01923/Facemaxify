@@ -17,3 +17,4 @@ Allow: /favicon.png
 # Sitemap
 Sitemap: https://facemaxify.com/sitemap.xml
 Sitemap: https://facemaxify.com/sitemap-blog.xml
+Sitemap: https://facemaxify.com/sitemap-i18n.xml

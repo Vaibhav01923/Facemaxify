@@ -2,6 +2,15 @@ import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../services/supabase";
 import { MAIN_TOOL_PATH, MAIN_TOOL_SKIN_CHECK, getVisitorId, markThisBrowserAsOwner } from "../services/funnel";
 import { seoLandingPageMap } from "../data/seoLandingPages";
+import {
+  hubPath,
+  LOCALE_META,
+  LOCALIZED_HUBS,
+  LOCALIZED_PAGES,
+  localeOfPath,
+  pageAtPath,
+  pagePath,
+} from "../i18n/registry";
 
 // Private funnel dashboard at /stats (not linked anywhere, noindex). The password is checked
 // inside the get_funnel_stats database function against a bcrypt hash, so it never appears
@@ -159,6 +168,8 @@ export const StatsPage: React.FC = () => {
     if (tool === MAIN_TOOL_PATH) return "Full facial analysis";
     if (tool === MAIN_TOOL_SKIN_CHECK) return "Skin check";
     if (tool.startsWith("/tools/")) return TOOL_NAMES[tool.slice(7)] ?? tool;
+    const translated = localeOfPath(tool);
+    if (translated) return `${LOCALE_META[translated].name} · ${pageAtPath(tool)?.card.title ?? "tools hub"}`;
     return seoLandingPageMap[tool.slice(1)]?.heroTitle ?? tool;
   };
 
@@ -200,6 +211,7 @@ export const StatsPage: React.FC = () => {
 
   const toolPaths = Object.keys(TOOL_NAMES).map((slug) => `/tools/${slug}`);
   const landingPaths = Object.keys(seoLandingPageMap).map((slug) => `/${slug}`);
+  const translatedPaths = [...LOCALIZED_HUBS.map((hub) => hubPath(hub.locale)), ...LOCALIZED_PAGES.map(pagePath)];
   const totals = stats?.totals ?? { visitors: 0, submitters: 0, succeeded: 0, submissions: 0, successes: 0, failures: 0 };
   const home = byTool.get("/") ?? { tool: "/", ...EMPTY };
   const main = byTool.get(MAIN_TOOL_PATH) ?? { tool: MAIN_TOOL_PATH, ...EMPTY };
@@ -276,6 +288,7 @@ export const StatsPage: React.FC = () => {
 
         <Table title="Free tools" rows={rowsFor(toolPaths, byTool)} label={label} />
         <Table title="Landing pages" rows={rowsFor(landingPaths, byTool)} label={label} />
+        <Table title="Translated pages (Spanish, Japanese)" rows={rowsFor(translatedPaths, byTool)} label={label} />
 
         <section className="mb-10">
           <h2 className="text-lg font-bold text-white mb-3">Why attempts failed</h2>

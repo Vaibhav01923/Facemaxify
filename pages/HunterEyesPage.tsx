@@ -6,7 +6,7 @@ import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
 
-function calculate(lm: any[]) {
+export function calculate(lm: any[]) {
   // Eye openness (vertical / horizontal)
   const leftOpenness = dist(lm[159], lm[145]) / dist(lm[33], lm[133]);
   const rightOpenness = dist(lm[386], lm[374]) / dist(lm[263], lm[362]);

@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { alternatesForPath, localeOfPath, LOCALE_META } from "../i18n/registry";
 
 interface SEOProps {
   title?: string;
@@ -28,9 +29,27 @@ export const SEO: React.FC<SEOProps> = ({
   const baseUrl = "https://facemaxify.com";
   const currentUrl = canonicalUrl || `${baseUrl}${location.pathname}`;
 
+  // Language of the page (translated pages live under /es/, /ja/) and its other-language
+  // versions. The prerendered HTML already carries these in <head>; this keeps them right
+  // when the browser renders the page itself.
+  const locale = localeOfPath(location.pathname);
+  const htmlLang = locale ? LOCALE_META[locale].htmlLang : "en";
+  const ogLocale = locale ? LOCALE_META[locale].ogLocale : "en_US";
+  const alternatesKey = JSON.stringify(alternatesForPath(location.pathname));
+
   React.useEffect(() => {
     // Update document title
     document.title = title;
+    document.documentElement.lang = htmlLang;
+
+    document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
+    (JSON.parse(alternatesKey) as { hreflang: string; href: string }[]).forEach(({ hreflang, href }) => {
+      const link = document.createElement("link");
+      link.rel = "alternate";
+      link.hreflang = hreflang;
+      link.href = href;
+      document.head.appendChild(link);
+    });
 
     // Update or create meta tags
     const updateMetaTag = (
@@ -61,7 +80,7 @@ export const SEO: React.FC<SEOProps> = ({
     updateMetaTag("og:url", currentUrl, true);
     updateMetaTag("og:type", type, true);
     updateMetaTag("og:site_name", "Facemaxify", true);
-    updateMetaTag("og:locale", "en_US", true);
+    updateMetaTag("og:locale", ogLocale, true);
 
     // Twitter Card tags
     updateMetaTag("twitter:title", title);
@@ -104,7 +123,7 @@ export const SEO: React.FC<SEOProps> = ({
         // script?.remove();
       };
     }
-  }, [title, description, keywords, image, type, currentUrl, schema]);
+  }, [title, description, keywords, image, type, currentUrl, schema, htmlLang, ogLocale, alternatesKey]);
 
   return null;
 };

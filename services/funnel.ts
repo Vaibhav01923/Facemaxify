@@ -5,6 +5,7 @@
 // isn't readable from the browser.
 import { supabase } from "./supabase";
 import { seoLandingPageMap } from "../data/seoLandingPages";
+import { localeOfPath } from "../i18n/registry";
 
 export type FunnelEvent = "view" | "photo_submitted" | "analysis_succeeded" | "analysis_failed";
 
@@ -50,9 +51,16 @@ function normalize(path: string): string {
 }
 
 // Pages that belong to a tool's funnel: the homepage (entry to the main tool), every
-// /tools/* page, the programmatic landing pages and the main analysis itself.
+// /tools/* page, the programmatic landing pages, the translated pages (/es/*, /ja/*) and the
+// main analysis itself.
 function isFunnelPage(path: string): boolean {
-  return path === "/" || path.startsWith("/tools/") || path === MAIN_TOOL_PATH || path.slice(1) in seoLandingPageMap;
+  return (
+    path === "/" ||
+    path.startsWith("/tools/") ||
+    path === MAIN_TOOL_PATH ||
+    path.slice(1) in seoLandingPageMap ||
+    localeOfPath(path) !== null
+  );
 }
 
 export function trackFunnel(event: FunnelEvent, tool: string = window.location.pathname, detail?: string): void {

@@ -6,6 +6,18 @@
   }
 }
 
+/* Inter only covers Latin; name Japanese system fonts for translated pages instead of leaving it to the browser default. */
+html:lang(ja) body {
+  font-family: "Inter", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Meiryo", sans-serif;
+  /* Break lines between phrases instead of mid-word where the browser supports it (Chrome, Edge). */
+  word-break: auto-phrase;
+}
+
+/* Japanese body text reads better with looser leading than the 1.625 used for English articles. */
+html:lang(ja) [data-tool-article] :is(p, li) {
+  line-height: 1.9;
+}
+
 @theme {
   --animate-pulse-slow: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 

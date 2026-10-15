@@ -8,17 +8,28 @@ import App from "../../App";
 import { ArticleMarkdown } from "../../components/tools/ToolArticle";
 
 export { seoLandingPages } from "../../data/seoLandingPages";
+// Translated pages (Spanish, Japanese): the registry drives prerendering, hreflang and the sitemap.
+export * as i18n from "../../i18n/registry";
+export { UI as i18nUi } from "../../i18n/strings";
 
 // Articles by slug: tool pages (content/tools/<slug>.md) and other pages (content/pages/<slug>.md).
-export const articles: Record<string, string> = Object.fromEntries(
-  Object.entries(
+// Translated pages' articles (content/i18n/<locale>/<slug>.md) are keyed "<locale>/<slug>".
+export const articles: Record<string, string> = Object.fromEntries([
+  ...Object.entries(
     import.meta.glob<string>(["../../content/tools/*.md", "../../content/pages/*.md"], {
       query: "?raw",
       import: "default",
       eager: true,
     }),
   ).map(([file, markdown]) => [file.match(/([^/]+)\.md$/)![1], markdown]),
-);
+  ...Object.entries(
+    import.meta.glob<string>("../../content/i18n/*/*.md", {
+      query: "?raw",
+      import: "default",
+      eager: true,
+    }),
+  ).map(([file, markdown]) => [file.match(/content\/i18n\/(.+)\.md$/)![1], markdown]),
+]);
 
 export function render(url: string): string {
   return renderToStaticMarkup(

@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 // The long-form article under each tool page, written in Markdown in content/tools/<slug>.md
-// (other article pages, like /methodology, live in content/pages/<slug>.md).
+// (other article pages, like /methodology, live in content/pages/<slug>.md, and the translated
+// tool pages' articles in content/i18n/<locale>/<slug>.md, whose slug is "<locale>/<slug>").
 // It's rendered into the page's HTML at build time (scripts/prerender.mjs), so crawlers get
 // it without running JavaScript, and on load the browser reuses that HTML instead of every
 // article shipping inside the app's JavaScript. Only when the page arrives without it (the
@@ -9,10 +10,13 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import Markdown from "markdown-to-jsx";
 import { articleMarkdownOptions } from "./toolArticleMarkdown";
 
-const markdownFiles = import.meta.glob<string>(["../../content/tools/*.md", "../../content/pages/*.md"], {
-  query: "?raw",
-  import: "default",
-});
+const markdownFiles = import.meta.glob<string>(
+  ["../../content/tools/*.md", "../../content/pages/*.md", "../../content/i18n/*/*.md"],
+  {
+    query: "?raw",
+    import: "default",
+  },
+);
 
 // Build time: every article's Markdown, provided by scripts/ssr/entry-server.tsx.
 export const ArticleMarkdown = createContext<Record<string, string>>({});
@@ -33,7 +37,11 @@ export const ToolArticle: React.FC<{ slug: string }> = ({ slug }) => {
 
   useEffect(() => {
     if (prerendered !== undefined || html !== undefined) return;
-    (markdownFiles[`../../content/tools/${slug}.md`] ?? markdownFiles[`../../content/pages/${slug}.md`])?.().then(setFetched);
+    (
+      markdownFiles[`../../content/tools/${slug}.md`] ??
+      markdownFiles[`../../content/pages/${slug}.md`] ??
+      markdownFiles[`../../content/i18n/${slug}.md`]
+    )?.().then(setFetched);
   }, [slug, prerendered, html]);
 
   const markdown = prerendered ?? fetched;

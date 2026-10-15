@@ -1,5 +1,6 @@
 import React from "react";
 import { UserButton, SignInButton, useUser } from "@clerk/clerk-react";
+import { LanguageSwitcher } from "./i18n/LanguageSwitcher";
 
 export const Navbar: React.FC = () => {
   const { isSignedIn } = useUser();
@@ -119,6 +120,7 @@ export const Navbar: React.FC = () => {
 
           {/* Right Side - Auth */}
           <div className="flex items-center gap-4">
+            <LanguageSwitcher />
             {isSignedIn ? (
               <UserButton
                 appearance={{

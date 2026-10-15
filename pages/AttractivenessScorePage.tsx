@@ -6,7 +6,7 @@ import { PhotoAnalyzerShell } from "../components/tools/PhotoAnalyzerShell";
 
 function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2); }
 
-function calculate(lm: any[]) {
+export function calculate(lm: any[]) {
   const midlineX = (lm[1].x + lm[6].x + lm[152].x) / 3;
   const faceH = Math.abs(lm[10].y - lm[152].y) || 1;
 

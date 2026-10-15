@@ -12,6 +12,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 import { build, loadEnv } from "vite";
 import { renderHtmlWithMeta } from "../api/_lib/htmlMeta.js";
+import { applyLocaleHead, buildSitemapXml, withAlternates, withJsonLd } from "./i18nHead.mjs";
 
 const rootDir = path.resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 const distDir = path.join(rootDir, "dist");
@@ -102,12 +103,13 @@ await build({
     copyPublicDir: false,
   },
 });
-const { render, seoLandingPages, articles } = await import(
+const { render, seoLandingPages, articles, i18n, i18nUi } = await import(
   pathToFileURL(path.join(ssrOutDir, "entry-server.js")).href
 );
 
 // FAQPage structured data built from a tool article's "## Frequently asked questions"
-// section, so it always matches the questions shown on the page.
+// section (or its Spanish / Japanese equivalent), so it always matches the questions shown on
+// the page.
 function plainText(markdown) {
   return markdown
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
@@ -117,7 +119,9 @@ function plainText(markdown) {
 }
 
 function faqJsonLd(markdown) {
-  const section = markdown.split(/^## /m).find((s) => /^frequently asked questions/i.test(s));
+  const section = markdown
+    .split(/^## /m)
+    .find((s) => /^(frequently asked questions|preguntas frecuentes|よくある質問)/i.test(s));
   if (!section) return null;
   const mainEntity = section
     .split(/^### /m)
@@ -137,11 +141,14 @@ function faqJsonLd(markdown) {
 // Pages outside /tools/ that render an article from content/pages/, by route.
 const pageArticles = { "/methodology": "methodology" };
 
-function withFaq(html, route) {
-  const slug = route.startsWith("/tools/") ? route.slice("/tools/".length) : pageArticles[route];
-  const markdown = slug && articles[slug];
+function withFaqMarkdown(html, markdown) {
   const script = markdown && faqJsonLd(markdown);
   return script ? html.replace("</head>", () => `${script}\n  </head>`) : html;
+}
+
+function withFaq(html, route) {
+  const slug = route.startsWith("/tools/") ? route.slice("/tools/".length) : pageArticles[route];
+  return withFaqMarkdown(html, slug && articles[slug]);
 }
 
 // --- 3. Programmatic landing pages: metadata lives in data/seoLandingPages.ts ---
@@ -179,11 +186,98 @@ writeFileSync(path.join(distDir, "index.html"), renderInto(template, "/"));
 for (const meta of routes) {
   const outDir = path.join(distDir, meta.route.replace(/^\//, ""));
   mkdirSync(outDir, { recursive: true });
-  const html = renderInto(withFaq(renderHtmlWithMeta(template, meta), meta.route), meta.route);
+  // English pages that have a translation also list its URL (hreflang), as the translation lists theirs.
+  const head = withAlternates(withFaq(renderHtmlWithMeta(template, meta), meta.route), i18n.alternatesForPath(meta.route));
+  writeFileSync(path.join(outDir, "index.html"), renderInto(head, meta.route));
+}
+
+// --- 5. Translated pages (Spanish, Japanese): /<locale> hubs and /<locale>/<slug> tool pages ---
+// Copy comes from i18n/pages.ts, articles from content/i18n/<locale>/. Unlike the pages above, a
+// problem here (missing article, missing translation, a render error) fails the build instead of
+// quietly shipping a page without its content.
+i18n.validateRegistry();
+
+function writeTranslatedPage({ locale, route, seo, articleKey, jsonLd }) {
+  const markdown = articles[articleKey];
+  if (!markdown) throw new Error(`[prerender] ${route} has no article: expected content/i18n/${articleKey}.md`);
+  const localeMeta = i18n.LOCALE_META[locale];
+  const canonicalUrl = i18n.absoluteUrl(route);
+
+  let html = renderHtmlWithMeta(template, { ...seo, canonicalUrl });
+  html = applyLocaleHead(html, { ...localeMeta, title: seo.title });
+  html = withAlternates(html, i18n.alternatesForPath(route));
+  html = withJsonLd(html, jsonLd(canonicalUrl));
+  html = withFaqMarkdown(html, markdown);
+
+  const body = render(route);
+  withContent++;
+  html = html.replace(EMPTY_ROOT, () => `<div id="root">${body}</div>`);
+
+  const outDir = path.join(distDir, route.replace(/^\//, ""));
+  mkdirSync(outDir, { recursive: true });
   writeFileSync(path.join(outDir, "index.html"), html);
 }
+
+for (const hub of i18n.LOCALIZED_HUBS) {
+  const { locale } = hub;
+  writeTranslatedPage({
+    locale,
+    route: i18n.hubPath(locale),
+    seo: hub.seo,
+    articleKey: i18n.hubArticleKey(locale),
+    jsonLd: (url) => [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: hub.hero.h1,
+        url,
+        description: hub.seo.description,
+        inLanguage: i18n.LOCALE_META[locale].htmlLang,
+      },
+    ],
+  });
+}
+
+for (const page of i18n.LOCALIZED_PAGES) {
+  const { locale } = page;
+  const ui = i18nUi[locale];
+  writeTranslatedPage({
+    locale,
+    route: i18n.pagePath(page),
+    seo: page.seo,
+    articleKey: i18n.articleKey(page),
+    jsonLd: (url) => [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        name: page.schemaName,
+        url,
+        description: page.seo.description,
+        inLanguage: i18n.LOCALE_META[locale].htmlLang,
+        applicationCategory: "UtilityApplication",
+        operatingSystem: "Web Browser",
+        isAccessibleForFree: true,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: ui.navHub, item: i18n.absoluteUrl(i18n.hubPath(locale)) },
+          { "@type": "ListItem", position: 2, name: page.card.title, item: url },
+        ],
+      },
+    ],
+  });
+}
+
+writeFileSync(path.join(distDir, "sitemap-i18n.xml"), buildSitemapXml(i18n.sitemapEntries()));
 
 console.log(
   `[prerender] wrote ${routes.length + 1} static page(s) with unique <head> metadata into dist/, ` +
     `${withContent} with the page content rendered in`,
+);
+console.log(
+  `[prerender] wrote ${i18n.LOCALIZED_HUBS.length + i18n.LOCALIZED_PAGES.length} translated page(s) ` +
+    `and dist/sitemap-i18n.xml`,
 );

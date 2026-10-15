@@ -49,6 +49,22 @@ Key facts:
 - [AI face analysis: what a face analyzer actually measures](https://facemaxify.com/blog/ai-face-analysis-what-a-face-analyzer-measures): how AI face analysis works, how to read scores and how to take an accurate photo.
 - [Facemaxify blog](https://facemaxify.com/blog): articles on facial analysis, symmetry and looksmaxxing.
 
+## Other languages
+
+Spanish and Japanese versions of the most-searched tools, written natively around how people search in those languages. They use the same measurements as the English tools, so a photo gets the same scores in every language. The free tools run in the browser; the full analysis is English-only.
+
+- [Análisis facial gratis con IA](https://facemaxify.com/es): directory of the Spanish tools.
+- [Test de belleza facial](https://facemaxify.com/es/test-de-belleza): Spanish attractiveness test, 0–100.
+- [Test de ojos de cazador](https://facemaxify.com/es/ojos-de-cazador): Spanish hunter eyes test.
+- [Tipo de rostro](https://facemaxify.com/es/tipo-de-rostro): Spanish face shape detector.
+- [Test de simetría facial](https://facemaxify.com/es/simetria-facial): Spanish face symmetry test.
+- [AI顔診断](https://facemaxify.com/ja): directory of the Japanese tools.
+- [顔面偏差値診断](https://facemaxify.com/ja/ganmen-hensachi): Japanese "face deviation score" test: a 100-point score plus an approximate 偏差値 (T-score), a linear rescaling of the tool's own score rather than a population statistic.
+- [イケメン診断](https://facemaxify.com/ja/ikemen-shindan): Japanese looks test from symmetry, jawline, canthal tilt, facial thirds and eye shape.
+- [美人診断](https://facemaxify.com/ja/bijin-shindan): Japanese attractiveness test.
+- [顔の黄金比診断](https://facemaxify.com/ja/ougonhi): Japanese golden ratio test.
+- [顔型診断](https://facemaxify.com/ja/kaogata-shindan): Japanese face shape detector.
+
 ## Optional
 
 - [All free tools](https://facemaxify.com/tools): directory of every Facemaxify tool.

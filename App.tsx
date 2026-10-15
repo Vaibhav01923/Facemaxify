@@ -53,6 +53,9 @@ import { BlogListingPage } from "./pages/BlogListingPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { MethodologyPage } from "./pages/MethodologyPage";
 import { StatsPage } from "./pages/StatsPage";
+import { LocalizedHubPage } from "./components/i18n/LocalizedHubPage";
+import { LocalizedToolPage } from "./components/i18n/LocalizedToolPage";
+import { hubPath, LOCALIZED_HUBS, LOCALIZED_PAGES, pagePath } from "./i18n/registry";
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
   constructor(props: any) {
@@ -298,6 +301,21 @@ const App: React.FC = () => {
       <Route path="/tools/face-rating" element={<FaceRatingPage />} />
       <Route path="/tools/attractiveness-score" element={<AttractivenessScorePage />} />
       <Route path="/tools/harmony-score" element={<HarmonyScorePage />} />
+
+      {/* Translated pages (Spanish, Japanese): /es, /es/<slug>, /ja, /ja/<slug>. Generated from
+          i18n/pages.ts; an unknown path under a language goes to that language's hub. */}
+      {LOCALIZED_HUBS.map((hub) => (
+        <React.Fragment key={hub.locale}>
+          <Route path={hubPath(hub.locale)} element={<LocalizedHubPage locale={hub.locale} />} />
+          <Route path={`${hubPath(hub.locale)}/*`} element={<Navigate to={hubPath(hub.locale)} replace />} />
+        </React.Fragment>
+      ))}
+      {LOCALIZED_PAGES.map((page) => (
+        <React.Fragment key={pagePath(page)}>
+          <Route path={pagePath(page)} element={<LocalizedToolPage page={page} />} />
+        </React.Fragment>
+      ))}
+
       <Route path="/:slug" element={<SeoLandingPageRoute />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />

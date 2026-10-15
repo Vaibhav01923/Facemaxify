@@ -8,7 +8,7 @@ function dist(a: any, b: any) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) 
 
 function clamp(v: number, lo = 0, hi = 100) { return Math.min(hi, Math.max(lo, v)); }
 
-function calculate(lm: any[]) {
+export function calculate(lm: any[]) {
   // 1. Symmetry score
   const midlineX = (lm[1].x + lm[6].x + lm[152].x) / 3;
   const faceH = Math.abs(lm[10].y - lm[152].y) || 1;

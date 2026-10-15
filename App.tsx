@@ -13,6 +13,7 @@ import {
 import { standardizeImage } from "./utils/imageProcessing";
 import { supabase } from "./services/supabase";
 import { trackPageView } from "./services/funnel";
+import { trackSignedIn } from "./services/trafficSource";
 
 import { DashboardHome } from "./components/DashboardHome";
 import { FacialAnalysis } from "./components/FacialAnalysis";
@@ -83,6 +84,11 @@ const App: React.FC = () => {
   React.useEffect(() => {
     trackPageView(pathname);
   }, [pathname]);
+
+  // Traffic sources: count a signed-in visit (once per session) against the visitor's source.
+  React.useEffect(() => {
+    if (isLoaded && user) trackSignedIn();
+  }, [isLoaded, user]);
   const [isPaid, setIsPaid] = useState<boolean | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
 

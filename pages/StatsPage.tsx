@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../services/supabase";
 import { MAIN_TOOL_PATH, MAIN_TOOL_SKIN_CHECK, getVisitorId, markThisBrowserAsOwner } from "../services/funnel";
 import { seoLandingPageMap } from "../data/seoLandingPages";
+import { StatsTrafficTab } from "./StatsTrafficTab";
 
 // Private funnel dashboard at /stats (not linked anywhere, noindex). The password is checked
 // inside the get_funnel_stats database function against a bcrypt hash, so it never appears
@@ -114,6 +115,8 @@ export const StatsPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [rangeIndex, setRangeIndex] = useState(3);
+  const [tab, setTab] = useState<"funnel" | "traffic">("funnel");
+  const [trafficRefresh, setTrafficRefresh] = useState(0);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -219,14 +222,18 @@ export const StatsPage: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-black">Funnel stats</h1>
-            <p className="text-sm text-slate-500 mt-1">
-              {stats?.tracking_since ? `Tracking since ${new Date(stats.tracking_since).toLocaleString()}` : "No events recorded yet."}
-              {stats?.outcomes_since && ` · results and failures since ${new Date(stats.outcomes_since).toLocaleString()}`}
-            </p>
-            <p className="text-xs text-slate-500 mt-1">
-              Your own browsers are excluded ({stats?.internal_browsers ?? 0} so far). Open this page once on each device you use to exclude it too.
-            </p>
+            <h1 className="text-3xl font-black">{tab === "funnel" ? "Funnel stats" : "Traffic sources"}</h1>
+            {tab === "funnel" && (
+              <>
+                <p className="text-sm text-slate-500 mt-1">
+                  {stats?.tracking_since ? `Tracking since ${new Date(stats.tracking_since).toLocaleString()}` : "No events recorded yet."}
+                  {stats?.outcomes_since && ` · results and failures since ${new Date(stats.outcomes_since).toLocaleString()}`}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Your own browsers are excluded ({stats?.internal_browsers ?? 0} so far). Open this page once on each device you use to exclude it too.
+                </p>
+              </>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             {RANGES.map((r, i) => (
@@ -242,7 +249,10 @@ export const StatsPage: React.FC = () => {
               </button>
             ))}
             <button
-              onClick={() => load(password, rangeIndex)}
+              onClick={() => {
+                load(password, rangeIndex);
+                setTrafficRefresh((n) => n + 1);
+              }}
               disabled={loading}
               className="px-4 py-2 rounded-full text-sm bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50"
             >
@@ -251,8 +261,31 @@ export const StatsPage: React.FC = () => {
           </div>
         </div>
 
+        <div className="flex gap-1 mb-8 border-b border-white/10" role="tablist">
+          {(
+            [
+              ["funnel", "Funnel"],
+              ["traffic", "Traffic sources"],
+            ] as const
+          ).map(([id, text]) => (
+            <button
+              key={id}
+              role="tab"
+              aria-selected={tab === id}
+              onClick={() => setTab(id)}
+              className={`px-5 py-3 text-sm font-semibold -mb-px border-b-2 ${tab === id ? "border-indigo-500 text-white" : "border-transparent text-slate-400 hover:text-slate-200"}`}
+            >
+              {text}
+            </button>
+          ))}
+        </div>
+
         {error && <p className="text-red-400 text-sm mb-6">{error}</p>}
 
+        {tab === "traffic" ? (
+          <StatsTrafficTab password={password} hours={RANGES[rangeIndex].hours} refreshKey={trafficRefresh} />
+        ) : (
+        <>
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
           <Tile title="Visitors" value={totals.visitors} note="unique people on the homepage or any tool" />
           <Tile title="Submitted a photo" value={totals.submitters} note={`unique people · ${percent(totals.submitters, totals.visitors)} of visitors`} />
@@ -304,6 +337,8 @@ export const StatsPage: React.FC = () => {
             </div>
           )}
         </section>
+        </>
+        )}
       </div>
     </div>
   );

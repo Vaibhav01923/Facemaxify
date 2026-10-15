@@ -1,5 +1,5 @@
 // Geometry shared by the analysis overlays (the photo with lines on top of the results of the
-// translated tools) and by the aspect-ratio fix applied before scoring.
+// translated tools) and by the aspect-ratio fix every tool applies before measuring.
 
 export type Pt = { x: number; y: number };
 export interface Size {
@@ -7,12 +7,22 @@ export interface Size {
   height: number;
 }
 
+// The photo's own size in pixels (not the size it is shown at).
+export const imageSize = (img: HTMLImageElement): Size => ({
+  width: img.naturalWidth || img.width,
+  height: img.naturalHeight || img.height,
+});
+
 // MediaPipe returns each landmark's x and y as a fraction of the image's width and height
 // *separately*. On a portrait photo that stretches the horizontal axis against the vertical one
 // (a 3:4 photo makes a face look a third wider than it is), which skews every measurement that
 // mixes the two: face length against width, eye height against width, the chin angle. Scaling x by
 // width/height puts both axes in the same units (the image's height), so ratios and angles come
 // out true, while measurements that only use y (facial thirds) are unchanged.
+//
+// PhotoAnalyzerShell applies this to the landmarks it hands to a tool's calculation; the standalone
+// analyzers, which run MediaPipe themselves, call it directly. Apply it once, to the raw landmarks,
+// and keep the raw ones for drawing on the photo, which needs fractions of the photo's own size.
 export function toSquareSpace<T extends { x: number }>(landmarks: T[], size?: Size): T[] {
   if (!size || !size.width || !size.height) return landmarks;
   const scale = size.width / size.height;

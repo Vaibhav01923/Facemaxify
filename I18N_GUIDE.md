@@ -2,8 +2,8 @@
 
 Facemaxify has native-language versions of its most-searched tools under `/es/…` and `/ja/…`. They are
 **written around the keyword people search in that language**, not translated word for word, and they reuse
-the English tools' calculations (with the photo-shape correction described under "Things to know"). English
-pages are unchanged.
+the English tools' calculations, so a photo scores the same in every language (including the photo-shape
+correction described under "Things to know").
 
 ## What exists
 
@@ -79,7 +79,8 @@ face rather than a bare score. Tap or hover a row of the results and its measure
 - **Keep label texts short** (about 12 Japanese characters or 25 Latin ones). They sit beside the face on a
   canvas that is roughly twice the face's width; a longer label is lifted above its line instead of beside it.
 - `overlay/geometry.ts` holds the landmark index lists and `SYMMETRY_PAIRS` (copied from the English
-  calculators: update both if a calculator changes its pairs).
+  calculators: update both if a calculator changes its pairs), and the photo-shape correction
+  (`toSquareSpace`, `imageSize`; see "Things to know").
 
 ## From free tool to paid sale
 
@@ -123,16 +124,30 @@ Not covered (yet): Clerk's emails, the dashboard UI, the 25+ metric names and th
   test photo I ran scored 83/100, i.e. 偏差値 66), so 偏差値 may come out high for ordinary faces. To make it
   a real population measure, run 50–100 varied photos through the engine and replace the 56 / 0.6 in
   `engines/faceRating.tsx` with the sample's mean and spread. The page says plainly that it's an estimate.
-- **Translated pages correct for the shape of the photo; the English tools don't (yet).** MediaPipe gives
-  every landmark's x and y as a fraction of the photo's width and height *separately*, so on a portrait
-  photo any measurement that mixes the two axes (face length ÷ width, eye height ÷ width, the chin angle) is
-  stretched. The same face, cropped square and cropped 3:4, came out as `1.18 / 111° / square` and
-  `0.89 / 125° / oval` on the old code. `PhotoAnalyzerShell` now passes the photo's size to `onAnalyze`, and
-  `LocalizedToolPage` runs `toSquareSpace` (`overlay/geometry.ts`) first; after that both crops give
-  identical numbers. Because of this, a portrait photo can score a little differently on `/es`/`/ja` than on
-  the English page. The English pages can take the same one-line fix (`onAnalyze={(lm, size) =>
-  calculate(toSquareSpace(lm, size))}`); `FacialShapeAnalyzer`, `GoldenRatioAnalyzer` and `CanthalTilt` don't
-  use the shell and would need it applied separately.
+- **Every tool corrects for the shape of the photo.** MediaPipe gives every landmark's x and y as a fraction
+  of the photo's width and height *separately*, so on a portrait photo any measurement that mixes the two
+  axes (face length ÷ width, eye height ÷ width, the chin angle, the canthal tilt) is stretched. The same
+  face, cropped square and cropped 3:4, used to come out as `1.21 / 110° / oval` and `0.92 / 124° / heart`
+  on `/tools/facial-shape`; now both crops give the same numbers (to the detector's own noise: ~0.01 on a
+  ratio, ~1° on an angle).
+  - **Tools built on `PhotoAnalyzerShell`** (English and translated alike) get the landmarks already
+    corrected: the shell runs `toSquareSpace` (`overlay/geometry.ts`) before it calls `onAnalyze`. Don't
+    correct them again. `renderResults` still receives the raw landmarks in `context`, which is what drawing
+    on the photo needs.
+  - **Standalone analyzers** that run MediaPipe themselves (`FacialShapeAnalyzer`, `GoldenRatioAnalyzer`,
+    `CanthalTiltAnalyzer`, `FaceSymmetryAnalyzer`) call it directly: pass
+    `toSquareSpace(landmarks, imageSize(img))` to the calculation and keep the raw landmarks for drawing.
+    A new analyzer that doesn't use the shell has to do the same. (Golden ratio only compares widths with
+    widths and heights with heights, and symmetry only compares left with right, so neither score moves
+    much with or without it.)
+  - **The full report** (`/dashboard/facial-analysis`, and `SimpleSeoAnalyzer` on the landing pages) needs
+    nothing: it re-detects the landmarks on a 1024×1024 square (`standardizeImage`), where x and y already
+    share a unit.
+  - **Portrait photos score differently than before on the English pages** (the same face on a 3:4 crop used
+    to score 92 on `/tools/hunter-eyes` against 66 square; now 65 against 66). To re-check after touching a
+    calculation, crop one photo square and 3:4 without rescaling it (e.g.
+    `helperimages/outer_corner_where_eyelids_meet.png`: x 225–675 with y 10–460 against y 0–600) and compare
+    the two on `/tools/facial-shape` and `/tools/hunter-eyes`.
 - **The hunter-eyes "canthal tilt" is not in degrees.** `pages/HunterEyesPage.tsx` multiplies the sine of the
   tilt by 180 instead of 180/π, so the number it shows (and the "ideal: > 3°" next to it) is about 3.14×
   the real angle. The translated page copies it so the languages agree, and the photo label for tilt shows

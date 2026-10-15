@@ -16,6 +16,7 @@ import {
   getConfidenceColor,
   type FaceShapeResult,
 } from "../../utils/faceShapeClassifier";
+import { imageSize, toSquareSpace } from "../i18n/overlay/geometry";
 
 export const FacialShapeAnalyzer: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -103,8 +104,11 @@ export const FacialShapeAnalyzer: React.FC = () => {
             // Extract landmarks
             const landmarks = results.multiFaceLandmarks[0];
 
-            // Extract measurements
-            const measurements = extractMeasurements(landmarks);
+            // Extract measurements, in true proportions: a portrait photo would otherwise look
+            // wider than it is.
+            const measurements = extractMeasurements(
+              toSquareSpace(landmarks, imageSize(img)),
+            );
 
             // Classify face shape
             const faceShapeResult = classifyFaceShape(measurements);

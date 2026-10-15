@@ -7,6 +7,7 @@ import {
   calculateCanthalTilt,
   type CanthalTiltResult,
 } from "../../utils/canthalTiltCalculator";
+import { imageSize, toSquareSpace } from "../i18n/overlay/geometry";
 
 export const CanthalTiltAnalyzer: React.FC = () => {
   const { isSignedIn } = useUser();
@@ -160,7 +161,10 @@ export const CanthalTiltAnalyzer: React.FC = () => {
 
           try {
             const landmarks = results.multiFaceLandmarks[0];
-            const tiltResult = calculateCanthalTilt(landmarks);
+            // Measure the angle in true proportions; the guidelines are drawn from the raw landmarks.
+            const tiltResult = calculateCanthalTilt(
+              toSquareSpace(landmarks, imageSize(img)),
+            );
             setResult(tiltResult);
             drawGuidelines(landmarks);
             resolve();

@@ -4,24 +4,23 @@ import { useUser, useClerk } from "@clerk/clerk-react";
 import { Upload, Loader2, AlertCircle, ArrowRight } from "lucide-react";
 import { trackFunnel } from "../../services/funnel";
 import { rememberFullReportClick } from "../../services/attribution";
+import { imageSize, toSquareSpace } from "../i18n/overlay/geometry";
 import type { ShellStrings } from "../../i18n/types";
 
-/** The analysed photo and its MediaPipe landmarks, for tools that draw on top of the result. */
+/**
+ * The analysed photo and its MediaPipe landmarks, for tools that draw on top of the result. The
+ * landmarks are as MediaPipe returned them (x and y as fractions of the photo's width and height),
+ * which is what placing something on the photo needs.
+ */
 export interface PhotoContext {
   image: string;
   landmarks: any[];
 }
 
-/** Width and height of the analysed photo, in pixels. */
-export interface ImageSize {
-  width: number;
-  height: number;
-}
-
 interface Props {
-  // MediaPipe's landmark x and y are fractions of the photo's width and height separately, so a
-  // calculation that mixes the two axes needs the photo's size to correct for its shape.
-  onAnalyze: (landmarks: any[], size: ImageSize) => any;
+  // Gets the face's landmarks corrected for the shape of the photo (see toSquareSpace), so a
+  // calculation can mix x and y freely. Don't correct them again.
+  onAnalyze: (landmarks: any[]) => any;
   renderResults: (result: any, reset: () => void, context: PhotoContext) => React.ReactNode;
   analyzeLabel?: string;
   uploadHint?: string;
@@ -103,8 +102,8 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
             return;
           }
           try {
-            const size = { width: imgEl.naturalWidth || imgEl.width, height: imgEl.naturalHeight || imgEl.height };
-            const res = onAnalyze(results.multiFaceLandmarks[0], size);
+            // Measure in true proportions: a portrait photo would otherwise look wider than it is.
+            const res = onAnalyze(toSquareSpace(results.multiFaceLandmarks[0], imageSize(imgEl)));
             setLandmarks(results.multiFaceLandmarks[0]);
             setResult(res);
             resolve();

@@ -5,6 +5,7 @@ import { Upload, Loader2, CheckCircle, AlertCircle, ArrowRight } from "lucide-re
 import { calculateFaceSymmetry, FaceSymmetryResult } from "../../utils/faceSymmetryCalculator";
 import { trackFunnel } from "../../services/funnel";
 import { rememberFullReportClick } from "../../services/attribution";
+import { imageSize, toSquareSpace } from "../i18n/overlay/geometry";
 
 export const FaceSymmetryAnalyzer: React.FC = () => {
   const { isSignedIn } = useUser();
@@ -52,7 +53,8 @@ export const FaceSymmetryAnalyzer: React.FC = () => {
             return;
           }
           const landmarks = results.multiFaceLandmarks[0];
-          const res = calculateFaceSymmetry(landmarks);
+          // Measure in true proportions: a portrait photo would otherwise look wider than it is.
+          const res = calculateFaceSymmetry(toSquareSpace(landmarks, imageSize(imgEl)));
           setResult(res);
           resolve();
         });

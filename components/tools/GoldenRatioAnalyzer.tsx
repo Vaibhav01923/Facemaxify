@@ -15,6 +15,7 @@ import {
   calculateGoldenRatio,
   type GoldenRatioResult,
 } from "../../utils/goldenRatioCalculator";
+import { imageSize, toSquareSpace } from "../i18n/overlay/geometry";
 
 export const GoldenRatioAnalyzer: React.FC = () => {
   const { isSignedIn } = useUser();
@@ -147,7 +148,10 @@ export const GoldenRatioAnalyzer: React.FC = () => {
 
           try {
             const landmarks = results.multiFaceLandmarks[0];
-            const ratioResult = calculateGoldenRatio(landmarks);
+            // Measure in true proportions; the guidelines are drawn from the raw landmarks.
+            const ratioResult = calculateGoldenRatio(
+              toSquareSpace(landmarks, imageSize(img)),
+            );
             setResult(ratioResult);
             drawGuidelines(landmarks);
             resolve();

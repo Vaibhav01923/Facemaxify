@@ -4,8 +4,8 @@ import type { Locale } from "../../../i18n/types";
 import { LayerDot, LayerRow } from "../overlay/selection";
 
 // What every translated tool page needs from a measuring engine: the calculation (reused from
-// the English tool; LocalizedToolPage first corrects the landmarks for the photo's shape) and a
-// results view in the page's language.
+// the English tool; PhotoAnalyzerShell has already corrected the landmarks for the photo's shape)
+// and a results view in the page's language.
 export interface ResultsProps {
   result: any;
   reset: () => void;

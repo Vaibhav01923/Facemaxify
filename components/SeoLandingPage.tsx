@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { SEO } from "./SEO";
 import { Navbar } from "./Navbar";
 import { SimpleSeoAnalyzer } from "./tools/SimpleSeoAnalyzer";
+import { rememberFullReportClick } from "../services/attribution";
 import {
   SeoLandingPageConfig,
   seoLandingPages,
@@ -22,6 +23,7 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({ page }) => {
     .slice(0, 6);
 
   const startFullAnalysis = () => {
+    rememberFullReportClick();
     if (isSignedIn) {
       window.location.href = "/dashboard/facial-analysis";
       return;

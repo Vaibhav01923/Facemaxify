@@ -4,6 +4,7 @@ import { useUser, useClerk } from "@clerk/clerk-react";
 import { Upload, Loader2, CheckCircle, AlertCircle, ArrowRight } from "lucide-react";
 import { calculateFaceSymmetry, FaceSymmetryResult } from "../../utils/faceSymmetryCalculator";
 import { trackFunnel } from "../../services/funnel";
+import { rememberFullReportClick } from "../../services/attribution";
 
 export const FaceSymmetryAnalyzer: React.FC = () => {
   const { isSignedIn } = useUser();
@@ -67,6 +68,7 @@ export const FaceSymmetryAnalyzer: React.FC = () => {
   };
 
   const goFullAnalysis = () => {
+    rememberFullReportClick();
     if (isSignedIn) { window.location.href = "/dashboard/facial-analysis"; return; }
     localStorage.setItem("pendingAction", "dashboard");
     openSignIn();

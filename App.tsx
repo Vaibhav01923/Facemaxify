@@ -13,6 +13,7 @@ import {
 import { standardizeImage } from "./utils/imageProcessing";
 import { supabase } from "./services/supabase";
 import { trackPageView } from "./services/funnel";
+import { initAttribution } from "./services/attribution";
 
 import { DashboardHome } from "./components/DashboardHome";
 import { FacialAnalysis } from "./components/FacialAnalysis";
@@ -82,9 +83,11 @@ const App: React.FC = () => {
   const { user, isLoaded } = useUser();
   const { pathname } = useLocation();
 
-  // Funnel views for /stats (only counted on tool pages — see services/funnel.ts).
+  // Funnel views for /stats (only counted on tool pages — see services/funnel.ts), and the
+  // first-party attribution kept for checkout (first page, language — see services/attribution.ts).
   React.useEffect(() => {
     trackPageView(pathname);
+    initAttribution(pathname);
   }, [pathname]);
   const [isPaid, setIsPaid] = useState<boolean | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);

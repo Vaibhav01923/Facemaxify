@@ -3,6 +3,7 @@ import { FaceMesh } from "@mediapipe/face_mesh";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { Upload, Loader2, AlertCircle, ArrowRight } from "lucide-react";
 import { trackFunnel } from "../../services/funnel";
+import { rememberFullReportClick } from "../../services/attribution";
 import type { ShellStrings } from "../../i18n/types";
 
 /** The analysed photo and its MediaPipe landmarks, for tools that draw on top of the result. */
@@ -18,6 +19,9 @@ interface Props {
   uploadHint?: string;
   // Text for translated pages (see i18n/strings.tsx). English pages leave this out.
   strings?: Partial<ShellStrings>;
+  // What the "full report" button does. Translated pages pass the sign-in flow that keeps their
+  // language (components/i18n/useFullReport.ts); English pages use the default below.
+  onFullReport?: () => void;
 }
 
 const ENGLISH_STRINGS: ShellStrings = {
@@ -45,6 +49,7 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
   analyzeLabel = "Analyze Photo",
   uploadHint,
   strings,
+  onFullReport,
 }) => {
   const t: ShellStrings = { ...ENGLISH_STRINGS, ...strings };
   const { isSignedIn } = useUser();
@@ -112,6 +117,8 @@ export const PhotoAnalyzerShell: React.FC<Props> = ({
   const reset = () => { setResult(null); setLandmarks([]); setSelectedImage(null); setError(null); };
 
   const goFull = () => {
+    if (onFullReport) { onFullReport(); return; }
+    rememberFullReportClick();
     if (isSignedIn) { window.location.href = "/dashboard/facial-analysis"; return; }
     localStorage.setItem("pendingAction", "dashboard");
     openSignIn();

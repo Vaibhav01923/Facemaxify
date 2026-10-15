@@ -24,7 +24,7 @@ export const LanguageSwitcher: React.FC<{ label?: string; className?: string }> 
           lang={link.htmlLang}
           title={link.label}
           aria-label={link.label}
-          className="px-2 py-3 hover:text-white transition-colors"
+          className="px-1.5 py-3 hover:text-white transition-colors sm:px-2"
         >
           <span aria-hidden="true" className="sm:hidden">
             {link.code.toUpperCase()}

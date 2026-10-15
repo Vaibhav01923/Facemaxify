@@ -1,4 +1,9 @@
 import DodoPayments from 'dodopayments';
+import { attributionFromCookieHeader, attributionMetadata } from './_lib/attribution.js';
+
+// Checkout page languages we force for visitors who came through the Spanish / Japanese pages
+// (Dodo supports both). Everyone else gets Dodo's default.
+const CHECKOUT_LANGUAGE = { es: 'es', ja: 'ja' };
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -56,6 +61,13 @@ export default async function handler(req, res) {
       }
     }
 
+    // Where this buyer came from (first page, page they clicked "full report" on, language), read
+    // from the first-party cookie services/attribution.ts keeps. It ends up on the payment in Dodo
+    // and in the webhook. Metadata passed explicitly in the request wins over it.
+    const attribution = attributionFromCookieHeader(req.headers.cookie);
+    parsedMetadata = { ...attributionMetadata(attribution), ...parsedMetadata };
+    console.log('[checkout] attribution:', JSON.stringify(attribution));
+
     // Forcefully inject the intended email into metadata so the webhook knows exactly who to upgrade
     if (customerEmail) {
       parsedMetadata.customer_email = String(customerEmail);
@@ -63,8 +75,7 @@ export default async function handler(req, res) {
 
     const productId = products || process.env.DODO_PAYMENTS_PRODUCT_ID;
 
-    // Create a one-time payment link/session using Checkout Sessions (Recommended)
-    const session = await client.checkoutSessions.create({
+    const sessionParams = {
       product_cart: [
         {
           product_id: productId,
@@ -80,7 +91,25 @@ export default async function handler(req, res) {
       discount_code: discountCode || undefined, // Apply discount code if provided
       metadata: parsedMetadata,
       return_url: process.env.DODO_PAYMENTS_SUCCESS_URL || 'https://facemaxify.com/dashboard',
-    });
+    };
+
+    // Create a one-time payment link/session using Checkout Sessions (Recommended)
+    let session;
+    const forceLanguage = CHECKOUT_LANGUAGE[attribution.lang];
+    if (forceLanguage) {
+      try {
+        session = await client.checkoutSessions.create({
+          ...sessionParams,
+          customization: { force_language: forceLanguage },
+        });
+      } catch (languageError) {
+        // The language is a nicety, never a reason to lose a sale: fall back to Dodo's default.
+        console.warn('Checkout with forced language failed, retrying without it:', languageError.message);
+      }
+    }
+    if (!session) {
+      session = await client.checkoutSessions.create(sessionParams);
+    }
 
     // Redirect the user to the checkout URL
     return res.redirect(session.checkout_url);

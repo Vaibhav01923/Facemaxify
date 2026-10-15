@@ -8,6 +8,7 @@ import type { LocalizedPage } from "../../i18n/types";
 import { ENGINES } from "./engines";
 import { LocalizedFooter, RelatedTools } from "./LocalizedFooter";
 import { LocalizedNavbar } from "./LocalizedNavbar";
+import { useFullReport } from "./useFullReport";
 
 // One translated tool page: hero, the tool itself (reusing the English tool's calculation),
 // the long article, and links to the language's other tools. Copy comes from i18n/pages.ts and
@@ -16,6 +17,7 @@ export const LocalizedToolPage: React.FC<{ page: LocalizedPage }> = ({ page }) =
   const { locale } = page;
   const ui = UI[locale];
   const engine = ENGINES[page.engine];
+  const openFullReport = useFullReport();
   const related = page.related.map((slug) => pageBySlug(locale, slug)).filter((p): p is LocalizedPage => Boolean(p));
   // Japanese has no letter case, and wide letter-spacing hurts readability.
   const badgeCase = locale === "ja" ? "tracking-normal" : "uppercase tracking-widest";
@@ -57,6 +59,7 @@ export const LocalizedToolPage: React.FC<{ page: LocalizedPage }> = ({ page }) =
           )}
           analyzeLabel={page.analyzeLabel}
           strings={ui.shell}
+          onFullReport={openFullReport}
         />
 
         <ToolArticle slug={articleKey(page)} />

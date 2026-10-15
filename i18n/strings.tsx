@@ -39,6 +39,26 @@ export const UI: Record<Locale, UiStrings> = {
       another: "← Analizar otra foto",
       footnote: "Tu foto no se sube: el análisis se hace en tu propio navegador.",
     },
+    fullReport: {
+      heading: "El informe completo de Facemaxify",
+      intro:
+        "Cada herramienta gratuita mide una sola cosa. El informe completo analiza todo tu rostro a partir de una foto y te dice qué hacer con el resultado.",
+      features: [
+        "Más de 25 proporciones faciales, cada una con tu valor, el rango ideal y una nota de 0 a 10 (la vista previa gratuita muestra 3).",
+        "Plan personalizado con IA: mejoras sin cirugía (grasa corporal, piel, estilo) y, aparte, orientación sobre procedimientos médicos, según tus proporciones.",
+        "Análisis de colores personales: tu paleta de temporada, el subtono de tu piel y los mejores colores de ropa.",
+        "Análisis de peinados: cuáles te favorecen, cuáles están bien y cuáles evitar según la forma de tu rostro.",
+        "Informe de piel con IA: tu tipo de piel, lo que conviene mejorar y una rutina de mañana y de noche.",
+        "Guías de mejora facial para llevar el plan a la práctica.",
+      ],
+      priceLine: (price) => `${price} USD · pago único · acceso de por vida`,
+      notes: [
+        "Los textos que genera la IA (resumen, consejos, rutina de piel) se escriben en español. Los menús, los nombres de las medidas y las guías siguen en inglés por ahora.",
+        "Para generar el informe hay que iniciar sesión y, a diferencia de las herramientas gratuitas, tu foto se sube y se procesa con modelos de IA de Google y OpenAI.",
+      ],
+      button: "Ver el informe completo",
+      imageAlt: "Vista previa del informe completo de Facemaxify: proporciones faciales con su puntuación",
+    },
   },
   ja: {
     navHub: "無料ツール一覧",
@@ -72,6 +92,26 @@ export const UI: Record<Locale, UiStrings> = {
       ctaButton: "フルレポートを見る",
       another: "← 別の写真を診断する",
       footnote: "写真はアップロードされません。診断はお使いのブラウザ内で行われます。",
+    },
+    fullReport: {
+      heading: "Facemaxify フルレポート",
+      intro:
+        "無料ツールは、それぞれ1つの項目を測ります。フルレポートは、1枚の写真から顔全体を分析し、結果をどう活かすかまで示します。",
+      features: [
+        "25以上の顔の比率。それぞれにあなたの値・理想の範囲・10点満点のスコアを表示します(無料プレビューで見られるのは3つ)。",
+        "AIによる個別プラン。手術なしの改善(体脂肪・肌・スタイル)と、別枠で医療的な施術についての考え方を、あなたの比率にもとづいて提示します。",
+        "パーソナルカラー分析。シーズンごとのパレット、肌のアンダートーン、似合う服の色がわかります。",
+        "ヘアスタイル分析。顔型に合わせて、似合う髪型・普通の髪型・避けたい髪型を示します。",
+        "AI肌レポート。肌タイプ、気になる点、朝と夜のスキンケアルーティンを提案します。",
+        "プランを実践するための、顔の改善ガイド。",
+      ],
+      priceLine: (price) => `${price}(USD)・買い切り・ずっと使える`,
+      notes: [
+        "AIが生成する文章(総評・アドバイス・肌のルーティンなど)は日本語で表示されます。メニュー、測定項目の名前、ガイドは今のところ英語です。",
+        "レポートの作成にはログインが必要で、無料ツールとは異なり、写真がアップロードされ、GoogleとOpenAIのAIモデルで処理されます。",
+      ],
+      button: "フルレポートを見る",
+      imageAlt: "Facemaxifyフルレポートのプレビュー(顔の比率とスコア)",
     },
   },
 };

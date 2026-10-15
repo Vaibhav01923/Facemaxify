@@ -1,5 +1,6 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { languageName, reportLanguage } from "./_lib/language.js";
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -17,6 +18,8 @@ export default async function handler(req, res) {
     }
 
     const { currentPhotoUrl } = req.body;
+    // Visitors who came through the Spanish / Japanese pages get the report text in their language.
+    const language = reportLanguage(req.body.language);
 
     if (!process.env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY is not defined');
 
@@ -57,7 +60,13 @@ Return ONLY a raw JSON object matching this exact schema (no markdown, no code b
     "weekly": ["Weekly treatment 1", "Weekly treatment 2"]
   },
   "lifestyle_tips": ["Tip 1", "Tip 2"]
-}`;
+}${
+      language
+        ? `
+
+Write every text value (skin_type, concerns, summary, advice, steps, product types, reasons and tips) in ${languageName(language)}. Keep the JSON keys and the numeric severity_score exactly as in the schema.`
+        : ""
+    }`;
 
     const parts = [prompt];
     const imagePart = await processImage(currentPhotoUrl);

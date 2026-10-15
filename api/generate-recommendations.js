@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { languageName, reportLanguage } from "./_lib/language.js";
 
 export default async function handler(req, res) {
   // CORS configuration
@@ -41,6 +42,8 @@ export default async function handler(req, res) {
     }
 
     const { metrics, frontPhotoUrl } = req.body;
+    // Visitors who came through the Spanish / Japanese pages get the report text in their language.
+    const language = reportLanguage(req.body.language);
 
     if (!process.env.GEMINI_API_KEY) {
       throw new Error("GEMINI_API_KEY is not defined");
@@ -128,6 +131,11 @@ export default async function handler(req, res) {
     }
 
     **Tone:** Professional, objective, direct, and actionable. Avoid fluff.
+    ${
+      language
+        ? `**Language:** Write every text value in ${languageName(language)}. Keep the JSON keys exactly as in the schema (in English) and translate the example phrases (such as "CRITICAL/URGENT" and "No major intervention recommended") naturally.`
+        : ""
+    }
     **CRITICAL:** Return ONLY valid JSON matching the exact schema above. No breakdown, no preamble, do NOT wrap in markdown code blocks.
     `;
 

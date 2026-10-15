@@ -1,4 +1,5 @@
 import OpenAI, { toFile } from "openai";
+import { imageTextLanguage, languageName } from "./_lib/language.js";
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -16,6 +17,8 @@ export default async function handler(req, res) {
     }
 
     const { photoUrl } = req.body;
+    // Visitors who came through the Spanish / Japanese pages get the text inside the image in their language.
+    const language = imageTextLanguage(req.body.language);
     if (!photoUrl) return res.status(400).json({ error: 'photoUrl is required' });
     if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY is not defined');
 
@@ -36,7 +39,9 @@ export default async function handler(req, res) {
     const response = await openai.images.edit({
       model: "gpt-image-2",
       image: await toFile(imageBuffer, 'portrait.png', { type: 'image/png' }),
-      prompt,
+      prompt: language
+        ? `${prompt} Write all text that appears in the image (titles, section labels and styling tips) in ${languageName(language)}.`
+        : prompt,
       n: 1,
       size: "1024x1536",
     });

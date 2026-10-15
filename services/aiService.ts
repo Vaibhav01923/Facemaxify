@@ -1,4 +1,12 @@
 import { MetricResult } from "./ratioCalculator";
+import { getPreferredLanguage } from "./attribution";
+
+// Visitors who came through the Spanish / Japanese pages get the report text in that language
+// (the API ignores anything else); English requests are sent exactly as before.
+const languageField = () => {
+  const language = getPreferredLanguage();
+  return language === "en" ? {} : { language };
+};
 
 export const getAiRecommendations = async (metrics: MetricResult[], frontPhotoUrl: string | null): Promise<any> => {
   try {
@@ -18,6 +26,7 @@ export const getAiRecommendations = async (metrics: MetricResult[], frontPhotoUr
       body: JSON.stringify({
         metrics,
         frontPhotoUrl,
+        ...languageField(),
       }),
     });
 
@@ -42,7 +51,7 @@ export const generateHairstyleAnalysis = async (photoUrl: string): Promise<strin
     const response = await fetch('/api/generate-hairstyle-analysis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ photoUrl }),
+      body: JSON.stringify({ photoUrl, ...languageField() }),
     });
 
     if (!response.ok) {
@@ -66,7 +75,7 @@ export const generateColorAnalysis = async (photoUrl: string): Promise<string | 
     const response = await fetch('/api/generate-color-analysis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ photoUrl }),
+      body: JSON.stringify({ photoUrl, ...languageField() }),
     });
 
     if (!response.ok) {
@@ -98,7 +107,7 @@ export const generateSkincareRoutine = async (
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ currentPhotoUrl }),
+      body: JSON.stringify({ currentPhotoUrl, ...languageField() }),
     });
 
     if (!response.ok) {

@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
 import { captureToolArticles } from "./components/tools/ToolArticle";
+import { clerkLocalizationFor } from "./i18n/clerk";
 import "./index.css";
 
 function showFatalError(msg: string) {
@@ -51,7 +52,12 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <RootErrorBoundary>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+      {/* Sign-in / sign-up popup in Spanish or Japanese on the translated pages; unchanged elsewhere. */}
+      <ClerkProvider
+        publishableKey={PUBLISHABLE_KEY}
+        afterSignOutUrl="/"
+        localization={clerkLocalizationFor(window.location.pathname)}
+      >
         <BrowserRouter>
           <App />
         </BrowserRouter>

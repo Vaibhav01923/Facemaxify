@@ -58,6 +58,31 @@ inconsistent — nothing ships half-translated.
 4. Don't auto-redirect by browser language — it hides pages from Google. The language switcher in every
    navbar is the link between versions.
 
+## From free tool to paid sale
+
+The full report (dashboard, paywall, checkout) is English-only, and that is where the money is, so the
+translated pages try to carry the visitor's language as far down the funnel as it can go:
+
+| Step | What happens | Where |
+|---|---|---|
+| Hub page | A "what's in the full report" section: contents, price, honest note that menus and guides are English, button | `components/i18n/FullReportSection.tsx`, copy in `i18n/strings.tsx`, price in `i18n/offer.ts` |
+| Click through | Opens Clerk's sign-in popup **in Spanish / Japanese** and goes straight to `/dashboard/facial-analysis` afterwards (not Clerk's English-only hosted page) | `components/i18n/useFullReport.ts`, `i18n/clerk.ts` (`@clerk/localizations`, pinned) |
+| AI report | The report text (summary, advice, skin routine) and the text inside the colour / hairstyle images are written in the visitor's language | `api/_lib/language.js`, the four `api/generate-*.js`, `services/aiService.ts` |
+| Checkout | Dodo's checkout page is forced to Spanish / Japanese; if Dodo ever rejects that, the checkout retries without it, so a sale is never lost over language | `api/checkout.js` |
+
+**Attribution.** A first-party cookie, `fmx_attr` (30 days, page paths and language only), records the
+first page a visitor landed on, the last page they clicked "full report" on, and their language
+(`services/attribution.ts`; format and validation in `api/_lib/attribution.js`). `api/checkout.js` reads it
+and puts it on the payment as metadata: `landing_page`, `source_page`, `language`, `first_seen`. So each
+sale in Dodo (and in the `payment.succeeded` webhook payload) says which page it came from, e.g.
+`source_page: /ja/ganmen-hensachi`. Clicks on "full report" are also sent to Vercel Analytics as a
+`full_report_click` event, which only shows up on plans that include custom events.
+
+The language used for the AI report and the checkout is the language of the site pages the visitor last
+read (English pages reset it to English); the signed-in app never changes it.
+
+Not covered (yet): Clerk's emails, the dashboard UI, the 25+ metric names and the guides are still English.
+
 ## After deploying
 
 - In Search Console, submit `https://facemaxify.com/sitemap-i18n.xml`. It's listed separately from
@@ -81,3 +106,9 @@ inconsistent — nothing ships half-translated.
   and `/stats` has a "Translated pages" table. It relies on the `track_funnel_event` database function
   accepting those paths.
 - The full report (dashboard) is English-only; translated pages say so, and say that it uploads the photo.
+- **Check these once by hand** (they need real accounts, so they weren't exercised in testing): the Clerk
+  popup language, a Spanish and a Japanese full report (is the Japanese text inside the colour / hairstyle
+  images legible? if not, remove `ja` from `IMAGE_TEXT_LANGUAGES` in `api/_lib/language.js`), and one checkout in
+  each language.
+- After pulling this change, run `npm install` (it adds `@clerk/localizations`, pinned with an `overrides`
+  entry so Clerk's own packages keep their locked versions).

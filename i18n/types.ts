@@ -89,4 +89,14 @@ export interface UiStrings {
   fullReportNote: string;
   languageNavLabel: string;
   shell: ShellStrings;
+  // The "what's in the full report" section on the hub pages (components/i18n/FullReportSection.tsx).
+  fullReport: {
+    heading: string;
+    intro: string;
+    features: string[];
+    priceLine: (price: string) => string;
+    notes: string[];
+    button: string;
+    imageAlt: string;
+  };
 }

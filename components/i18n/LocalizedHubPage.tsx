@@ -3,6 +3,7 @@ import { SEO } from "../SEO";
 import { ToolArticle } from "../tools/ToolArticle";
 import { absoluteUrl, hubArticleKey, hubFor, hubPath, pagesFor } from "../../i18n/registry";
 import type { Locale } from "../../i18n/types";
+import { FullReportSection } from "./FullReportSection";
 import { LocalizedFooter, ToolCards } from "./LocalizedFooter";
 import { LocalizedNavbar } from "./LocalizedNavbar";
 
@@ -38,6 +39,8 @@ export const LocalizedHubPage: React.FC<{ locale: Locale }> = ({ locale }) => {
           <h2 className="mb-6 text-2xl font-bold tracking-normal text-white">{hub.toolsHeading}</h2>
           <ToolCards pages={pagesFor(locale)} />
         </section>
+
+        <FullReportSection locale={locale} />
 
         <ToolArticle slug={hubArticleKey(locale)} />
         <LocalizedFooter locale={locale} />

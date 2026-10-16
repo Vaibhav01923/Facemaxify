@@ -51,7 +51,7 @@ Calculate ratios:
 ### **Step 4: AI Classification**
 
 ```
-Send measurements to Gemini AI
+Send measurements to Claude AI
     ↓
 AI analyzes ratios + visual features
     ↓
@@ -383,7 +383,7 @@ async function enhanceWithAI(
     Be specific and actionable.
   `;
 
-  const result = await callGeminiAI(prompt, imageData);
+  const result = await callClaudeAI(prompt, imageData);
   return result;
 }
 ```

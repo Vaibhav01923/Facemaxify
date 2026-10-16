@@ -9,7 +9,7 @@ Key facts:
 - **Honest about limits:** scores describe the geometry of one 2D photo. They don't measure skin, expression, style or personality, and the targets are general proportions that vary between populations.
 - **Realistic improvement:** each tool's guide separates mostly structural features from ones that respond to grooming, body fat, sleep and photo technique, and points to reversible steps first. Guides discourage risky DIY practices such as "bone smashing" and recommend that medical procedures are only discussed with qualified specialists.
 - **Wellbeing:** scores are framed as feedback, not verdicts; guides note that body dysmorphia is common and treatable.
-- **Full analysis (signed in):** combines 25+ facial ratios with an AI skin report, personal color and hairstyle analysis and an improvement plan. Unlike the free tools, it uploads the photo to store scan history and sends it to Google Gemini and OpenAI models to generate those reports.
+- **Full analysis (signed in):** combines 25+ facial ratios with an AI skin report, personal color and hairstyle analysis and an improvement plan. Unlike the free tools, it uploads the photo to store scan history and sends it to Anthropic Claude and OpenAI models to generate those reports.
 
 ## Methodology
 

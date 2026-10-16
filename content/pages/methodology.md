@@ -84,7 +84,7 @@ The free tools don't use an AI model trained on people's attractiveness ratings,
 
 **Free tools:** your photo is analysed in your browser and isn't uploaded to our servers.
 
-**Full Facemaxify analysis (signed in):** your photo is uploaded and stored with your account so you can see your scan history. To generate the written reports, your photo and measurements are sent to third-party AI providers: Google's Gemini models produce the skin report and improvement plan, and OpenAI's image models produce the personal color and hairstyle analysis.
+**Full Facemaxify analysis (signed in):** your photo is uploaded and stored with your account so you can see your scan history. To generate the written reports, your photo and measurements are sent to third-party AI providers: Anthropic's Claude models produce the skin report and improvement plan, and OpenAI's image models produce the personal color and hairstyle analysis.
 
 ## Wellbeing
 

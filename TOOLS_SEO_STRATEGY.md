@@ -181,7 +181,7 @@ Free Tool → Try it → Like it → Hit limit → See upgrade prompt → Conver
 ```
 /services/
   mediaPipeService.ts      → Facial landmark detection
-  aiAnalysisService.ts     → AI analysis (Gemini)
+  aiAnalysisService.ts     → AI analysis (Claude)
   imageProcessing.ts       → Image utilities
   analyticsService.ts      → Track usage
   subscriptionService.ts   → Check premium status
@@ -336,7 +336,7 @@ All tools must be:
 ### **vs imagetoolshub.com:**
 
 - ✅ More specialized (facial analysis niche)
-- ✅ Better AI (Gemini + mathematical precision)
+- ✅ Better AI (Claude + mathematical precision)
 - ✅ Cleaner UX
 - ✅ Faster tools
 - ✅ Better mobile experience

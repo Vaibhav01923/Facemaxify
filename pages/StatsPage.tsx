@@ -3,6 +3,7 @@ import { supabase } from "../services/supabase";
 import { MAIN_TOOL_PATH, MAIN_TOOL_SKIN_CHECK, getVisitorId, markThisBrowserAsOwner } from "../services/funnel";
 import { seoLandingPageMap } from "../data/seoLandingPages";
 import { StatsTrafficTab } from "./StatsTrafficTab";
+import { StatsCountriesTab } from "./StatsCountriesTab";
 
 // Private funnel dashboard at /stats (not linked anywhere, noindex). The password is checked
 // inside the get_funnel_stats database function against a bcrypt hash, so it never appears
@@ -115,7 +116,7 @@ export const StatsPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [rangeIndex, setRangeIndex] = useState(3);
-  const [tab, setTab] = useState<"funnel" | "traffic">("funnel");
+  const [tab, setTab] = useState<"funnel" | "traffic" | "countries">("funnel");
   const [trafficRefresh, setTrafficRefresh] = useState(0);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
@@ -222,7 +223,7 @@ export const StatsPage: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-black">{tab === "funnel" ? "Funnel stats" : "Traffic sources"}</h1>
+            <h1 className="text-3xl font-black">{tab === "funnel" ? "Funnel stats" : tab === "traffic" ? "Traffic sources" : "Countries"}</h1>
             {tab === "funnel" && (
               <>
                 <p className="text-sm text-slate-500 mt-1">
@@ -266,6 +267,7 @@ export const StatsPage: React.FC = () => {
             [
               ["funnel", "Funnel"],
               ["traffic", "Traffic sources"],
+              ["countries", "Countries"],
             ] as const
           ).map(([id, text]) => (
             <button
@@ -284,6 +286,8 @@ export const StatsPage: React.FC = () => {
 
         {tab === "traffic" ? (
           <StatsTrafficTab password={password} hours={RANGES[rangeIndex].hours} refreshKey={trafficRefresh} />
+        ) : tab === "countries" ? (
+          <StatsCountriesTab password={password} hours={RANGES[rangeIndex].hours} refreshKey={trafficRefresh} />
         ) : (
         <>
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">

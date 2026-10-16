@@ -49,6 +49,7 @@ interface DashboardProps {
 }
 
 import { SkincareTimeline } from "./SkincareTimeline";
+import { GenerationFailed, GenerationNotice, useLeaveWarning } from "./GenerationNotice";
 
 export const Dashboard: React.FC<DashboardProps> = ({
   data,
@@ -210,6 +211,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [loadingSkincare, setLoadingSkincare] = useState(false);
   const skincareAttempted = useRef(false);
 
+  // Per scan, each report gets one automatic attempt and then a "Try again" button. Before, a failed overview
+  // request was retried in a loop and a failed skincare request left a "Generating..." screen up forever.
+  const scanKey = scanId ?? "unsaved";
+  const analysisAttemptedFor = useRef<string | null>(null);
+  const [analysisFailedFor, setAnalysisFailedFor] = useState<string | null>(null);
+  const [analysisRetry, setAnalysisRetry] = useState(0);
+  const [skincareFailedFor, setSkincareFailedFor] = useState<string | null>(null);
+  const [skincareRetry, setSkincareRetry] = useState(0);
+
+  const retryAnalysis = () => {
+    analysisAttemptedFor.current = null;
+    setAnalysisFailedFor(null);
+    setAnalysisRetry((n) => n + 1);
+  };
+  const retrySkincare = () => {
+    skincareAttempted.current = false;
+    setSkincareFailedFor(null);
+    setSkincareRetry((n) => n + 1);
+  };
+
   const [styleSubTab, setStyleSubTab] = useState<"colors" | "hairstyle">("colors");
   const [colorAnalysisImage, setColorAnalysisImage] = useState<string | null>(null);
   const [loadingColorAnalysis, setLoadingColorAnalysis] = useState(false);
@@ -271,8 +292,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
         !data.analysis &&
         !analysis &&
         !loadingAnalysis &&
-        frontMetrics.length > 0
+        frontMetrics.length > 0 &&
+        analysisAttemptedFor.current !== scanKey
       ) {
+        analysisAttemptedFor.current = scanKey;
+        setAnalysisFailedFor(null);
         setLoadingAnalysis(true);
         console.log("Generating new AI Analysis...");
 
@@ -296,9 +320,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 userId: user?.id,
               });
             }
+          } else {
+            setAnalysisFailedFor(scanKey);
           }
         } catch (error) {
           console.error("Failed to generate AI analysis:", error);
+          setAnalysisFailedFor(scanKey);
         } finally {
           setLoadingAnalysis(false);
         }
@@ -306,7 +333,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     };
 
     loadAnalysis();
-  }, [data, frontMetrics, analysis, loadingAnalysis, scanId, user?.id]);
+  }, [data, frontMetrics, analysis, loadingAnalysis, scanId, user?.id, analysisRetry]);
 
   // ---------------------------------------------------------------------------
   // SKINCARE ANALYSIS LOGIC
@@ -339,6 +366,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         return;
 
       skincareAttempted.current = true;
+      setSkincareFailedFor(null);
       setLoadingSkincare(true);
       console.log("Generating Skincare Analysis...");
 
@@ -354,16 +382,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
             console.log("Skincare analysis saved to separate column");
             onRefresh?.();
           }
+        } else {
+          setSkincareFailedFor(scanKey);
         }
       } catch (error) {
         console.error("Failed to load skincare:", error);
+        setSkincareFailedFor(scanKey);
       } finally {
         setLoadingSkincare(false);
       }
     };
 
     loadSkincare();
-  }, [activeTab, skincareAnalysis, data, user, scanId]);
+  }, [activeTab, skincareAnalysis, data, user, scanId, skincareRetry]);
+
+  // A refresh or closed tab cancels the request in flight and the report starts over, so ask before that happens.
+  // The overview is only worth waiting for once it is unlocked (free accounts see it blurred).
+  useLeaveWarning(
+    (loadingAnalysis && !!isPaid) || loadingSkincare || loadingColorAnalysis || loadingHairstyle,
+  );
 
   // RESET STYLE ANALYSIS STATE WHEN SCAN CHANGES
   useEffect(() => {
@@ -680,6 +717,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
               )}
 
+              {loadingAnalysis && isPaid && (
+                <div className="mb-6">
+                  <GenerationNotice what="overview analysis" />
+                </div>
+              )}
+
               {/* CONTENT AREA */}
               <div
                 className={`space-y-6 ${!isPaid ? "filter blur-md opacity-40 pointer-events-none select-none" : ""}`}
@@ -815,6 +858,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           </div>
                         )}
                       </div>
+                    ) : analysisFailedFor === scanKey ? (
+                      <GenerationFailed what="overview analysis" onRetry={retryAnalysis} />
                     ) : (
                       // Empty / Error State
                       <div className="text-slate-500 text-center py-10">
@@ -1130,12 +1175,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {/* Loading State or Timeline */}
             {loadingSkincare ? (
               <div className="space-y-6">
+                <GenerationNotice what="skincare routine" />
                 <div className="h-40 bg-slate-900/50 rounded-2xl animate-pulse border border-white/5"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="h-64 bg-slate-900/50 rounded-2xl animate-pulse delay-100 border border-white/5"></div>
                   <div className="h-64 bg-slate-900/50 rounded-2xl animate-pulse delay-200 border border-white/5"></div>
                 </div>
               </div>
+            ) : skincareFailedFor === scanKey && !skincareAnalysis ? (
+              <GenerationFailed what="skincare routine" onRetry={retrySkincare} />
             ) : (
               <SkincareTimeline
                 scans={scans}

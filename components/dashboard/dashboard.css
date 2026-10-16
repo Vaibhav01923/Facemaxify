@@ -1,0 +1,331 @@
+/*
+ * Dashboard design tokens and shared classes.
+ * Direction: a measuring studio at night. Ink-blue surfaces separated by hairlines and tonal steps (no drop shadows),
+ * one cool accent, system monospace for measurements and labels, Inter for everything else.
+ */
+.dash {
+  /* surfaces: one hue, a few percent of lightness per step */
+  --d-bg: #07080d;
+  --d-s1: #0b0d14;
+  --d-s2: #11141d;
+  --d-s3: #181c28;
+  /* hairlines */
+  --d-line: rgba(176, 188, 255, 0.07);
+  --d-line2: rgba(176, 188, 255, 0.13);
+  --d-line3: rgba(176, 188, 255, 0.24);
+  /* text: primary, supporting, metadata, disabled */
+  --d-t1: #eef0f8;
+  --d-t2: #a8adc3;
+  --d-t3: #6d728a;
+  --d-t4: #474c63;
+  /* the one accent */
+  --d-accent: #9aa8ff;
+  --d-accent-soft: rgba(154, 168, 255, 0.12);
+  --d-accent-line: rgba(154, 168, 255, 0.38);
+  --d-warn: #fcd34d;
+  --d-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --d-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  min-height: 100dvh;
+  background: var(--d-bg);
+  color: var(--d-t1);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss03";
+}
+.dash ::selection {
+  background: var(--d-accent-soft);
+}
+.dash :focus-visible {
+  outline: 2px solid var(--d-accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ---- type ---- */
+.d-eyebrow {
+  font-family: var(--d-mono);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--d-t3);
+}
+.d-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.d-mono {
+  font-family: var(--d-mono);
+  font-variant-numeric: tabular-nums;
+}
+.d-h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+.d-h2 {
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+.d-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--d-t2);
+  text-wrap: pretty;
+}
+
+/* ---- surfaces ---- */
+.d-card {
+  background: var(--d-s1);
+  border: 1px solid var(--d-line);
+  border-radius: 18px;
+}
+.d-card-raised {
+  background: var(--d-s2);
+  border: 1px solid var(--d-line2);
+  border-radius: 18px;
+}
+/* machined-tray look for the one hero object on a page: outer shell + inner core with concentric radii */
+.d-bezel {
+  padding: 6px;
+  border-radius: 28px;
+  background: rgba(176, 188, 255, 0.035);
+  border: 1px solid var(--d-line2);
+}
+.d-bezel > .d-core {
+  border-radius: 22px;
+  background: var(--d-s1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+.d-hair {
+  height: 1px;
+  background: var(--d-line);
+}
+
+/* ---- controls ---- */
+.d-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 8px 0 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 180ms var(--d-ease), transform 160ms var(--d-ease), border-color 180ms var(--d-ease);
+}
+.d-btn:active {
+  transform: scale(0.97);
+}
+.d-btn .d-btn-dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  transition: transform 260ms var(--d-ease);
+}
+.d-btn:hover .d-btn-dot {
+  transform: translate(2px, -1px);
+}
+.d-btn-primary {
+  background: var(--d-t1);
+  color: #07080d;
+}
+.d-btn-primary:hover {
+  background: #fff;
+}
+.d-btn-primary .d-btn-dot {
+  background: rgba(7, 8, 13, 0.1);
+}
+.d-btn-ghost {
+  color: var(--d-t1);
+  border: 1px solid var(--d-line2);
+  background: transparent;
+}
+.d-btn-ghost:hover {
+  background: var(--d-s2);
+  border-color: var(--d-line3);
+}
+.d-btn-ghost .d-btn-dot {
+  background: var(--d-s3);
+}
+.d-btn-sm {
+  height: 36px;
+  padding: 0 6px 0 14px;
+  font-size: 13px;
+}
+.d-btn-sm .d-btn-dot {
+  width: 24px;
+  height: 24px;
+}
+.d-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.d-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-family: var(--d-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--d-t3);
+  border: 1px solid var(--d-line2);
+  white-space: nowrap;
+}
+.d-chip[data-tone="ready"] {
+  color: var(--d-accent);
+  border-color: var(--d-accent-line);
+  background: var(--d-accent-soft);
+}
+.d-chip[data-tone="pending"] {
+  color: var(--d-t2);
+}
+.d-chip[data-tone="lock"] {
+  color: var(--d-t3);
+  border-style: dashed;
+}
+
+.d-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--d-accent);
+  cursor: pointer;
+}
+.d-link svg {
+  transition: transform 220ms var(--d-ease);
+}
+.d-link:hover svg,
+a:hover > .d-link svg,
+.group:hover .d-link svg {
+  transform: translateX(3px);
+}
+
+/* ---- navigation ---- */
+.d-nav {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--d-t2);
+  transition: background-color 160ms var(--d-ease), color 160ms var(--d-ease);
+}
+.d-nav:hover {
+  background: var(--d-s2);
+  color: var(--d-t1);
+}
+.d-nav[aria-current="page"] {
+  background: var(--d-s2);
+  color: var(--d-t1);
+}
+.d-nav[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--d-accent);
+}
+.d-nav .d-idx {
+  font-family: var(--d-mono);
+  font-size: 11px;
+  color: var(--d-t4);
+}
+.d-nav[aria-current="page"] .d-idx {
+  color: var(--d-accent);
+}
+
+/* ---- loading ---- */
+.d-skel {
+  position: relative;
+  overflow: hidden;
+  background: var(--d-s2);
+  border-radius: 12px;
+}
+.d-skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(176, 188, 255, 0.06), transparent);
+  animation: d-shimmer 1.6s var(--d-ease) infinite;
+}
+@keyframes d-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* sweep of the scan line over a portrait, once */
+@keyframes d-scan {
+  from {
+    transform: translateY(-10%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(110%);
+    opacity: 0;
+  }
+}
+.d-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 28%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--d-accent-soft) 70%, rgba(154, 168, 255, 0.5) 99%, transparent 100%);
+  animation: d-scan 1.8s var(--d-ease) 0.35s 1 both;
+}
+
+.d-scroll-x {
+  scrollbar-width: none;
+}
+.d-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash *,
+  .dash *::before,
+  .dash *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .d-scanline {
+    display: none;
+  }
+}

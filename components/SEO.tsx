@@ -132,7 +132,7 @@ export const SEO: React.FC<SEOProps> = ({
 export const DashboardSEO: React.FC = () => (
   <SEO
     title="Dashboard - Facemaxify | Your Facial Analysis Hub"
-    description="Access your facial analysis dashboard. View your analysis results, guides, and personalized recommendations."
+    description="Access your facial analysis dashboard. View your analysis results, skincare, color and hairstyle reports, and personalized recommendations."
     keywords="facial analysis dashboard, beauty metrics, face analysis results"
   />
 );
@@ -145,10 +145,3 @@ export const FacialAnalysisSEO: React.FC = () => (
   />
 );
 
-export const GuidesSEO: React.FC = () => (
-  <SEO
-    title="Beauty & Facial Improvement Guides - Facemaxify"
-    description="Access comprehensive guides on facial improvement, beauty enhancement, and maximizing your appearance. Evidence-based, no-BS protocols."
-    keywords="facial improvement guides, beauty enhancement, appearance improvement, facial aesthetics"
-  />
-);

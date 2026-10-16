@@ -17,14 +17,12 @@ import { initAttribution } from "./services/attribution";
 import { trackSignedIn } from "./services/trafficSource";
 
 import { DashboardHome } from "./components/DashboardHome";
+import { DashboardLayout } from "./components/dashboard/DashboardLayout";
+import { SectionPage } from "./components/dashboard/SectionPage";
 import { FacialAnalysis } from "./components/FacialAnalysis";
-import { Guides } from "./components/Guides";
-import { GuideDetail } from "./components/GuideDetail";
 import {
   SEO,
-  DashboardSEO,
   FacialAnalysisSEO,
-  GuidesSEO,
 } from "./components/SEO";
 import { FacialShapePage } from "./pages/FacialShapePage";
 import { ToolsDirectoryPage } from "./pages/ToolsDirectoryPage";
@@ -221,20 +219,24 @@ const App: React.FC = () => {
         }
       />
 
+      {/* Dashboard hub: one shell (left rail + mobile tab bar) around the overview and the four report sections. */}
       <Route
         path="/dashboard"
         element={
           <>
             <SignedIn>
-              <>
-                <DashboardSEO />
-                <DashboardHome isPaid={isPaid} />
-              </>
+              <DashboardLayout isPaid={!!isPaid} />
             </SignedIn>
             <SignedOut><RedirectToSignIn /></SignedOut>
           </>
         }
-      />
+      >
+        <Route index element={<DashboardHome />} />
+        <Route path="facial" element={<SectionPage kind="facial" />} />
+        <Route path="skincare" element={<SectionPage kind="skincare" />} />
+        <Route path="color" element={<SectionPage kind="color" />} />
+        <Route path="hairstyle" element={<SectionPage kind="hairstyle" />} />
+      </Route>
 
       <Route
         path="/dashboard/facial-analysis"
@@ -244,37 +246,6 @@ const App: React.FC = () => {
           <>
             <FacialAnalysisSEO />
             <FacialAnalysis isPaid={isPaid} />
-          </>
-        }
-      />
-
-      <Route
-        path="/dashboard/guides"
-        element={
-          <>
-            <SignedIn>
-              <>
-                <GuidesSEO />
-                <Guides isPaid={isPaid} />
-              </>
-            </SignedIn>
-            <SignedOut><RedirectToSignIn /></SignedOut>
-          </>
-        }
-      />
-
-      <Route
-        path="/dashboard/guides/:guideId"
-        element={
-          <>
-            <SignedIn>
-              {isPaid ? (
-                <GuideDetail />
-              ) : (
-                <Navigate to="/dashboard/guides" replace />
-              )}
-            </SignedIn>
-            <SignedOut><RedirectToSignIn /></SignedOut>
           </>
         }
       />

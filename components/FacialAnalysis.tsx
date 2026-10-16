@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { useUser } from "@clerk/clerk-react";
+import React, { useRef, useState } from "react";
+import { useClerk, useUser } from "@clerk/clerk-react";
 import { useSearchParams } from "react-router-dom";
 import { LandmarkEditor } from "./LandmarkEditor";
 import { Dashboard as ResultsDashboard } from "./Dashboard";
+import { GuestResultsGate } from "./GuestResultsGate";
+import { clearGuestScan, loadGuestScan, saveGuestScan, type GuestScan } from "../services/guestScan";
 import { Navbar } from "./Navbar";
 import { Clock, Menu, X } from "lucide-react";
 import { FinalResult, FrontLandmarks, Point } from "../types";
@@ -23,8 +25,11 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
   isPaid = false,
 }) => {
   const { user } = useUser();
+  const { openSignIn } = useClerk();
   const [searchParams, setSearchParams] = useSearchParams();
   const [step, setStep] = useState(0);
+  // Guards "save the scan this visitor made before signing in" so it only ever happens once.
+  const claimingGuestScan = useRef(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -40,6 +45,8 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
     Point
   > | null>(null);
   const [frontBox, setFrontBox] = useState<any>(null);
+  // Which landmark the editor opens on (non-zero only when resuming a half-finished guest session)
+  const [editorStartIndex, setEditorStartIndex] = useState(0);
 
   // Final Result
   const [finalResult, setFinalResult] = useState<FinalResult | null>(null);
@@ -48,10 +55,96 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
   const [selectedScanId, setSelectedScanId] = useState<string | null>(null);
   const [historyData, setHistoryData] = useState<any[]>([]);
 
+  // Put a scan made before signing in back on screen (after a reload, or coming back from the sign-in page).
+  const restoreGuestScan = (pending: GuestScan) => {
+    setFrontPhotoStandardized(pending.photo);
+    setFrontLandmarks(pending.landmarks);
+    setFrontBox(pending.box);
+    if (pending.stage === "edit") {
+      setEditorStartIndex(pending.index ?? 0);
+      setStep(4); // back to refining landmarks
+    } else {
+      setFinalResult({
+        frontPhotoUrl: pending.photo,
+        frontLandmarks: pending.landmarks as FrontLandmarks,
+        gender: "unknown",
+        race: "unknown",
+      });
+      setStep(8); // all landmarks confirmed: the sign-in gate (guests) or the results (signed in)
+    }
+  };
+
+  // The visitor finished mapping every landmark as a guest and has now signed in: save that scan to their
+  // account, then show it on the normal results screen (with the usual paid/locked content). We save first so
+  // the results screen knows the scan id when it generates and stores the AI report.
+  const claimGuestScan = async (pending: GuestScan, userId: string) => {
+    const result: FinalResult = {
+      frontPhotoUrl: pending.photo,
+      frontLandmarks: pending.landmarks as FrontLandmarks,
+      gender: "unknown",
+      race: "unknown",
+    };
+    try {
+      const metrics = calculateFrontRatios(pending.landmarks as FrontLandmarks);
+      const score = metrics.length > 0 ? calculateWeightedTotalScore(metrics) : 0;
+      const history = (await getScanHistory(userId)) ?? [];
+      setHistoryData(history);
+
+      // same 20-scan limit as a normal upload; over it, they still see their results, just not saved
+      const saved = history.length < 20 ? await saveScanResult(result, score, userId) : null;
+      if (saved) {
+        clearGuestScan();
+        const fresh = (await getScanHistory(userId)) ?? [];
+        setHistoryData(fresh);
+        const scan = fresh.find((s) => s.id === saved.id);
+        if (scan) {
+          loadFromHistory(scan);
+          return;
+        }
+        setSelectedScanId(saved.id);
+      }
+    } catch (err) {
+      console.error("Could not save the scan made before sign-in:", err);
+    }
+    setFinalResult(result);
+    setStep(8);
+  };
+
   // Initialize MediaPipe  // Load history on mount
   React.useEffect(() => {
     initializeMediaPipe().catch((err) => console.warn("MediaPipe init failed:", err));
     const initHistory = async () => {
+      const pending = loadGuestScan();
+
+      if (!user?.id) {
+        // Not signed in: carry on where they left off, if they were part-way through a scan.
+        if (pending) restoreGuestScan(pending);
+        setHistoryLoaded(true);
+        return;
+      }
+
+      if (pending?.stage === "done") {
+        // Signed in with a finished guest scan waiting: that is what they came back to see.
+        if (!claimingGuestScan.current) {
+          claimingGuestScan.current = true;
+          setHistoryLoaded(false);
+          await claimGuestScan(pending, user.id);
+        }
+        setHistoryLoaded(true);
+        return;
+      }
+
+      if (pending?.stage === "edit") {
+        // Signed in part-way through refining landmarks: resume if it was just now, otherwise it is a leftover
+        // and their latest saved scan is what they want to see.
+        if (Date.now() - pending.savedAt < 2 * 3600 * 1000) {
+          restoreGuestScan(pending);
+          setHistoryLoaded(true);
+          return;
+        }
+        clearGuestScan();
+      }
+
       if (user?.id && historyData.length === 0) {
         const data = await getScanHistory(user.id);
         if (data && data.length > 0) {
@@ -220,7 +313,12 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
             }
           }
         } else {
+          // Not signed in: keep the photo and landmarks in this browser so a reload or the sign-in redirect doesn't lose them
+          if (!user?.id) {
+            saveGuestScan({ stage: "edit", photo: standardized, landmarks: finalLandmarks, box: finalBox });
+          }
           // Move to editing step
+          setEditorStartIndex(0);
           setStep(4);
         }
         setLoading(false);
@@ -246,6 +344,11 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
       };
       setFinalResult(result);
       setStep(8);
+
+      // Not signed in: park the finished scan in this browser; it is saved to their account once they sign in
+      if (!user?.id) {
+        saveGuestScan({ stage: "done", photo: frontPhotoStandardized, landmarks: editedLandmarks, box: frontBox });
+      }
 
       // AUTO-SAVE with calculated score
       if (user?.id) {
@@ -295,6 +398,8 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
   };
 
   const startNewAnalysis = () => {
+    clearGuestScan();
+    setEditorStartIndex(0);
     setFinalResult(null);
     setStep(0);
     setFrontPhotoRaw(null);
@@ -383,6 +488,11 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
                 <p className="text-slate-400 mb-10 font-medium tracking-tight">
                   Upload a front-facing photo to begin your aesthetic journey
                 </p>
+                {!user && (
+                  <p className="text-emerald-300/90 text-xs font-semibold -mt-6 mb-8">
+                    No account needed to start. Your photo stays on your device until you sign in.
+                  </p>
+                )}
 
                 {error && (
                   <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm font-medium">
@@ -422,13 +532,38 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
                   initialLandmarks={frontLandmarks}
                   faceBox={frontBox}
                   onComplete={handleFrontEditComplete}
+                  initialIndex={editorStartIndex}
+                  onProgress={
+                    user?.id
+                      ? undefined
+                      : (landmarks, index) =>
+                          saveGuestScan({
+                            stage: "edit",
+                            photo: frontPhotoStandardized,
+                            landmarks,
+                            box: frontBox,
+                            index,
+                          })
+                  }
                   title="Refine My Landmarks"
                   landmarkType="front"
                 />
               </div>
             )}
 
-          {step === 8 && finalResult && (
+          {step === 8 && finalResult && !user && (
+            <GuestResultsGate
+              photo={finalResult.frontPhotoUrl}
+              landmarks={finalResult.frontLandmarks as Record<string, Point>}
+              onSignIn={() => {
+                const redirect = `${window.location.origin}/dashboard/facial-analysis`;
+                openSignIn({ forceRedirectUrl: redirect, signUpForceRedirectUrl: redirect });
+              }}
+              onStartOver={startNewAnalysis}
+            />
+          )}
+
+          {step === 8 && finalResult && user && (
             <ResultsDashboard
               data={finalResult}
               isPaid={isPaid}

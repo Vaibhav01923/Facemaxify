@@ -239,14 +239,11 @@ const App: React.FC = () => {
       <Route
         path="/dashboard/facial-analysis"
         element={
+          // Open to signed-out visitors: they can upload and map their landmarks without an account, and are asked
+          // to sign in only to see the results (see GuestResultsGate / services/guestScan.ts).
           <>
-            <SignedIn>
-              <>
-                <FacialAnalysisSEO />
-                <FacialAnalysis isPaid={isPaid} />
-              </>
-            </SignedIn>
-            <SignedOut><RedirectToSignIn /></SignedOut>
+            <FacialAnalysisSEO />
+            <FacialAnalysis isPaid={isPaid} />
           </>
         }
       />

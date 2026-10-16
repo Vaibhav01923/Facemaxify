@@ -11,20 +11,29 @@ interface LandmarkEditorProps {
   initialLandmarks: Record<string, Point>;
   faceBox: { ymin: number, xmin: number, ymax: number, xmax: number };
   onComplete: (landmarks: Record<string, Point>) => void;
+  /** Called each time the user moves between points, with the landmarks so far and the index they are now on. */
+  onProgress?: (landmarks: Record<string, Point>, index: number) => void;
+  /** Which point to start on (used to resume a half-finished session). */
+  initialIndex?: number;
   title: string;
   landmarkType: 'front' | 'side';
 }
 
-export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({ 
-  photoUrl, 
-  initialLandmarks, 
+export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
+  photoUrl,
+  initialLandmarks,
   faceBox,
   onComplete,
+  onProgress,
+  initialIndex = 0,
   title,
   landmarkType
 }) => {
   const [landmarks, setLandmarks] = useState<Record<string, Point>>(initialLandmarks);
-  const [activeKey, setActiveKey] = useState<string>(Object.keys(initialLandmarks)[0]);
+  const [activeKey, setActiveKey] = useState<string>(() => {
+    const all = Object.keys(initialLandmarks);
+    return all[Math.min(Math.max(Math.floor(initialIndex) || 0, 0), all.length - 1)];
+  });
   const [showReference, setShowReference] = useState(false);
   
   const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
@@ -262,10 +271,17 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
     }
   };
 
+  // Landmarks including the point being placed right now (state updates are async, so build it directly).
+  const withCurrentPosition = () => {
+      const pt = getCenterPoint();
+      return pt ? { ...landmarks, [activeKey]: pt } : landmarks;
+  };
+
   const handleNext = () => {
       saveCurrentPosition();
       if (currentIndex < keys.length - 1) {
           setActiveKey(keys[currentIndex + 1]);
+          onProgress?.(withCurrentPosition(), currentIndex + 1);
       } else {
           // For the last item, we need to ensure state is updated before completing
           // But setLandmarks is async. So we calculate it directly for the onComplete callback
@@ -279,7 +295,10 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
 
   const handlePrev = () => {
       saveCurrentPosition();
-      if (currentIndex > 0) setActiveKey(keys[currentIndex - 1]);
+      if (currentIndex > 0) {
+          setActiveKey(keys[currentIndex - 1]);
+          onProgress?.(withCurrentPosition(), currentIndex - 1);
+      }
   };
 
   const progress = Math.round(((currentIndex + 1) / keys.length) * 100);

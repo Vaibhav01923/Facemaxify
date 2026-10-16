@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { getScanHistory, deleteScan, supabase } from "../services/supabase";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
+  ArrowLeft,
   Plus,
   MoreHorizontal,
   ArrowUpCircle,
@@ -67,6 +69,13 @@ export const AnalysisHistory: React.FC<AnalysisHistoryProps> = ({
     <div className="flex flex-col h-full bg-[#0A0A0F] text-slate-300 border-r border-white/5 w-80 shrink-0">
       {/* User Info Header */}
       <div className="p-4 border-b border-white/5">
+        <Link
+          to="/dashboard"
+          className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Dashboard
+        </Link>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-900 border border-white/5">

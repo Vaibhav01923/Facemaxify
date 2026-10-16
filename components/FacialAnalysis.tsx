@@ -153,7 +153,17 @@ export const FacialAnalysis: React.FC<{ isPaid?: boolean }> = ({
           // Auto-load based on URL param
           const params = new URLSearchParams(window.location.search);
           const scanId = params.get("scanId");
-          if (scanId) {
+          if (params.get("new")) {
+            // Coming from "New scan" on the dashboard: stay on the upload step, keep the history in the sidebar.
+            setSearchParams(
+              (prev) => {
+                const next = new URLSearchParams(prev);
+                next.delete("new");
+                return next;
+              },
+              { replace: true },
+            );
+          } else if (scanId) {
             const scan = data.find((s) => s.id === scanId);
             if (scan) {
               loadFromHistory(scan);

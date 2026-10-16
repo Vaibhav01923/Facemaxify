@@ -231,7 +231,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setSkincareRetry((n) => n + 1);
   };
 
-  const [styleSubTab, setStyleSubTab] = useState<"colors" | "hairstyle">("colors");
+  const [styleSubTab, setStyleSubTab] = useState<"colors" | "hairstyle">(
+    searchParams.get("style") === "hairstyle" ? "hairstyle" : "colors",
+  );
   const [colorAnalysisImage, setColorAnalysisImage] = useState<string | null>(null);
   const [loadingColorAnalysis, setLoadingColorAnalysis] = useState(false);
   const colorAnalysisAttempted = useRef(false);
@@ -513,7 +515,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-700 animate-gradient-x opacity-50"></div>
           <p className="relative z-10 text-[11px] sm:text-xs font-black text-white uppercase tracking-widest flex items-center justify-center gap-3">
             <span className="opacity-70">
-              ✨ Unlock 25+ Premium Facial Ratios & Guides
+              ✨ Unlock 25+ Premium Facial Ratios & Style Reports
             </span>
             <button
               onClick={() =>

@@ -13,6 +13,7 @@ import skincareHandler from '../api/generate-skincare.js';
 import recommendationsHandler from '../api/generate-recommendations.js';
 import colorAnalysisHandler from '../api/generate-color-analysis.js';
 import hairstyleAnalysisHandler from '../api/generate-hairstyle-analysis.js';
+import geoHandler from '../api/geo.js';
 
 // Load env vars from parent directory (.env or .env.local)
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -44,6 +45,7 @@ app.post('/api/generate-skincare', (req, res) => skincareHandler(req, res));
 app.post('/api/generate-recommendations', (req, res) => recommendationsHandler(req, res));
 app.post('/api/generate-color-analysis', (req, res) => colorAnalysisHandler(req, res));
 app.post('/api/generate-hairstyle-analysis', (req, res) => hairstyleAnalysisHandler(req, res));
+app.get('/api/geo', (req, res) => geoHandler(req, res));
 
 app.listen(port, () => {
   console.log(`Backend server listening on port ${port}`);

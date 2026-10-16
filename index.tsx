@@ -7,6 +7,7 @@ import App from "./App";
 import { captureToolArticles } from "./components/tools/ToolArticle";
 import { clerkLocalizationFor } from "./i18n/clerk";
 import { initTrafficTracking } from "./services/trafficSource";
+import { initCountryTracking } from "./services/country";
 import "./index.css";
 
 function showFatalError(msg: string) {
@@ -52,6 +53,9 @@ captureToolArticles();
 // Remember where this visitor came from (UTM tags / referrer) before the router or Clerk's sign-in redirect
 // replaces the landing URL. Shown in /stats → Traffic sources.
 initTrafficTracking();
+
+// Record which country this visitor is in (worked out on the server, no IP stored). Shown in /stats → Countries.
+void initCountryTracking();
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(

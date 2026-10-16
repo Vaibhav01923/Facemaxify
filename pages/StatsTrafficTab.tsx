@@ -54,7 +54,7 @@ const SOURCE_NAMES: Record<string, string> = {
 
 const sourceName = (s: string) => SOURCE_NAMES[s] ?? s;
 
-function percent(part: number, whole: number): string {
+export function percent(part: number, whole: number): string {
   return whole > 0 ? `${Math.round((part / whole) * 100)}%` : "–";
 }
 
@@ -64,7 +64,7 @@ function tagged(path: string, source: string, campaign: string, medium = "social
   return `${SITE}${path}?${q.toString()}`;
 }
 
-const Tile: React.FC<{ title: string; value: string | number; note: string; accent?: boolean }> = ({ title, value, note, accent }) => (
+export const Tile: React.FC<{ title: string; value: string | number; note: string; accent?: boolean }> = ({ title, value, note, accent }) => (
   <div className={`rounded-2xl border p-4 ${accent ? "bg-red-500/10 border-red-500/30" : "bg-slate-900/60 border-white/10"}`}>
     <p className="text-xs uppercase tracking-wider text-slate-400">{title}</p>
     <p className="text-3xl font-black mt-1 tabular-nums">{value}</p>

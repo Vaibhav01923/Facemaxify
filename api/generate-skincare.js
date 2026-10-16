@@ -1,6 +1,86 @@
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateJson, toImageBlock } from "./_lib/claude.js";
 import { languageName, reportLanguage } from "./_lib/language.js";
+
+const stringList = { type: "array", items: { type: "string" } };
+const routineSteps = {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
+      step: { type: "string" },
+      product_type: { type: "string" },
+      reason: { type: "string" },
+    },
+    required: ["step", "product_type", "reason"],
+    additionalProperties: false,
+  },
+};
+
+// skin_type is a plain string (not an enum) because Spanish / Japanese reports translate it.
+const SKINCARE_SCHEMA = {
+  type: "object",
+  properties: {
+    analysis: {
+      type: "object",
+      properties: {
+        skin_type: { type: "string" },
+        concerns: stringList,
+        severity_score: { type: "integer" },
+        summary: { type: "string" },
+      },
+      required: ["skin_type", "concerns", "severity_score", "summary"],
+      additionalProperties: false,
+    },
+    improvements: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { area: { type: "string" }, advice: { type: "string" } },
+        required: ["area", "advice"],
+        additionalProperties: false,
+      },
+    },
+    routine: {
+      type: "object",
+      properties: { morning: routineSteps, evening: routineSteps, weekly: stringList },
+      required: ["morning", "evening", "weekly"],
+      additionalProperties: false,
+    },
+    lifestyle_tips: stringList,
+  },
+  required: ["analysis", "improvements", "routine", "lifestyle_tips"],
+  additionalProperties: false,
+};
+
+const buildPrompt = (language) => `You are an expert Dermatologist and Esthetician. Analyze the user's skin from the provided photo and give a detailed, actionable skin report.
+
+Return ONLY a raw JSON object matching this exact schema (no markdown, no code blocks, no text before or after):
+{
+  "analysis": {
+    "skin_type": "Oily | Dry | Combination | Normal | Sensitive",
+    "concerns": ["list of observed skin concerns"],
+    "severity_score": 1,
+    "summary": "2-3 sentence plain-English assessment of their current skin condition and what to focus on"
+  },
+  "improvements": [
+    { "area": "specific concern or goal", "advice": "concrete actionable step to improve it" }
+  ],
+  "routine": {
+    "morning": [{ "step": "Step name", "product_type": "Product type", "reason": "Why this helps" }],
+    "evening": [{ "step": "Step name", "product_type": "Product type", "reason": "Why this helps" }],
+    "weekly": ["Weekly treatment 1", "Weekly treatment 2"]
+  },
+  "lifestyle_tips": ["Tip 1", "Tip 2"]
+}
+
+severity_score is a whole number from 1 (clear, healthy skin) to 10 (severe concerns).${
+  language
+    ? `
+
+Write every text value (skin_type, concerns, summary, advice, steps, product types, reasons and tips) in ${languageName(language)}. Keep the JSON keys and the numeric severity_score exactly as in the schema.`
+    : ""
+}`;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -20,66 +100,12 @@ export default async function handler(req, res) {
     const { currentPhotoUrl } = req.body;
     // Visitors who came through the Spanish / Japanese pages get the report text in their language.
     const language = reportLanguage(req.body.language);
+    if (!currentPhotoUrl) return res.status(400).json({ error: 'currentPhotoUrl is required' });
 
-    if (!process.env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY is not defined');
+    const image = await toImageBlock(currentPhotoUrl);
+    const result = await generateJson({ prompt: buildPrompt(language), schema: SKINCARE_SCHEMA, image });
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-    const processImage = async (url) => {
-      try {
-        let mimeType = 'image/jpeg', data = '';
-        if (url.startsWith('data:')) {
-          const matches = url.match(/^data:(.+);base64,(.+)$/);
-          if (matches) { mimeType = matches[1]; data = matches[2]; }
-        } else {
-          const response = await fetch(url);
-          const arrayBuffer = await response.arrayBuffer();
-          data = Buffer.from(arrayBuffer).toString('base64');
-        }
-        return { inlineData: { data, mimeType } };
-      } catch { return null; }
-    };
-
-    const prompt = `You are an expert Dermatologist and Esthetician. Analyze the user's skin from the provided photo and give a detailed, actionable skin report.
-
-Return ONLY a raw JSON object matching this exact schema (no markdown, no code blocks):
-{
-  "analysis": {
-    "skin_type": "Oily | Dry | Combination | Normal | Sensitive",
-    "concerns": ["list of observed skin concerns"],
-    "severity_score": 1,
-    "summary": "2-3 sentence plain-English assessment of their current skin condition and what to focus on"
-  },
-  "improvements": [
-    { "area": "specific concern or goal", "advice": "concrete actionable step to improve it" }
-  ],
-  "routine": {
-    "morning": [{ "step": "Step name", "product_type": "Product type", "reason": "Why this helps" }],
-    "evening": [{ "step": "Step name", "product_type": "Product type", "reason": "Why this helps" }],
-    "weekly": ["Weekly treatment 1", "Weekly treatment 2"]
-  },
-  "lifestyle_tips": ["Tip 1", "Tip 2"]
-}${
-      language
-        ? `
-
-Write every text value (skin_type, concerns, summary, advice, steps, product types, reasons and tips) in ${languageName(language)}. Keep the JSON keys and the numeric severity_score exactly as in the schema.`
-        : ""
-    }`;
-
-    const parts = [prompt];
-    const imagePart = await processImage(currentPhotoUrl);
-    if (imagePart) parts.push(imagePart);
-
-    const result = await model.generateContent(parts);
-    let text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-
-    try {
-      res.status(200).json({ result: JSON.parse(text) });
-    } catch {
-      res.status(500).json({ error: 'Failed to parse AI response' });
-    }
+    res.status(200).json({ result });
   } catch (error) {
     console.error('Skincare API Error:', error);
     res.status(500).json({ error: 'Failed to generate analysis: ' + error.message });

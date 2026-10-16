@@ -1,5 +1,41 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateJson, toImageBlock } from "./_lib/claude.js";
 import { languageName, reportLanguage } from "./_lib/language.js";
+
+const assessmentAdvice = {
+  type: "object",
+  properties: { assessment: { type: "string" }, advice: { type: "string" } },
+  required: ["assessment", "advice"],
+  additionalProperties: false,
+};
+
+const RECOMMENDATIONS_SCHEMA = {
+  type: "object",
+  properties: {
+    executive_summary: { type: "string" },
+    softmax: {
+      type: "object",
+      properties: {
+        body_fat: assessmentAdvice,
+        skin_grooming: assessmentAdvice,
+        style: assessmentAdvice,
+      },
+      required: ["body_fat", "skin_grooming", "style"],
+      additionalProperties: false,
+    },
+    hardmax: {
+      type: "object",
+      properties: {
+        bone_structure: { type: "string" },
+        balance: { type: "string" },
+        recommendation: { type: "string" },
+      },
+      required: ["bone_structure", "balance", "recommendation"],
+      additionalProperties: false,
+    },
+  },
+  required: ["executive_summary", "softmax", "hardmax"],
+  additionalProperties: false,
+};
 
 export default async function handler(req, res) {
   // CORS configuration
@@ -45,16 +81,9 @@ export default async function handler(req, res) {
     // Visitors who came through the Spanish / Japanese pages get the report text in their language.
     const language = reportLanguage(req.body.language);
 
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not defined");
+    if (!Array.isArray(metrics)) {
+      return res.status(400).json({ error: "metrics is required" });
     }
-
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    // Use gemini-3-flash-preview as requested
-    const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash-preview",
-      generationConfig: { responseMimeType: "application/json" },
-    });
 
     // Prepare inputs
     const metricsSummary = metrics
@@ -64,32 +93,11 @@ export default async function handler(req, res) {
       )
       .join("\n");
 
-    let imagePart = null;
+    // The photo is optional for this report: fall back to metrics only if it can't be used.
+    let image = null;
     if (frontPhotoUrl) {
       try {
-        // Check if it's base64 or URL
-        let mimeType = "image/jpeg";
-        let data = "";
-
-        if (frontPhotoUrl.startsWith("data:")) {
-          const matches = frontPhotoUrl.match(/^data:(.+);base64,(.+)$/);
-          if (matches) {
-            mimeType = matches[1];
-            data = matches[2];
-          }
-        } else {
-          // Fetch URL and convert to base64
-          const response = await fetch(frontPhotoUrl);
-          const arrayBuffer = await response.arrayBuffer();
-          data = Buffer.from(arrayBuffer).toString("base64");
-        }
-
-        imagePart = {
-          inlineData: {
-            data: data,
-            mimeType: mimeType,
-          },
-        };
+        image = await toImageBlock(frontPhotoUrl);
       } catch (e) {
         console.error("Failed to process image:", e);
       }
@@ -139,22 +147,15 @@ export default async function handler(req, res) {
     **CRITICAL:** Return ONLY valid JSON matching the exact schema above. No breakdown, no preamble, do NOT wrap in markdown code blocks.
     `;
 
-    const parts = [prompt];
-    if (imagePart) parts.push(imagePart);
+    const analysis = await generateJson({
+      prompt,
+      schema: RECOMMENDATIONS_SCHEMA,
+      image,
+    });
 
-    const result = await model.generateContent(parts);
-    const response = await result.response;
-    let text = response.text();
-
-    // Clean up potential markdown code blocks if the model ignores instructions
-    text = text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
-
-    res.status(200).json({ analysis: JSON.parse(text) });
+    res.status(200).json({ analysis });
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    console.error("Claude API Error:", error);
     res
       .status(500)
       .json({ error: "Failed to generate analysis: " + error.message });

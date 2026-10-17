@@ -29,7 +29,7 @@ export const SkincareReport: React.FC<{ scan: Scan }> = ({ scan }) => {
   const severity = Math.max(0, Math.min(10, Number(a.severity_score) || 0));
 
   return (
-    <div className="grid gap-5 lg:grid-cols-12">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
       <div className="lg:col-span-8">
         <div className="d-card overflow-hidden">
           <Locked locked={!isPaid} meta={meta} note="Your skin type, the concerns that matter, and a morning and night routine." minHeight={460}>
@@ -37,7 +37,7 @@ export const SkincareReport: React.FC<{ scan: Scan }> = ({ scan }) => {
               <div className="space-y-4 p-6">
                 <GenerationNotice what="skincare report" />
                 <div className="d-skel h-32" />
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="d-skel h-48" />
                   <div className="d-skel h-48" />
                 </div>
@@ -121,7 +121,7 @@ const Results: React.FC<{ data: any }> = ({ data }) => (
     {data.improvements?.length > 0 && (
       <section className="p-6 sm:p-7">
         <p className="d-eyebrow mb-4">Key improvements</p>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {data.improvements.map((item: any, i: number) => (
             <div key={i} className="rounded-xl border border-[var(--d-line)] bg-[var(--d-s2)] p-4">
               <p className="text-[14px] font-medium">{item.area}</p>
@@ -133,7 +133,7 @@ const Results: React.FC<{ data: any }> = ({ data }) => (
     )}
 
     {data.routine && (
-      <section className="grid gap-8 p-6 sm:p-7 md:grid-cols-2">
+      <section className="grid grid-cols-1 gap-8 p-6 sm:p-7 md:grid-cols-2">
         <div>
           <p className="d-eyebrow mb-5">Morning routine</p>
           <ol className="space-y-5">{data.routine.morning?.map((s: any, i: number) => <Step key={i} n={i + 1} step={s} />)}</ol>

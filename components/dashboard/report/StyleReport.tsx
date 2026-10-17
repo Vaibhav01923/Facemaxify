@@ -35,7 +35,7 @@ export const StyleReport: React.FC<{ kind: "color" | "hairstyle"; scan: Scan }> 
   const frame = color ? "aspect-[3/2]" : "aspect-[4/5]";
 
   return (
-    <div className="grid gap-5 lg:grid-cols-12">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
       <div className="lg:col-span-8">
         <div className="d-bezel h-full">
           <div className="d-core relative h-full">

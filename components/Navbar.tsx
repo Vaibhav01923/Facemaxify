@@ -4,6 +4,15 @@ import { LanguageSwitcher } from "./i18n/LanguageSwitcher";
 
 export const Navbar: React.FC = () => {
   const { isSignedIn } = useUser();
+  // The links above are hidden below the md breakpoint, so phones get this menu instead.
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800 shadow-2xl shadow-black/20">
@@ -23,7 +32,7 @@ export const Navbar: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center ml-10 space-x-8">
             <div className="relative group">
-              <button className="text-slate-300 hover:text-white font-medium flex items-center gap-1 transition-colors">
+              <button className="py-3 text-slate-300 hover:text-white font-medium flex items-center gap-1 transition-colors">
                 Free Tools
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -109,17 +118,17 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            <a href="/blog" className="text-slate-300 hover:text-white font-medium transition-colors">
+            <a href="/blog" className="py-3 text-slate-300 hover:text-white font-medium transition-colors">
               Blog
             </a>
 
-            <a href="/methodology" className="text-slate-300 hover:text-white font-medium transition-colors">
+            <a href="/methodology" className="py-3 text-slate-300 hover:text-white font-medium transition-colors">
               How it works
             </a>
           </div>
 
           {/* Right Side - Auth */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <LanguageSwitcher />
             {isSignedIn ? (
               <UserButton
@@ -139,9 +148,58 @@ export const Navbar: React.FC = () => {
                 </button>
               </SignInButton>
             )}
+
+            {/* Phone menu button */}
+            <button
+              type="button"
+              className="md:hidden -mr-2 inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+                {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+              </svg>
+            </button>
           </div>
         </div>
       </div>
+
+      {menuOpen && (
+        <div id="mobile-menu" className="md:hidden absolute inset-x-0 top-full border-b border-slate-800 bg-slate-950 shadow-2xl shadow-black/40">
+          <div className="mx-auto max-w-7xl space-y-1 px-4 py-3">
+            <div className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Popular tools</div>
+            <a href="/facial-harmony-analyzer" className="flex min-h-12 items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-slate-800">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-lg">🎯</span>
+              <span>
+                <span className="block font-medium text-white">Facial Harmony Analyzer</span>
+                <span className="block text-xs text-slate-400">Broad keyword page into full report</span>
+              </span>
+            </a>
+            <a href="/tools/facial-shape" className="flex min-h-12 items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-slate-800">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-lg">📐</span>
+              <span>
+                <span className="block font-medium text-white">Face Shape Detector</span>
+                <span className="block text-xs text-slate-400">Identify your face shape instantly</span>
+              </span>
+            </a>
+            <a href="/tools" className="flex min-h-12 items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-indigo-400 transition-colors hover:bg-indigo-500/10 hover:text-indigo-300">
+              View All Tools and Pages
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <div className="my-2 h-px bg-slate-800" />
+
+            <a href="/blog" className="flex min-h-12 items-center rounded-xl px-3 font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-white">
+              Blog
+            </a>
+            <a href="/methodology" className="flex min-h-12 items-center rounded-xl px-3 font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-white">
+              How it works
+            </a>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

@@ -110,7 +110,7 @@ export const BlogPostPage: React.FC = () => {
 
         <main className="px-4 py-14 sm:px-6 lg:px-8">
           <article className="mx-auto max-w-3xl">
-            <Link to="/blog" className="text-sm text-slate-500 hover:text-slate-300 mb-6 inline-block">
+            <Link to="/blog" className="text-sm text-slate-500 hover:text-slate-300 -mt-2 mb-4 py-2 inline-block">
               ← Back to blog
             </Link>
 

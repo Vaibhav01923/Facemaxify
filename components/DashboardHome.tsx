@@ -75,11 +75,11 @@ const Filled: React.FC = () => {
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-5 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
         {/* ---------- hero: latest scan ---------- */}
         <Reveal className="lg:col-span-8">
           <div className="d-bezel h-full">
-            <div className="d-core grid h-full md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+            <div className="d-core grid h-full grid-cols-1 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
               <ScanPortrait src={scan.front_photo_url} landmarks={scan.front_landmarks} aspect="aspect-[5/4] md:aspect-auto" className="md:h-full md:min-h-[360px]" />
               <div className="flex flex-col p-6 sm:p-8">
                 <div className="flex items-center justify-between">
@@ -193,7 +193,7 @@ const Filled: React.FC = () => {
             </div>
           </div>
         </Reveal>
-        <div className="grid gap-5 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
           {SECTIONS.map((s, i) => (
             <Reveal key={s.key} delay={(i % 2) * 0.06} className={i === 0 || i === 3 ? "lg:col-span-7" : "lg:col-span-5"}>
               <SectionCard section={s} scan={scan} isPaid={isPaid} />
@@ -203,7 +203,7 @@ const Filled: React.FC = () => {
       </div>
 
       {/* ---------- progress + history ---------- */}
-      <div className="grid gap-5 pt-6 sm:pt-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-5 pt-6 sm:pt-8 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
           <ProgressCard scans={scans} isPaid={isPaid} />
         </Reveal>
@@ -487,7 +487,7 @@ const FirstScan: React.FC = () => {
     <div className="space-y-5">
       <Reveal>
         <div className="d-bezel">
-          <div className="d-core grid md:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]">
+          <div className="d-core grid grid-cols-1 md:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]">
             <div className="flex flex-col p-7 sm:p-10">
               <span className="d-eyebrow">Start here</span>
               <h2 className="d-h1 mt-5 max-w-[16ch]">Take your first scan</h2>
@@ -531,7 +531,7 @@ const FirstScan: React.FC = () => {
           <p className="d-eyebrow mb-3">Reports</p>
           <h2 className="d-h2 mb-5">What you'll unlock from one photo</h2>
         </Reveal>
-        <div className="grid gap-5 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
           {SECTIONS.map((s, i) => (
             <Reveal key={s.key} delay={(i % 2) * 0.06} className={i === 0 || i === 3 ? "lg:col-span-7" : "lg:col-span-5"}>
               <SectionCard section={s} scan={null} isPaid={false} />
@@ -550,11 +550,11 @@ const OverviewSkeleton: React.FC = () => (
     <div className="d-skel mb-4 h-3 w-24" />
     <div className="d-skel mb-3 h-10 w-80 max-w-full" />
     <div className="d-skel mb-10 h-4 w-64 max-w-full" />
-    <div className="grid gap-5 lg:grid-cols-12">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
       <div className="d-skel h-[420px] lg:col-span-8" />
       <div className="d-skel h-[420px] lg:col-span-4" />
     </div>
-    <div className="mt-8 grid gap-5 lg:grid-cols-12">
+    <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-12">
       <div className="d-skel h-[360px] lg:col-span-7" />
       <div className="d-skel h-[360px] lg:col-span-5" />
     </div>

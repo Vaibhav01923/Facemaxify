@@ -240,11 +240,11 @@ export const ScanFlow: React.FC = () => {
         <>
           <header className="relative z-10 mx-auto flex h-16 max-w-5xl items-center justify-between px-5">
             {signedIn ? (
-              <Link to="/dashboard" className="inline-flex items-center gap-2 text-[13px] font-medium text-[var(--d-t2)] transition-colors hover:text-[var(--d-t1)]">
+              <Link to="/dashboard" className="inline-flex items-center gap-2 py-2.5 text-[13px] font-medium text-[var(--d-t2)] transition-colors hover:text-[var(--d-t1)]">
                 <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> Dashboard
               </Link>
             ) : (
-              <a href="/" className="flex items-center gap-2.5">
+              <a href="/" className="flex items-center gap-2.5 py-2.5">
                 <img src="/favicon.png" alt="" className="h-6 w-6 rounded-md" />
                 <span className="text-[16px] font-semibold tracking-[-0.03em]">Facemaxify</span>
               </a>
@@ -292,7 +292,7 @@ export const ScanFlow: React.FC = () => {
               }
             />
           ) : (
-            <main className="relative z-10 mx-auto grid max-w-5xl items-center gap-10 px-5 pb-16 pt-6 lg:min-h-[calc(100dvh-64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,430px)] lg:gap-16">
+            <main className="relative z-10 mx-auto grid max-w-5xl grid-cols-1 items-center gap-10 px-5 pb-16 pt-6 lg:min-h-[calc(100dvh-64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,430px)] lg:gap-16">
               <div>
                 <p className="d-eyebrow mb-5">Facial analysis</p>
                 <h1 className="d-h1 max-w-[18ch]">Upload a front-facing photo</h1>

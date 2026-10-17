@@ -181,7 +181,7 @@
   padding: 0 8px;
   border-radius: 6px;
   font-family: var(--d-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--d-t3);
@@ -209,6 +209,15 @@
   font-weight: 500;
   color: var(--d-accent);
   cursor: pointer;
+}
+/* the visible link stays small; the tappable area grows past it so it is easy to hit on a phone */
+.d-link {
+  position: relative;
+}
+.d-link::after {
+  content: "";
+  position: absolute;
+  inset: -10px -6px;
 }
 .d-link svg {
   transition: transform 220ms var(--d-ease);

@@ -57,7 +57,7 @@ export const CaliperRule: React.FC<{
         })}
       </div>
       {/* scale labels */}
-      <div className="d-mono absolute inset-x-0 bottom-0 flex justify-between text-[10px] text-[var(--d-t4)]">
+      <div className="d-mono absolute inset-x-0 bottom-0 flex justify-between text-[11px] text-[var(--d-t4)]">
         <span>0</span>
         <span style={{ marginLeft: average < 50 ? 0 : undefined }}>{average}</span>
         <span>100</span>
@@ -65,7 +65,7 @@ export const CaliperRule: React.FC<{
       {/* previous scan */}
       {ghost != null && !masked && width > 0 && (
         <div className="absolute top-3 h-6 w-px border-l border-dashed border-[var(--d-t3)]" style={{ transform: `translateX(${pos(ghost)}px)` }}>
-          <span className="d-mono absolute -top-3 -translate-x-1/2 text-[9px] uppercase tracking-wider text-[var(--d-t3)]">prev</span>
+          <span className="d-mono absolute -top-3 -translate-x-1/2 text-[10px] uppercase tracking-wider text-[var(--d-t3)]">prev</span>
         </div>
       )}
       {/* current value marker */}

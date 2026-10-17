@@ -23,7 +23,7 @@ export const LocalizedNavbar: React.FC<{ locale: Locale }> = ({ locale }) => {
           <div className="flex items-center gap-1 sm:gap-6">
             <a
               href={hubPath(locale)}
-              className="hidden sm:inline text-slate-300 hover:text-white font-medium text-sm transition-colors"
+              className="hidden sm:inline py-3 text-slate-300 hover:text-white font-medium text-sm transition-colors"
             >
               {ui.navHub}
             </a>

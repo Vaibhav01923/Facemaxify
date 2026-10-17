@@ -95,7 +95,7 @@ export const FacialReport: React.FC<{ scan: Scan }> = ({ scan }) => {
   };
 
   return (
-    <div className="grid gap-5 lg:grid-cols-12">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
       {/* ---------------- score ---------------- */}
       <div className="lg:col-span-7 lg:col-start-6 lg:row-start-1">
         <ScoreCard score={score} paid={isPaid} sitePercentile={sitePercentile} count={metrics.length} />
@@ -381,7 +381,7 @@ const Coach: React.FC<{ analysis: any; loading: boolean; failed: boolean; retry:
       <div className="space-y-4 p-6">
         <GenerationNotice what="overview analysis" />
         <div className="d-skel h-28" />
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="d-skel h-52" />
           <div className="d-skel h-52" />
         </div>
@@ -406,7 +406,7 @@ const Coach: React.FC<{ analysis: any; loading: boolean; failed: boolean; retry:
       </div>
 
       {!legacy && (
-        <div className="grid gap-5 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
           <section className="space-y-3" aria-label="Softmax protocol">
             <div>
               <h3 className="text-[16px] font-semibold tracking-[-0.02em]">Softmax</h3>

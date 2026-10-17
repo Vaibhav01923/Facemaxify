@@ -47,7 +47,7 @@ export function renderPostPage(post) {
   const body = renderToStaticMarkup(compiler(postBody(post.content), markdownOptions));
   return pageShell(
     `<article class="mx-auto max-w-3xl">` +
-      `<a href="/blog" class="text-sm text-slate-500 hover:text-slate-300 mb-6 inline-block">← Back to blog</a>` +
+      `<a href="/blog" class="text-sm text-slate-500 hover:text-slate-300 -mt-2 mb-4 py-2 inline-block">← Back to blog</a>` +
       (tags ? `<div class="flex flex-wrap gap-2 mb-4">${tags}</div>` : "") +
       `<h1 class="text-3xl font-black tracking-tight text-white sm:text-5xl mb-6">${escapeHtml(post.title)}</h1>` +
       cover +

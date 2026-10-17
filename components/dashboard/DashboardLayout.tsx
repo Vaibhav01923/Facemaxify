@@ -195,16 +195,16 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
             </div>
 
             <div className="flex gap-4 px-2.5 text-[12px] text-[var(--d-t3)]">
-              <a href="/tools" className="transition-colors hover:text-[var(--d-t1)]">Free tools</a>
-              <a href="/blog" className="transition-colors hover:text-[var(--d-t1)]">Blog</a>
-              <a href="/methodology" className="transition-colors hover:text-[var(--d-t1)]">How it works</a>
+              <a href="/tools" className="-my-2 py-2 transition-colors hover:text-[var(--d-t1)]">Free tools</a>
+              <a href="/blog" className="-my-2 py-2 transition-colors hover:text-[var(--d-t1)]">Blog</a>
+              <a href="/methodology" className="-my-2 py-2 transition-colors hover:text-[var(--d-t1)]">How it works</a>
             </div>
           </div>
         </aside>
 
         {/* ---------------- mobile top bar ---------------- */}
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--d-line)] bg-[rgba(7,8,13,0.82)] px-5 backdrop-blur-xl lg:hidden">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
+          <Link to="/dashboard" className="flex items-center gap-2.5 py-2.5">
             <img src="/favicon.png" alt="" className="h-6 w-6 rounded-md" />
             <span className="text-[16px] font-semibold tracking-[-0.03em]">Facemaxify</span>
           </Link>

@@ -83,7 +83,7 @@ export const GuestResultsGate: React.FC<GuestResultsGateProps> = ({ photo, landm
         </div>
       </div>
 
-      <button type="button" onClick={onStartOver} className="mt-7 text-[13px] text-[var(--d-t3)] underline underline-offset-4 transition-colors hover:text-[var(--d-t1)]">
+      <button type="button" onClick={onStartOver} className="mt-4 py-3 text-[13px] text-[var(--d-t3)] underline underline-offset-4 transition-colors hover:text-[var(--d-t1)]">
         Start over with a different photo
       </button>
     </div>

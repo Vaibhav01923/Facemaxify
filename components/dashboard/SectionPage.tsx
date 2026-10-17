@@ -20,7 +20,7 @@ export const SectionPage: React.FC<{ kind: SectionKey }> = ({ kind }) => {
         <div className="d-skel mb-4 h-3 w-28" />
         <div className="d-skel mb-4 h-10 w-80 max-w-full" />
         <div className="d-skel mb-10 h-4 w-96 max-w-full" />
-        <div className="grid gap-5 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
           <div className="d-skel h-[460px] lg:col-span-8" />
           <div className="d-skel h-[460px] lg:col-span-4" />
         </div>
@@ -97,7 +97,7 @@ const ScanPicker: React.FC<{ scans: Scan[]; selectedId?: string; onPick: (id: st
 const OtherReports: React.FC<{ current: SectionKey; scan: Scan | null; isPaid: boolean }> = ({ current, scan, isPaid }) => (
   <Reveal className="mt-10">
     <p className="d-eyebrow mb-4">Other reports</p>
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       {SECTIONS.filter((s) => s.key !== current).map((s) => {
         const st = statusOf(s, scan, isPaid);
         return (

@@ -12,17 +12,12 @@ export interface SectionMeta {
   blurb: string;
   /** Free accounts can open the report but not read all of it. */
   access: "partial" | "pro";
-  /** Query string that opens this report inside the results screen for a given scan. */
-  deepLink: (scanId?: string) => string;
   /** Bullets for "what's inside" on the section page. */
   inside: string[];
   /** What the photo should look like for the best result. */
   photoTips: string[];
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
 }
-
-const results = (tab: string, extra = "") => (scanId?: string) =>
-  `/dashboard/facial-analysis?${scanId ? `scanId=${scanId}&` : ""}tab=${tab}${extra}`;
 
 export const SECTIONS: SectionMeta[] = [
   {
@@ -33,7 +28,6 @@ export const SECTIONS: SectionMeta[] = [
     route: "/dashboard/facial",
     blurb: "Your face measured against 25+ ratios, from canthal tilt to jaw angle, so you can see which features lead and which lag.",
     access: "partial",
-    deepLink: results("front"),
     inside: [
       "Overall harmony score and where it sits among other faces",
       "Each ratio against its ideal range, drawn on your photo",
@@ -51,14 +45,13 @@ export const SECTIONS: SectionMeta[] = [
     route: "/dashboard/skincare",
     blurb: "Your skin type and main concerns from a photo, with a morning and night routine built around them.",
     access: "pro",
-    deepLink: results("skincare"),
     inside: [
       "Skin type and a severity score",
       "The concerns that matter most, in order",
       "Morning and night routine, step by step",
-      "Check-ins over time to see what changed",
+      "Saved to your scan, so you only wait once",
     ],
-    photoTips: ["Bare skin, no makeup", "Soft daylight from the front", "No beauty filter or smoothing", "Same lighting each check-in"],
+    photoTips: ["Bare skin, no makeup", "Soft daylight from the front", "No beauty filter or smoothing", "The same lighting each time you scan"],
     icon: Droplet,
   },
   {
@@ -69,7 +62,6 @@ export const SECTIONS: SectionMeta[] = [
     route: "/dashboard/color",
     blurb: "Your undertone and seasonal palette, the colors that work on you, the neutrals, and what to avoid wearing.",
     access: "pro",
-    deepLink: results("style", "&style=colors"),
     inside: [
       "Skin undertone and seasonal palette",
       "Best colors and best neutrals as swatches",
@@ -87,7 +79,6 @@ export const SECTIONS: SectionMeta[] = [
     route: "/dashboard/hairstyle",
     blurb: "Cuts and lengths compared on your own face: what suits you, what is fine, and what is less flattering.",
     access: "pro",
-    deepLink: results("style", "&style=hairstyle"),
     inside: [
       "Four or five recommended styles on your portrait",
       "Styles that work but don't flatter",

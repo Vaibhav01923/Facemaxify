@@ -24,6 +24,10 @@ export interface Scan {
 
 export type SectionKey = "facial" | "skincare" | "color" | "hairstyle";
 
+/** The report pages pick their scan from `?scan=<id>` (the newest scan when it is absent). */
+export const SCAN_PARAM = "scan";
+export const withScan = (path: string, scanId?: string | null) => (scanId ? `${path}?${SCAN_PARAM}=${scanId}` : path);
+
 /** The three ratios free accounts are allowed to see (mirrors ALLOWED_FREE_METRICS in Dashboard.tsx). */
 export const FREE_METRIC_NAMES = [
   "Jaw Frontal Angle",

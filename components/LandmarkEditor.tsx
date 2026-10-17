@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from './Button';
+import './dashboard/dashboard.css';
 import { Point } from '../types';
 import { FRONT_LANDMARK_DEFINITIONS, SIDE_LANDMARK_DEFINITIONS, LANDMARK_REFERENCE_IMAGES } from '../constants';
 import { ReferenceImageViewer } from './ReferenceImageViewer';
@@ -15,6 +15,8 @@ interface LandmarkEditorProps {
   onProgress?: (landmarks: Record<string, Point>, index: number) => void;
   /** Which point to start on (used to resume a half-finished session). */
   initialIndex?: number;
+  /** When given, the header shows an "Exit" button that calls it. */
+  onExit?: () => void;
   title: string;
   landmarkType: 'front' | 'side';
 }
@@ -26,6 +28,7 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   onComplete,
   onProgress,
   initialIndex = 0,
+  onExit,
   title,
   landmarkType
 }) => {
@@ -337,76 +340,79 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
       return (
         <button 
            {...getHandlers()}
-           className="w-12 h-12 bg-white/90 backdrop-blur shadow-lg rounded-xl flex items-center justify-center active:bg-blue-50 active:scale-95 transition-all border border-slate-200 touch-none select-none"
+           className="flex h-12 w-12 touch-none select-none items-center justify-center rounded-xl border border-[var(--d-line2)] bg-[rgba(17,20,29,0.88)] text-[var(--d-t1)] backdrop-blur transition-[background-color,transform] duration-150 hover:bg-[var(--d-s3)] active:scale-95"
            aria-label={label}
            style={{ touchAction: 'none' }} // Force browser to ignore native gestures
         >
-           <svg className={`w-6 h-6 text-slate-700 ${rotation}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+           <svg className={`h-5 w-5 ${rotation}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M5 15l7-7 7 7" />
            </svg>
         </button>
       );
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 text-white overflow-hidden select-none">
+    <div className="dash flex h-full flex-col overflow-hidden select-none !min-h-0">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-b from-slate-900 to-slate-900/95 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between z-50">
-          <div className="flex items-center gap-3">
-            <div>
-              <h2 className="text-xl font-bold text-white">{title}</h2>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-slate-400">
-                  Landmark {currentIndex + 1} of {keys.length}: {currentDef.name}
-                </p>
-                {/* Info Icon Button */}
-                {LANDMARK_REFERENCE_IMAGES[activeKey] && (
-                  <button
-                    onClick={() => setShowReference(true)}
-                    className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-full transition-colors group ml-2"
-                    aria-label="View reference image"
-                  >
-                    <Info className="w-3.5 h-3.5 text-indigo-400" />
-                    <span className="text-xs font-medium text-indigo-300 group-hover:text-indigo-200">See Example</span>
-                  </button>
-                )}
+        <div className="z-50 flex items-center justify-between gap-4 border-b border-[var(--d-line)] bg-[rgba(7,8,13,0.92)] px-5 py-3.5 backdrop-blur-xl sm:px-6">
+          <div className="min-w-0">
+            <p className="d-eyebrow">{title}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h2 className="truncate text-[17px] font-semibold tracking-[-0.02em]">{currentDef.name}</h2>
+              <span className="d-mono text-[12px] text-[var(--d-t3)]">
+                {currentIndex + 1} / {keys.length}
+              </span>
+              {/* Info Icon Button */}
+              {LANDMARK_REFERENCE_IMAGES[activeKey] && (
+                <button
+                  onClick={() => setShowReference(true)}
+                  className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--d-accent-line)] bg-[var(--d-accent-soft)] px-2.5 text-[12px] font-medium text-[var(--d-accent)] transition-colors hover:border-[var(--d-accent)]"
+                  aria-label="View reference image"
+                >
+                  <Info className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  See example
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-4">
+            <div className="hidden flex-col items-end sm:flex">
+              <span className="d-mono mb-1.5 text-[11px] text-[var(--d-accent)]">{progress}%</span>
+              <div className="h-[3px] w-32 overflow-hidden rounded-full bg-[var(--d-s3)]">
+                <div className="h-full rounded-full bg-[var(--d-accent)] transition-[width] duration-300 ease-out" style={{ width: `${progress}%` }} />
               </div>
             </div>
+            {onExit && (
+              <button onClick={onExit} className="d-btn d-btn-ghost d-btn-sm !px-3.5 text-[var(--d-t2)]">
+                Exit
+              </button>
+            )}
           </div>
-          <div className="flex flex-col items-end">
-            <span className="text-xs font-bold text-blue-400 mb-1">{progress}%</span>
-            <div className="w-32 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-blue-500 transition-all duration-300 ease-out"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-         </div>
+        </div>
 
       {/* Control Bar */}
-      <div className="flex-none p-4 bg-slate-800 border-b border-slate-700 z-20 shadow-lg">
-        <div className="flex items-center justify-between bg-slate-700/50 p-3 rounded-lg border border-slate-600 backdrop-blur-sm">
-           <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold shadow-lg ring-2 ring-blue-500/30">
+      <div className="z-20 flex-none border-b border-[var(--d-line)] bg-[var(--d-s1)] px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
+           <div className="flex min-w-0 items-center gap-4">
+              <div className="d-mono grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-[var(--d-accent-line)] bg-[var(--d-accent-soft)] text-[14px] font-semibold text-[var(--d-accent)]">
                  {currentIndex + 1}
               </div>
-              <div className="flex flex-col">
-                 <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Aligning</span>
-                 <span className="text-lg font-bold text-white">{activeLabel}</span>
+              <div className="min-w-0">
+                 <span className="d-eyebrow block">Placing</span>
+                 <span className="mt-1.5 block truncate text-[16px] font-medium tracking-[-0.01em]">{activeLabel}</span>
               </div>
            </div>
-           <div className="flex gap-2">
-              <Button variant="secondary" onClick={handlePrev} disabled={currentIndex === 0} className="text-xs py-2 px-4 h-10">Back</Button>
-              <Button onClick={handleNext} className="text-xs py-2 px-6 h-10 bg-blue-600 hover:bg-blue-500">
-                  {currentIndex === keys.length - 1 ? "Finish" : "Next Point"}
-              </Button>
+           <div className="flex shrink-0 gap-2">
+              <button onClick={handlePrev} disabled={currentIndex === 0} className="d-btn d-btn-ghost d-btn-sm !px-4 disabled:opacity-40">Back</button>
+              <button onClick={handleNext} className="d-btn d-btn-primary d-btn-sm !px-5">
+                  {currentIndex === keys.length - 1 ? "Finish" : "Next point"}
+              </button>
            </div>
-            </div>
-         </div>
+        </div>
+      </div>
 
       {/* Main Viewport */}
-      <div className="flex-1 relative bg-black overflow-hidden cursor-move">
+      <div className="relative flex-1 cursor-move overflow-hidden bg-black">
          <div 
             ref={containerRef}
             className="w-full h-full relative touch-none"
@@ -466,8 +472,8 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
             </div>
             
             <div className="absolute top-6 w-full px-4 text-center pointer-events-none z-40 flex flex-col items-center gap-2">
-                 <span className="bg-blue-900/80 text-blue-100 text-xs px-3 py-1.5 rounded-lg backdrop-blur-md border border-blue-500/30 shadow-lg max-w-sm">
-                    ℹ️ {activeInstruction}
+                 <span className="max-w-sm rounded-xl border border-[var(--d-line2)] bg-[rgba(7,8,13,0.82)] px-3.5 py-2 text-[12.5px] leading-snug text-[var(--d-t1)] backdrop-blur-md">
+                    {activeInstruction}
                  </span>
             </div>
 
@@ -485,8 +491,8 @@ export const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
 
          {/* Zoom Controls */}
          <div className="absolute bottom-8 right-8 flex flex-col gap-3 z-50">
-             <Button variant="secondary" onClick={() => handleZoom(1.5)} className="w-12 h-12 rounded-full p-0 flex items-center justify-center text-xl shadow-xl bg-slate-800 text-white border-slate-700 hover:bg-slate-700 hover:scale-105 active:scale-95 transition-transform">+</Button>
-             <Button variant="secondary" onClick={() => handleZoom(1/1.5)} className="w-12 h-12 rounded-full p-0 flex items-center justify-center text-xl shadow-xl bg-slate-800 text-white border-slate-700 hover:bg-slate-700 hover:scale-105 active:scale-95 transition-transform">-</Button>
+             <button aria-label="Zoom in" onClick={() => handleZoom(1.5)} className="grid h-12 w-12 place-items-center rounded-full border border-[var(--d-line2)] bg-[rgba(17,20,29,0.88)] text-xl text-[var(--d-t1)] backdrop-blur transition-[background-color,transform] duration-150 hover:bg-[var(--d-s3)] active:scale-95">+</button>
+             <button aria-label="Zoom out" onClick={() => handleZoom(1/1.5)} className="grid h-12 w-12 place-items-center rounded-full border border-[var(--d-line2)] bg-[rgba(17,20,29,0.88)] text-xl text-[var(--d-t1)] backdrop-blur transition-[background-color,transform] duration-150 hover:bg-[var(--d-s3)] active:scale-95">&minus;</button>
          </div>
       </div>
 

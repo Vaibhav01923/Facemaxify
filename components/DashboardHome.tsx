@@ -17,6 +17,7 @@ import {
   shortDate,
   skincareOf,
   timeAgo,
+  withScan,
   type Scan,
 } from "./dashboard/scanData";
 import { CaliperRule, CountUp, Reveal, ScanPortrait, ScoreTrend, SectionArt, StepTicks } from "./dashboard/visuals";
@@ -121,7 +122,7 @@ const Filled: React.FC = () => {
                 </div>
 
                 <div className="mt-auto flex flex-wrap items-center gap-3 pt-7">
-                  <Link to={SECTIONS[0].deepLink(scan.id)} className="d-btn d-btn-primary">
+                  <Link to={withScan(SECTIONS[0].route, scan.id)} className="d-btn d-btn-primary">
                     <span>Open full report</span>
                     <span className="d-btn-dot">
                       <Arrow />
@@ -152,7 +153,7 @@ const Filled: React.FC = () => {
                 const st = statusOf(s, scan, isPaid);
                 return (
                   <li key={s.key}>
-                    <Link to={s.route} className="group flex items-center gap-3 py-3">
+                    <Link to={withScan(s.route, scan.id)} className="group flex items-center gap-3 py-3">
                       <span className="d-mono w-5 text-[11px] text-[var(--d-t4)]">{s.index}</span>
                       <span className="flex-1 text-[14px] font-medium text-[var(--d-t1)]">{s.short}</span>
                       <span className="d-chip" data-tone={st.tone}>
@@ -166,7 +167,7 @@ const Filled: React.FC = () => {
 
             {nextUp && (
               <Link
-                to={nextUp.route}
+                to={withScan(nextUp.route, scan.id)}
                 className="group mt-auto flex items-center justify-between gap-3 rounded-xl border border-[var(--d-line2)] bg-[var(--d-s2)] px-4 py-3 transition-colors hover:border-[var(--d-accent-line)]"
               >
                 <span>
@@ -235,7 +236,7 @@ const SectionCard: React.FC<{ section: SectionMeta; scan: Scan | null; isPaid: b
     : st.tone === "lock" ? "See what's inside"
     : st.tone === "ready" ? "Open report"
     : "Generate report";
-  const to = scan ? s.route : NEW_SCAN;
+  const to = scan ? withScan(s.route, scan.id) : NEW_SCAN;
 
   return (
     <Link to={to} className="d-card group flex h-full flex-col overflow-hidden transition-colors duration-300 hover:border-[var(--d-line3)]">
@@ -458,7 +459,7 @@ const RecentScans: React.FC<{ scans: Scan[]; isPaid: boolean }> = ({ scans, isPa
         const sc = score100(s);
         return (
           <li key={s.id}>
-            <Link to={SECTIONS[0].deepLink(s.id)} className="group block">
+            <Link to={withScan(SECTIONS[0].route, s.id)} className="group block">
               <span className="relative block aspect-[4/5] overflow-hidden rounded-xl border border-[var(--d-line2)] bg-[var(--d-s2)]">
                 <img src={s.front_photo_url} alt={`Scan from ${shortDate(s.created_at)}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-6">

@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useEffect, useMemo } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import React, { createContext, useCallback, useContext, useEffect, useMemo } from "react";
+import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
 import { UserButton, useUser } from "@clerk/clerk-react";
 import { Lock } from "lucide-react";
 import { useRegionalDiscount } from "../../hooks/useRegionalDiscount";
 import { DashboardSEO } from "../SEO";
-import { FREE_METRIC_NAMES, reportsReady, useScans, type Scan, type SectionKey } from "./scanData";
+import { deleteScan } from "../../services/supabase";
+import { FREE_METRIC_NAMES, SCAN_PARAM, reportsReady, useScans, withScan, type Scan, type SectionKey } from "./scanData";
 import { OVERVIEW_ICON, SECTIONS } from "./sections";
 import { StepTicks } from "./visuals";
 import "./dashboard.css";
@@ -14,6 +15,12 @@ interface DashboardContextValue {
   scans: Scan[];
   latest: Scan | null;
   previous: Scan | null;
+  /** The scan the report pages are showing: `?scan=` when it matches one of yours, otherwise the newest. */
+  selected: Scan | null;
+  selectScan: (id: string) => void;
+  /** Deletes a scan (it is archived, as before) and reloads the list. Resolves false when it could not. */
+  removeScan: (id: string) => Promise<boolean>;
+  userId?: string;
   loading: boolean;
   refresh: () => Promise<void>;
   /** Link that starts checkout for the signed-in user. */
@@ -38,7 +45,45 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
   const { user } = useUser();
   const { pathname } = useLocation();
   const scans = useScans();
+  const [params, setParams] = useSearchParams();
   const discount = useRegionalDiscount();
+  const scanParam = params.get(SCAN_PARAM);
+  const selected = useMemo(() => scans.scans.find((s) => s.id === scanParam) ?? scans.latest, [scans.scans, scans.latest, scanParam]);
+
+  const selectScan = useCallback(
+    (id: string) =>
+      setParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.set(SCAN_PARAM, id);
+          return next;
+        },
+        { replace: true },
+      ),
+    [setParams],
+  );
+
+  const { refresh } = scans;
+  const removeScan = useCallback(
+    async (id: string) => {
+      if (!user?.id) return false;
+      const ok = await deleteScan(id, user.id);
+      if (ok) {
+        if (scanParam === id)
+          setParams(
+            (prev) => {
+              const next = new URLSearchParams(prev);
+              next.delete(SCAN_PARAM);
+              return next;
+            },
+            { replace: true },
+          );
+        await refresh();
+      }
+      return ok;
+    },
+    [user?.id, scanParam, setParams, refresh],
+  );
   const email = user?.primaryEmailAddress?.emailAddress ?? "";
   const upgradeHref = `${discount.link}${discount.link.includes("?") ? "&" : "?"}customerEmail=${encodeURIComponent(email)}`;
 
@@ -46,12 +91,12 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
     window.scrollTo({ top: 0 });
   }, [pathname]);
 
-  const ready = scans.latest ? reportsReady(scans.latest) : null;
+  const ready = selected ? reportsReady(selected) : null;
   const readyCount = ready ? Object.values(ready).filter(Boolean).length : 0;
 
   const value = useMemo<DashboardContextValue>(
-    () => ({ ...scans, isPaid, upgradeHref, upgradePrice: discount.price }),
-    [scans, isPaid, upgradeHref, discount.price],
+    () => ({ ...scans, selected, selectScan, removeScan, userId: user?.id, isPaid, upgradeHref, upgradePrice: discount.price }),
+    [scans, selected, selectScan, removeScan, user?.id, isPaid, upgradeHref, discount.price],
   );
 
   return (
@@ -82,12 +127,12 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
               const isReady = sec && ready ? ready[sec] : false;
               const locked = sec && !isPaid && SECTIONS.find((s) => s.key === sec)?.access === "pro";
               return (
-                <NavLink key={item.to} to={item.to} end={item.end} className="d-nav">
+                <NavLink key={item.to} to={withScan(item.to, scanParam)} end={item.end} className="d-nav">
                   <span className="d-idx">{item.index}</span>
                   <span className="truncate">{item.label}</span>
                   {locked ? (
                     <Lock className="h-3.5 w-3.5 text-[var(--d-t4)]" strokeWidth={1.5} aria-label="Pro" />
-                  ) : sec && isReady && scans.latest ? (
+                  ) : sec && isReady && selected ? (
                     <span className="h-1.5 w-1.5 rounded-full bg-[var(--d-accent)]" aria-label="Ready" />
                   ) : null}
                 </NavLink>
@@ -96,10 +141,10 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
           </nav>
 
           <div className="mt-auto space-y-4">
-            {scans.latest && (
+            {selected && (
               <div className="px-2.5">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="d-eyebrow">Latest scan</span>
+                  <span className="d-eyebrow">{selected.id === scans.latest?.id ? "Latest scan" : "This scan"}</span>
                   <span className="d-mono text-[11px] text-[var(--d-t3)]">{readyCount}/4</span>
                 </div>
                 <StepTicks done={readyCount} total={4} />
@@ -185,7 +230,7 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
               return (
                 <li key={item.to}>
                   <NavLink
-                    to={item.to}
+                    to={withScan(item.to, scanParam)}
                     end={item.end}
                     className={({ isActive }) =>
                       `flex h-[58px] flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${

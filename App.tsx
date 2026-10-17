@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { SignedIn, SignedOut, UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { LandingPage } from "./components/LandingPage";
-import { Dashboard } from "./components/Dashboard";
 import { LandmarkEditor } from "./components/LandmarkEditor";
 import { Navbar } from "./components/Navbar";
 import { FinalResult, FrontLandmarks, Point } from "./types";
@@ -19,7 +18,7 @@ import { trackSignedIn } from "./services/trafficSource";
 import { DashboardHome } from "./components/DashboardHome";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
 import { SectionPage } from "./components/dashboard/SectionPage";
-import { FacialAnalysis } from "./components/FacialAnalysis";
+import { ScanFlow } from "./components/dashboard/ScanFlow";
 import {
   SEO,
   FacialAnalysisSEO,
@@ -245,7 +244,7 @@ const App: React.FC = () => {
           // to sign in only to see the results (see GuestResultsGate / services/guestScan.ts).
           <>
             <FacialAnalysisSEO />
-            <FacialAnalysis isPaid={isPaid} />
+            <ScanFlow />
           </>
         }
       />

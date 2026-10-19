@@ -21,7 +21,7 @@ The sections below were written for a test-mode run; the product and database st
 | --- | --- |
 | Checkout starts the subscription (fixed product, no discount code, checks the Dodo product first) | `api/checkout.js` |
 | Webhook: signature check, access on/off from the subscription lifecycle | `api/webhooks/dodo.js`, `api/_lib/subscriptionAccess.js` |
-| "Manage subscription" opens Dodo's customer portal (verified Clerk token) | `api/manage-subscription.js`, `api/_lib/clerkAuth.js` |
+| "Manage subscription" opens Dodo's customer portal (verified Clerk token) | `POST /api/checkout` (`api/_lib/manageSubscription.js`), `api/_lib/clerkAuth.js` |
 | Database changes (new SQL, not run) | `supabase_subscriptions.sql` |
 | Prices and terms shown to visitors | `i18n/offer.ts`, `hooks/useRegionalDiscount.ts`, landing page, dashboard, FAQ, Spanish/Japanese pages (`i18n/strings.tsx`) |
 | Access rule in the browser (a cancelled plan ends when its paid period ends) | `services/subscription.ts`, `App.tsx` |

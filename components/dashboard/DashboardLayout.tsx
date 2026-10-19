@@ -296,7 +296,7 @@ const ManageBilling: React.FC<{ className: string; label?: string }> = ({ classN
     try {
       const token = await clerk.session?.getToken();
       if (!token) throw new Error("Please sign in again.");
-      const res = await fetch("/api/manage-subscription", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch("/api/checkout", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
       const body = await res.json().catch(() => ({}));
       if (!res.ok || !body.url) throw new Error(body.error || "Could not open billing right now.");
       window.location.assign(body.url);

@@ -1,6 +1,7 @@
 import { attributionFromCookieHeader, attributionMetadata } from './_lib/attribution.js';
 import { createDodoClient, subscriptionProductId } from './_lib/dodoClient.js';
 import { PLAN, formatUsd } from './_lib/pricing.js';
+import { manageSubscription } from './_lib/manageSubscription.js';
 
 // Checkout page languages we force for visitors who came through the Spanish / Japanese pages
 // (Dodo supports both). Everyone else gets Dodo's default.
@@ -60,6 +61,11 @@ async function planProblems(client, productId) {
 }
 
 export default async function handler(req, res) {
+  // POST = "Manage subscription": a link to Dodo's customer portal for the signed-in user. It shares
+  // this function because the Vercel plan allows only 12 functions (api/_lib/manageSubscription.js).
+  if (req.method === 'POST') {
+    return manageSubscription(req, res);
+  }
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

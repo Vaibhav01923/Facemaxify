@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { ClerkAuthError, verifyClerkSession } from './_lib/clerkAuth.js';
-import { createDodoClient } from './_lib/dodoClient.js';
+import { ClerkAuthError, verifyClerkSession } from './clerkAuth.js';
+import { createDodoClient } from './dodoClient.js';
 
-// "Manage subscription" in the dashboard: returns a link to Dodo's customer portal, where the
+// "Manage subscription" in the dashboard (POST /api/checkout, see api/checkout.js; it lives here because the plan allows only 12 functions): returns a link to Dodo's customer portal, where the
 // signed-in customer can cancel, update their card and see invoices. POST with the Clerk session
 // token as "Authorization: Bearer ...". Answers { url } or { error }.
 //
@@ -11,7 +11,7 @@ import { createDodoClient } from './_lib/dodoClient.js';
 
 const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-export default async function handler(req, res) {
+export async function manageSubscription(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

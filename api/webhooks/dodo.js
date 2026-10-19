@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import DodoPayments from "dodopayments";
+import { createDodoClient, subscriptionProductId } from "../_lib/dodoClient.js";
+import { processDodoEvent } from "../_lib/subscriptionAccess.js";
 
 // Initialize Supabase Client
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -17,76 +18,43 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const apiKey = process.env.DODO_PAYMENTS_API_KEY;
+  const dodo = createDodoClient();
   const webhookKey = process.env.DODO_PAYMENTS_WEBHOOK_KEY;
-  
-  let mode = process.env.DODO_PAYMENTS_MODE;
-  // Auto-detect mode if key follows standard naming convention
-  if (apiKey?.startsWith('sk_test_')) {
-    mode = 'test_mode';
-  } else if (apiKey?.startsWith('sk_live_')) {
-    mode = 'live_mode';
-  } else if (!mode) {
-    mode = 'live_mode'; // Default to Live Mode
-  }
 
-  console.log("----- WEBHOOK INIT -----");
-  console.log("Mode (Auto-detected):", mode);
-  console.log("API Key Exists:", !!apiKey);
-  console.log("Webhook Key Exists:", !!webhookKey);
-  if (apiKey) console.log("Key Prefix:", apiKey.substring(0, 8));
-  if (webhookKey) console.log("Webhook Key First 4:", webhookKey.substring(0, 4));
-  console.log("------------------------");
-
-  if (!apiKey || !webhookKey) {
+  if (!dodo || !webhookKey) {
     console.error("CRITICAL: DODO_PAYMENTS_API_KEY or DODO_PAYMENTS_WEBHOOK_KEY is missing.");
     return res.status(500).json({ error: "Internal Server Error: Webhook configuration missing." });
   }
-
-  const client = new DodoPayments({
-    bearerToken: apiKey.trim(),
-    environment: mode,
-  });
+  const { client, mode } = dodo;
 
   // Get raw body
   const rawBody = await getRawBody(req);
 
+  // Verify the signature. The SDK takes the headers and the signing secret as ONE options object:
+  // passing the headers on their own skips the check and accepts any request as genuine.
   let event;
   try {
-    event = client.webhooks.unwrap(rawBody, req.headers, webhookKey.trim());
+    event = client.webhooks.unwrap(rawBody, { headers: req.headers, key: webhookKey.trim() });
   } catch (err) {
     console.error("Webhook verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Handle the event
-  const eventType = event.type;
-  console.log(`Received webhook: ${eventType}`);
+  console.log(`Received webhook: ${event.type} (${mode})`);
 
-  if (eventType === "payment.succeeded") {
-    const data = event.data;
-    console.log("Payment Succeeded Data:", JSON.stringify(data));
-
-    // Extract email from metadata (preferred) or customer details
-    const email = data.metadata?.customer_email || data.customer?.email || data.billing?.email;
-
-    if (email) {
-      console.log(`Updating payment status for: ${email}`);
-      const { data: user, error } = await supabase
-        .from("users")
-        .update({ isPaid: true })
-        .eq("email", email)
-        .select();
-
-      if (error) {
-        console.error("Supabase update error:", error);
-        return res.status(500).send("Database update failed");
-      }
-
-      console.log("Database updated successfully:", user);
-    } else {
-      console.warn("No email found in payment data");
-    }
+  try {
+    const outcome = await processDodoEvent({
+      db: supabase,
+      event,
+      planProductId: subscriptionProductId(),
+      retrieveSubscription: (id) => client.subscriptions.retrieve(id),
+    });
+    console.log(`Webhook ${event.type}: ${outcome}`);
+  } catch (err) {
+    // 500 makes Dodo send the event again, which is what we want for a database hiccup (or for
+    // supabase_subscriptions.sql not being run yet).
+    console.error(`Webhook ${event.type} failed:`, err.message);
+    return res.status(500).send("Database update failed");
   }
 
   return res.json({ received: true });

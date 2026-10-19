@@ -1,10 +1,11 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
 import { Lock } from "lucide-react";
 import { useRegionalDiscount } from "../../hooks/useRegionalDiscount";
 import { DashboardSEO } from "../SEO";
 import { deleteScan } from "../../services/supabase";
+import type { SubscriptionInfo } from "../../services/subscription";
 import { FREE_METRIC_NAMES, SCAN_PARAM, reportsReady, useScans, withScan, type Scan, type SectionKey } from "./scanData";
 import { OVERVIEW_ICON, SECTIONS } from "./sections";
 import { StepTicks } from "./visuals";
@@ -25,7 +26,12 @@ interface DashboardContextValue {
   refresh: () => Promise<void>;
   /** Link that starts checkout for the signed-in user. */
   upgradeHref: string;
+  /** Short price for inside a buy button ("$0.99 first month"). Always show `upgradeTerms` next to it. */
   upgradePrice: string;
+  /** The full terms: first payment, then the monthly price, cancel anytime. */
+  upgradeTerms: string;
+  /** Set for subscribers, null for free accounts and people on the old plan. */
+  subscription: SubscriptionInfo | null;
 }
 
 const DashboardContext = createContext<DashboardContextValue | null>(null);
@@ -41,7 +47,7 @@ const NAV = [
   ...SECTIONS.map((s) => ({ to: s.route, end: false, index: s.index, label: s.title, short: s.short, icon: s.icon, key: s.key as SectionKey | null })),
 ];
 
-export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false }) => {
+export const DashboardLayout: React.FC<{ isPaid?: boolean; subscription?: SubscriptionInfo | null }> = ({ isPaid = false, subscription = null }) => {
   const { user } = useUser();
   const { pathname } = useLocation();
   const scans = useScans();
@@ -95,8 +101,8 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
   const readyCount = ready ? Object.values(ready).filter(Boolean).length : 0;
 
   const value = useMemo<DashboardContextValue>(
-    () => ({ ...scans, selected, selectScan, removeScan, userId: user?.id, isPaid, upgradeHref, upgradePrice: discount.price }),
-    [scans, selected, selectScan, removeScan, user?.id, isPaid, upgradeHref, discount.price],
+    () => ({ ...scans, selected, selectScan, removeScan, userId: user?.id, isPaid, upgradeHref, upgradePrice: discount.price, upgradeTerms: discount.terms, subscription }),
+    [scans, selected, selectScan, removeScan, user?.id, isPaid, upgradeHref, discount.price, discount.terms, subscription],
   );
 
   return (
@@ -160,7 +166,7 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
                 </span>
                 <div className="min-w-0">
                   <p className="text-[13px] font-medium leading-tight">Pro</p>
-                  <p className="text-[12px] leading-tight text-[var(--d-t3)]">All reports unlocked</p>
+                  <p className="text-[12px] leading-tight text-[var(--d-t3)]">{planLine(subscription)}</p>
                 </div>
               </div>
             ) : (
@@ -175,8 +181,11 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
                     <Arrow />
                   </span>
                 </a>
+                <p className="mt-2 text-[11px] leading-snug text-[var(--d-t3)]">{discount.terms}</p>
               </div>
             )}
+
+            {isPaid && <ManageBilling className="px-2.5 text-left text-[12px] text-[var(--d-t3)] transition-colors hover:text-[var(--d-t1)]" />}
 
             <div className="flex items-center gap-3 px-1.5">
               <UserButton
@@ -208,7 +217,10 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
             <img src="/favicon.png" alt="" className="h-6 w-6 rounded-md" />
             <span className="text-[16px] font-semibold tracking-[-0.03em]">Facemaxify</span>
           </Link>
-          <UserButton appearance={{ elements: { avatarBox: "w-8 h-8", userButtonPopoverCard: "bg-slate-900 border border-slate-800" } }} />
+          <div className="flex items-center gap-4">
+            {isPaid && <ManageBilling label="Billing" className="py-2 text-[13px] text-[var(--d-t3)] transition-colors hover:text-[var(--d-t1)]" />}
+            <UserButton appearance={{ elements: { avatarBox: "w-8 h-8", userButtonPopoverCard: "bg-slate-900 border border-slate-800" } }} />
+          </div>
         </header>
 
         {/* ---------------- content ---------------- */}
@@ -248,6 +260,63 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean }> = ({ isPaid = false
         </nav>
       </div>
     </DashboardContext.Provider>
+  );
+};
+
+/** The terms line to put under any "Unlock" button on the dashboard. */
+export const PlanTerms: React.FC<{ className?: string }> = ({ className = "" }) => {
+  const { upgradeTerms } = useDashboard();
+  return <p className={`text-[11px] leading-snug text-[var(--d-t3)] ${className}`}>{upgradeTerms}</p>;
+};
+
+const formatDay = (iso: string | null) =>
+  iso ? new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : null;
+
+/** What the rail says under "Pro": a subscriber's renewal or end date, or the plain line for the old plan. */
+const planLine = (sub: SubscriptionInfo | null) => {
+  if (!sub) return "All reports unlocked";
+  const day = formatDay(sub.periodEnd);
+  if (sub.cancelsAtPeriodEnd) return day ? `Cancelled · access until ${day}` : "Cancelled";
+  if (sub.status === "past_due") return "Payment failed · update your card";
+  return day ? `Renews ${day}` : "Subscription active";
+};
+
+/**
+ * "Manage subscription": asks the server for a link to Dodo's customer portal (cancel, change card,
+ * invoices) and goes there. The server checks who is asking, so the link only ever opens your own billing.
+ */
+const ManageBilling: React.FC<{ className: string; label?: string }> = ({ className, label = "Manage subscription" }) => {
+  const clerk = useClerk();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const open = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const token = await clerk.session?.getToken();
+      if (!token) throw new Error("Please sign in again.");
+      const res = await fetch("/api/manage-subscription", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.url) throw new Error(body.error || "Could not open billing right now.");
+      window.location.assign(body.url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not open billing right now.");
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div>
+      <button type="button" onClick={open} disabled={busy} className={className}>
+        {busy ? "Opening…" : label}
+      </button>
+      {error && (
+        <p role="alert" className="mt-1 px-2.5 text-[11px] leading-snug text-[var(--d-t3)]">
+          {error}
+        </p>
+      )}
+    </div>
   );
 };
 

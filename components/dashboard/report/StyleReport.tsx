@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Check, Expand } from "lucide-react";
 import { GenerationFailed, GenerationNotice, useLeaveWarning } from "../../GenerationNotice";
-import { Arrow, useDashboard } from "../DashboardLayout";
+import { Arrow, PlanTerms, useDashboard } from "../DashboardLayout";
 import { sectionByKey } from "../sections";
 import { colorImageUrl, hairstyleImageUrl, type Scan } from "../scanData";
 import { SectionArt } from "../visuals";
@@ -97,12 +97,15 @@ export const StyleReport: React.FC<{ kind: "color" | "hairstyle"; scan: Scan }> 
 
         <div className="mt-auto pt-8">
           {!isPaid ? (
-            <a href={upgradeHref} className="d-btn d-btn-primary w-full justify-between">
-              <span>Unlock · {upgradePrice}</span>
-              <span className="d-btn-dot">
-                <Arrow />
-              </span>
-            </a>
+            <>
+              <a href={upgradeHref} className="d-btn d-btn-primary w-full justify-between">
+                <span>Unlock · {upgradePrice}</span>
+                <span className="d-btn-dot">
+                  <Arrow />
+                </span>
+              </a>
+              <PlanTerms className="mt-2.5" />
+            </>
           ) : report.value ? (
             <button type="button" onClick={() => setOpen(true)} className="d-btn d-btn-primary w-full justify-between">
               <span>Open full size</span>

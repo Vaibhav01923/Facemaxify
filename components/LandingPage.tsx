@@ -14,6 +14,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { supabase } from "../services/supabase";
 import { FAQ } from "./FAQ";
+import { FIRST_PRICE, MONTHLY_PRICE, PLAN_TERMS } from "../i18n/offer";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -74,7 +75,7 @@ export const LandingPage: React.FC = () => {
     if (isSignedIn && pendingAction) {
       localStorage.removeItem("pendingAction");
       if (pendingAction === "purchase") {
-        window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+        window.location.href = `/api/checkout?customerEmail=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress ?? "")}`;
       } else if (pendingAction === "dashboard") {
         window.location.href = "/dashboard";
       }
@@ -330,13 +331,13 @@ export const LandingPage: React.FC = () => {
                   {/* Left Side: Text */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-4">
-                      Limited Time Launch Offer (41% OFF)
+                      Intro offer: {FIRST_PRICE} for your first month
                     </div>
                     <h3 className="text-3xl sm:text-5xl font-black text-white mb-2 tracking-tight">
-                      Full Access Pass
+                      Full Access
                     </h3>
                     <p className="text-slate-400 text-lg">
-                      Unlock the facial rating tool for life.
+                      Your score, all 25+ ratios, the AI coach, skincare, color and hairstyle reports.
                     </p>
                   </div>
 
@@ -349,36 +350,14 @@ export const LandingPage: React.FC = () => {
                   {/* Right Side: Price & Code */}
                   <div className="flex flex-col items-center gap-4 min-w-[280px]">
                     <div className="text-center">
-                      <span className="text-slate-500 line-through text-lg font-bold mr-2">
-                        $10
-                      </span>
                       <span className="text-5xl sm:text-6xl font-black text-white tracking-tighter shadow-indigo-500/50 drop-shadow-lg">
-                        $5.99
+                        {FIRST_PRICE}
                       </span>
-                    </div>
-
-                    <div
-                      onClick={() => {
-                        navigator.clipboard.writeText("EARLY40");
-                        // Simple visual feedback could be added here if we had a toast lib
-                        // For now we can change text momentarily or just rely on user knowing it copied
-                        const el = document.getElementById("code-text");
-                        if (el) {
-                          const original = el.innerText;
-                          el.innerText = "COPIED!";
-                          setTimeout(() => (el.innerText = original), 1000);
-                        }
-                      }}
-                      className="w-full bg-indigo-500/10 border border-indigo-500/30 border-dashed rounded-lg p-3 flex flex-col items-center gap-1 group/code cursor-pointer transition-colors hover:bg-indigo-500/20 active:scale-95 select-none"
-                    >
-                      <span className="text-[10px] text-indigo-300 uppercase tracking-widest font-bold">
-                        Use Code (Click to Copy)
+                      <span className="block text-sm font-bold text-slate-300 mt-1">
+                        for your first month
                       </span>
-                      <span
-                        id="code-text"
-                        className="text-2xl font-mono font-bold text-white tracking-widest group-hover/code:text-indigo-200 transition-colors"
-                      >
-                        EARLY40
+                      <span className="block text-base font-bold text-white mt-3">
+                        then {MONTHLY_PRICE} per month
                       </span>
                     </div>
 
@@ -388,7 +367,7 @@ export const LandingPage: React.FC = () => {
                           localStorage.setItem("pendingAction", "purchase");
                           openSignIn();
                         } else {
-                          window.location.href = `/api/checkout?customerEmail=${user?.primaryEmailAddress?.emailAddress}`;
+                          window.location.href = `/api/checkout?customerEmail=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress ?? "")}`;
                         }
                       }}
                       className="w-full py-4 bg-white hover:bg-indigo-50 text-black rounded-xl font-bold text-lg transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2 group/btn mt-2"
@@ -396,8 +375,8 @@ export const LandingPage: React.FC = () => {
                       Get Access{" "}
                       <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                     </button>
-                    <p className="text-xs text-slate-500 font-medium">
-                      One-time payment • Lifetime access
+                    <p className="text-xs text-slate-400 font-medium max-w-[260px] text-center leading-relaxed">
+                      {PLAN_TERMS} You pay {FIRST_PRICE} today.
                     </p>
                   </div>
                 </div>

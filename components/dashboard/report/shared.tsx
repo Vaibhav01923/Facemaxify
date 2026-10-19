@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { Lock, Plus, X } from "lucide-react";
-import { Arrow, useDashboard } from "../DashboardLayout";
+import { Arrow, PlanTerms, useDashboard } from "../DashboardLayout";
 import { NEW_SCAN, type SectionMeta } from "../sections";
 import { SectionArt } from "../visuals";
 import { shortDate, type Scan } from "../scanData";
@@ -108,6 +108,7 @@ export const Locked: React.FC<{
               <Arrow />
             </span>
           </a>
+          <PlanTerms className="mt-2.5" />
         </div>
       </div>
     </div>

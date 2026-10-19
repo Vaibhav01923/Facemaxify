@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { Lock, Plus } from "lucide-react";
-import { Arrow, useDashboard } from "./dashboard/DashboardLayout";
+import { Arrow, PlanTerms, useDashboard } from "./dashboard/DashboardLayout";
 import { NEW_SCAN, SECTIONS, statusOf, type SectionMeta } from "./dashboard/sections";
 import {
   FREE_METRIC_NAMES,
@@ -220,10 +220,13 @@ const Filled: React.FC = () => {
 const UnlockLink: React.FC = () => {
   const { upgradeHref, upgradePrice } = useDashboard();
   return (
-    <a href={upgradeHref} className="d-link">
-      Unlock everything · {upgradePrice}
-      <Arrow />
-    </a>
+    <div>
+      <a href={upgradeHref} className="d-link">
+        Unlock everything · {upgradePrice}
+        <Arrow />
+      </a>
+      <PlanTerms className="mt-1" />
+    </div>
   );
 };
 

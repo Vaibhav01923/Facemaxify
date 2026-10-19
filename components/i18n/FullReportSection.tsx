@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRight, Check } from "lucide-react";
-import { FULL_REPORT_PRICE } from "../../i18n/offer";
+import { FIRST_PRICE, MONTHLY_PRICE } from "../../i18n/offer";
 import { UI } from "../../i18n/strings";
 import type { Locale } from "../../i18n/types";
 import { useFullReport } from "./useFullReport";
@@ -40,7 +40,7 @@ export const FullReportSection: React.FC<{ locale: Locale }> = ({ locale }) => {
               className="w-full rounded-2xl border border-white/10"
             />
             <div>
-              <p className="text-lg font-bold text-white">{text.priceLine(FULL_REPORT_PRICE)}</p>
+              <p className="text-lg font-bold text-white">{text.priceLine(FIRST_PRICE, MONTHLY_PRICE)}</p>
               <button
                 type="button"
                 onClick={openFullReport}

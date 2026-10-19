@@ -96,7 +96,8 @@ export interface UiStrings {
     heading: string;
     intro: string;
     features: string[];
-    priceLine: (price: string) => string;
+    // The full terms next to the button: first payment, then the monthly price, renews, cancel anytime.
+    priceLine: (firstPrice: string, monthlyPrice: string) => string;
     notes: string[];
     button: string;
     imageAlt: string;

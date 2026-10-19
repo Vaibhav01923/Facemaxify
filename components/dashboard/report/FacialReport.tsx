@@ -5,7 +5,7 @@ import { Lock } from "lucide-react";
 import { FaceOverlay } from "../../FaceOverlay";
 import { LandmarkEditor } from "../../LandmarkEditor";
 import { GenerationFailed, GenerationNotice, useLeaveWarning } from "../../GenerationNotice";
-import { Arrow, useDashboard } from "../DashboardLayout";
+import { Arrow, PlanTerms, useDashboard } from "../DashboardLayout";
 import { sectionByKey } from "../sections";
 import { FREE_METRIC_NAMES, ratioTone, type Scan } from "../scanData";
 import { CaliperRule, CountUp } from "../visuals";
@@ -184,7 +184,10 @@ export const FacialReport: React.FC<{ scan: Scan }> = ({ scan }) => {
             )}
             {!isPaid && metrics.length > 0 && (
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--d-line)] bg-[var(--d-s2)] px-6 py-4">
-                <p className="text-[13px] text-[var(--d-t2)]">{metrics.filter((m) => !FREE_METRIC_NAMES.includes(m.name)).length} more ratios are part of Pro.</p>
+                <div className="min-w-0">
+                  <p className="text-[13px] text-[var(--d-t2)]">{metrics.filter((m) => !FREE_METRIC_NAMES.includes(m.name)).length} more ratios are part of Pro.</p>
+                  <PlanTerms className="mt-1 max-w-[46ch]" />
+                </div>
                 <a href={upgradeHref} className="d-btn d-btn-primary d-btn-sm">
                   <span>Unlock · {upgradePrice}</span>
                   <span className="d-btn-dot">
@@ -260,10 +263,13 @@ const ScoreCard: React.FC<{ score: number; paid: boolean; sitePercentile: number
               <span className="d-chip" data-tone="lock">
                 <Lock className="h-3 w-3" strokeWidth={1.75} /> Score is Pro
               </span>
-              <a href={upgradeHref} className="d-link">
-                Unlock · {upgradePrice}
-                <Arrow />
-              </a>
+              <div>
+                <a href={upgradeHref} className="d-link">
+                  Unlock · {upgradePrice}
+                  <Arrow />
+                </a>
+                <PlanTerms className="mt-1" />
+              </div>
             </>
           )}
         </div>
@@ -293,6 +299,7 @@ const RatioRow: React.FC<{
   onPin: (m: MetricResult) => void;
   upgradeHref: string;
 }> = ({ metric, active, locked, onHover, onPin, upgradeHref }) => {
+  const { upgradeTerms } = useDashboard();
   // the bar spans half the ideal minimum to one and a half times the ideal maximum, as before
   const barMin = metric.idealMin * 0.5;
   const barMax = metric.idealMax * 1.5;
@@ -343,7 +350,7 @@ const RatioRow: React.FC<{
   return (
     <li>
       {locked ? (
-        <a href={upgradeHref} className={`${base} hover:bg-[var(--d-s2)]`} aria-label={`${metric.name} is Pro. Unlock to see it.`}>
+        <a href={upgradeHref} className={`${base} hover:bg-[var(--d-s2)]`} title={upgradeTerms} aria-label={`${metric.name} is Pro. Unlock to see it. ${upgradeTerms}`}>
           {inner}
         </a>
       ) : (

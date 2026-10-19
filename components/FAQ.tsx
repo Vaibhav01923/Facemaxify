@@ -1,4 +1,5 @@
 import React from "react";
+import { FIRST_PRICE, MONTHLY_PRICE } from "../i18n/offer";
 
 interface FAQItem {
   question: string;
@@ -40,6 +41,14 @@ const faqData: FAQItem[] = [
     question: "Do I need to create an account?",
     answer:
       "No! You can use our free facial analysis tool without creating an account. Simply upload your photo and get instant results. No signup, no login, no hassle.",
+  },
+  {
+    question: "How much does the full report cost?",
+    answer: `The free tools stay free. The full report (your score, all 25+ ratios, the AI coach, skincare, color and hairstyle reports) is a monthly subscription: ${FIRST_PRICE} for the first month, then ${MONTHLY_PRICE} per month. It renews automatically every month until you cancel. The full price is shown next to every Unlock button and again on the checkout page before you pay.`,
+  },
+  {
+    question: "How do I cancel my subscription?",
+    answer: `Open your dashboard and choose "Manage subscription" to cancel in a few clicks, any time. After you cancel you are not charged again and keep full access until the end of the period you already paid for. If a renewal payment fails, access pauses until the payment goes through.`,
   },
   {
     question: "What facial features does the analyzer measure?",

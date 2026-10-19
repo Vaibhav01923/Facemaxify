@@ -14,6 +14,7 @@ import { supabase } from "./services/supabase";
 import { trackPageView } from "./services/funnel";
 import { initAttribution } from "./services/attribution";
 import { trackSignedIn } from "./services/trafficSource";
+import { resolveAccess, type SubscriptionInfo } from "./services/subscription";
 
 import { DashboardHome } from "./components/DashboardHome";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
@@ -93,6 +94,7 @@ const App: React.FC = () => {
     if (isLoaded && user) trackSignedIn();
   }, [isLoaded, user]);
   const [isPaid, setIsPaid] = useState<boolean | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
 
   React.useEffect(() => {
@@ -109,8 +111,6 @@ const App: React.FC = () => {
           .single();
 
         console.log("DEBUG: Supabase User Fetch:", { userData, error });
-
-        let currentIsPaid = false;
 
         // 2. Detect Country if missing
         if (!userData?.country) {
@@ -165,18 +165,11 @@ const App: React.FC = () => {
             console.error("Failed to save country:", upsertError);
         }
 
-        // Handle both casing possibilities and string/bool types
-        if (userData) {
-          if (
-            userData.isPaid === true ||
-            userData.is_paid === true ||
-            userData.isPaid === "true"
-          ) {
-            currentIsPaid = true;
-          }
-        }
-
-        setIsPaid(currentIsPaid);
+        // Handles both casing possibilities and string/bool types, and ends a cancelled
+        // subscriber's access when their paid period ends (services/subscription.ts).
+        const access = resolveAccess(userData);
+        setSubscription(access.subscription);
+        setIsPaid(access.isPaid);
       } catch (err) {
         console.error("Failed to check payment status:", err);
         setIsPaid(false);
@@ -224,7 +217,7 @@ const App: React.FC = () => {
         element={
           <>
             <SignedIn>
-              <DashboardLayout isPaid={!!isPaid} />
+              <DashboardLayout isPaid={!!isPaid} subscription={subscription} />
             </SignedIn>
             <SignedOut><RedirectToSignIn /></SignedOut>
           </>

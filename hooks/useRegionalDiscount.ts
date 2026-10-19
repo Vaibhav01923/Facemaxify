@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FIRST_PRICE_LABEL, PLAN_TERMS } from '../i18n/offer';
 
 export const useRegionalDiscount = () => {
     const [discount, setDiscount] = useState<{
@@ -6,13 +7,18 @@ export const useRegionalDiscount = () => {
         code: string;
         region: string;
         link: string;
+        /** Short price shown inside a buy button, e.g. "$0.99 first month". */
         price: string;
-    }>({ 
-        isEligible: false, 
-        code: '', 
+        /** The full terms, shown under every buy button: first payment, monthly price, cancel anytime. */
+        terms: string;
+    }>({
+        isEligible: false,
+        code: '',
         region: '',
-        link: '/api/checkout?discountCode=EARLY40',
-        price: '$5' 
+        // No discount code here: the checkout is fixed on the server (api/checkout.js).
+        link: '/api/checkout',
+        price: FIRST_PRICE_LABEL,
+        terms: PLAN_TERMS,
     });
 
     useEffect(() => {

@@ -8,7 +8,10 @@ export const FIRST_PRICE = formatUsd(PLAN.firstPaymentCents);
 export const MONTHLY_PRICE = formatUsd(PLAN.recurringCents);
 
 /** Short price shown inside a buy button. The terms line below it carries the rest. */
-export const FIRST_PRICE_LABEL = `${FIRST_PRICE} first month`;
+export const FIRST_PRICE_LABEL = FIRST_PRICE;
+
+/** One short line for under dashboard buy buttons: the renewal price and cancellation, never just the first price. */
+export const PLAN_TERMS_SHORT = `then ${MONTHLY_PRICE}/month. Cancel anytime.`;
 
 /** The full terms, English: shown under every buy button on the English pages. */
 export const PLAN_TERMS = `${FIRST_PRICE} for the first month, then ${MONTHLY_PRICE} per month. Renews monthly. Cancel anytime.`;

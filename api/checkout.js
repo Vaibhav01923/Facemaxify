@@ -82,7 +82,7 @@ export default async function handler(req, res) {
   // the old price while the page promises "$0.99 first month" would charge them something else.
   const productId = subscriptionProductId();
   if (!productId) {
-    console.error('CRITICAL: DODO_PAYMENTS_SUBSCRIPTION_PRODUCT_ID is missing, checkout is closed until it is set.');
+    console.error('CRITICAL: checkout is closed (DODO_PAYMENTS_SUBSCRIPTION_PRODUCT_ID is set to off).');
     return res.status(503).json({ error: 'Checkout is not available right now. Please try again later.' });
   }
 

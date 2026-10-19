@@ -17,7 +17,11 @@ export function createDodoClient() {
   return { client: new DodoPayments({ bearerToken: apiKey.trim(), environment: mode }), mode };
 }
 
-/** The id of the subscription product (the "$0.99 first month, then monthly" plan), or ''. */
+import { DEFAULT_PRODUCT_ID } from './pricing.js';
+
+/** The id of the subscription product ("$0.99 first month, then monthly"). '' means checkout is closed. */
 export function subscriptionProductId() {
-  return (process.env.DODO_PAYMENTS_SUBSCRIPTION_PRODUCT_ID || '').trim();
+  const fromEnv = (process.env.DODO_PAYMENTS_SUBSCRIPTION_PRODUCT_ID || '').trim();
+  if (fromEnv.toLowerCase() === 'off') return '';
+  return fromEnv || DEFAULT_PRODUCT_ID;
 }

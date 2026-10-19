@@ -15,3 +15,7 @@ export const PLAN = Object.freeze({
 
 /** 99 -> "$0.99", 9999 -> "$99.99" */
 export const formatUsd = (cents) => `$${(cents / 100).toFixed(2)}`;
+
+/** The live "Facemaxify Pro" subscription product in Dodo. DODO_PAYMENTS_SUBSCRIPTION_PRODUCT_ID overrides it
+ *  (use the test-mode product id with a test key); setting that variable to "off" closes checkout. */
+export const DEFAULT_PRODUCT_ID = 'pdt_0Nq57UqramILeQLRbzWb7';

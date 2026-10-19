@@ -14,7 +14,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { supabase } from "../services/supabase";
 import { FAQ } from "./FAQ";
-import { FIRST_PRICE, MONTHLY_PRICE, PLAN_TERMS } from "../i18n/offer";
+import { FIRST_PRICE } from "../i18n/offer";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -331,7 +331,7 @@ export const LandingPage: React.FC = () => {
                   {/* Left Side: Text */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-4">
-                      Intro offer: {FIRST_PRICE} for your first month
+                      Intro offer
                     </div>
                     <h3 className="text-3xl sm:text-5xl font-black text-white mb-2 tracking-tight">
                       Full Access
@@ -354,10 +354,7 @@ export const LandingPage: React.FC = () => {
                         {FIRST_PRICE}
                       </span>
                       <span className="block text-sm font-bold text-slate-300 mt-1">
-                        for your first month
-                      </span>
-                      <span className="block text-base font-bold text-white mt-3">
-                        then {MONTHLY_PRICE} per month
+                        to unlock
                       </span>
                     </div>
 
@@ -372,12 +369,9 @@ export const LandingPage: React.FC = () => {
                       }}
                       className="w-full py-4 bg-white hover:bg-indigo-50 text-black rounded-xl font-bold text-lg transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2 group/btn mt-2"
                     >
-                      Get Access{" "}
+                      Unlock for {FIRST_PRICE}{" "}
                       <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                     </button>
-                    <p className="text-xs text-slate-400 font-medium max-w-[260px] text-center leading-relaxed">
-                      {PLAN_TERMS} You pay {FIRST_PRICE} today.
-                    </p>
                   </div>
                 </div>
               </div>

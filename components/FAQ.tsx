@@ -44,7 +44,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "How much does the full report cost?",
-    answer: `The free tools stay free. The full report (your score, all 25+ ratios, the AI coach, skincare, color and hairstyle reports) is a monthly subscription: ${FIRST_PRICE} for the first month, then ${MONTHLY_PRICE} per month. It renews automatically every month until you cancel. The full price is shown next to every Unlock button and again on the checkout page before you pay.`,
+    answer: `The free tools stay free. The full report (your score, all 25+ ratios, the AI coach, skincare, color and hairstyle reports) is a monthly subscription: ${FIRST_PRICE} for the first month, then ${MONTHLY_PRICE} per month. It renews automatically every month until you cancel. The full price and billing terms are shown on the checkout page before you pay.`,
   },
   {
     question: "How do I cancel my subscription?",

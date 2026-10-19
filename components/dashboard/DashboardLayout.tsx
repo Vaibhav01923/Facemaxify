@@ -181,7 +181,7 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean; subscription?: Subscr
                     <Arrow />
                   </span>
                 </a>
-                <p className="mt-2 text-[11px] leading-snug text-[var(--d-t3)]">{discount.terms}</p>
+                {discount.terms && <p className="mt-2 text-[11px] leading-snug text-[var(--d-t3)]">{discount.terms}</p>}
               </div>
             )}
 
@@ -266,6 +266,7 @@ export const DashboardLayout: React.FC<{ isPaid?: boolean; subscription?: Subscr
 /** The terms line to put under any "Unlock" button on the dashboard. */
 export const PlanTerms: React.FC<{ className?: string }> = ({ className = "" }) => {
   const { upgradeTerms } = useDashboard();
+  if (!upgradeTerms) return null;
   return <p className={`text-[11px] leading-snug text-[var(--d-t3)] ${className}`}>{upgradeTerms}</p>;
 };
 

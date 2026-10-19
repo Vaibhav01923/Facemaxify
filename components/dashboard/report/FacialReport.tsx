@@ -299,7 +299,6 @@ const RatioRow: React.FC<{
   onPin: (m: MetricResult) => void;
   upgradeHref: string;
 }> = ({ metric, active, locked, onHover, onPin, upgradeHref }) => {
-  const { upgradeTerms } = useDashboard();
   // the bar spans half the ideal minimum to one and a half times the ideal maximum, as before
   const barMin = metric.idealMin * 0.5;
   const barMax = metric.idealMax * 1.5;
@@ -350,7 +349,7 @@ const RatioRow: React.FC<{
   return (
     <li>
       {locked ? (
-        <a href={upgradeHref} className={`${base} hover:bg-[var(--d-s2)]`} title={upgradeTerms} aria-label={`${metric.name} is Pro. Unlock to see it. ${upgradeTerms}`}>
+        <a href={upgradeHref} className={`${base} hover:bg-[var(--d-s2)]`} aria-label={`${metric.name} is Pro. Unlock to see it.`}>
           {inner}
         </a>
       ) : (

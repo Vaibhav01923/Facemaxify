@@ -56,7 +56,7 @@ export const UI: Record<Locale, UiStrings> = {
         "Guías de mejora facial para llevar el plan a la práctica.",
       ],
       priceLine: (first, monthly) =>
-        `${first} USD el primer mes, luego ${monthly} USD al mes. Se renueva cada mes. Cancela cuando quieras.`,
+        `${first} USD para desbloquear`,
       notes: [
         "Es una suscripción: se renueva cada mes hasta que la canceles. Puedes cancelar en cualquier momento desde «Manage subscription» en tu panel (en inglés) y conservas el acceso hasta el final del período ya pagado.",
         "Los textos que genera la IA (resumen, consejos, rutina de piel) se escriben en español. Los menús, los nombres de las medidas y las guías siguen en inglés por ahora.",
@@ -116,7 +116,7 @@ export const UI: Record<Locale, UiStrings> = {
         "プランを実践するための、顔の改善ガイド。",
       ],
       priceLine: (first, monthly) =>
-        `初月${first}(USD)、2か月目からは月額${monthly}(USD)。毎月自動更新・いつでも解約できます。`,
+        `${first}(USD)で解放`,
       notes: [
         "サブスクリプションです。解約するまで毎月自動で更新されます。ダッシュボード(英語表示)の「Manage subscription」からいつでも解約でき、支払い済みの期間の終わりまでは引き続き利用できます。",
         "AIが生成する文章(総評・アドバイス・肌のルーティンなど)は日本語で表示されます。メニュー、測定項目の名前、ガイドは今のところ英語です。",

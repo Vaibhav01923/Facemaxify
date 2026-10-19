@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FIRST_PRICE_LABEL, PLAN_TERMS_SHORT } from '../i18n/offer';
+import { FIRST_PRICE_LABEL } from '../i18n/offer';
 
 export const useRegionalDiscount = () => {
     const [discount, setDiscount] = useState<{
@@ -18,7 +18,7 @@ export const useRegionalDiscount = () => {
         // No discount code here: the checkout is fixed on the server (api/checkout.js).
         link: '/api/checkout',
         price: FIRST_PRICE_LABEL,
-        terms: PLAN_TERMS_SHORT,
+        terms: '', // billing terms are shown on Dodo's checkout page
     });
 
     useEffect(() => {

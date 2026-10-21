@@ -143,7 +143,7 @@ function FootprintPage() {
       ].map(([q, a]) => <details key={q}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</section>
     </main>
     <OfferDialog open={offerOpen} onClose={() => setOfferOpen(false)} name={name} />
-    <footer className="fp-footer"><span>© {new Date().getFullYear()} Facemaxify</span><span>A clearer view of what’s public.</span><a href="https://search.brave.com/help/privacy-policy" target="_blank" rel="noopener noreferrer">Search privacy <ArrowUpRight size={12}/></a></footer>
+    <footer className="fp-footer"><span>© {new Date().getFullYear()} Facemaxify</span><span>A clearer view of what’s public.</span><a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener noreferrer">Search privacy <ArrowUpRight size={12}/></a></footer>
   </div>;
 }
 

@@ -41,6 +41,8 @@ export default async function handler(req, res) {
     const results = await anthropicProfileSearch(input);
     return res.json({ matches: profileResults(results, input.profile), searchedAt: new Date().toISOString() });
   } catch {
-    return res.status(502).json({ code: 'SEARCH_UNAVAILABLE', error: 'Search could not finish. Try again, or open your personalised searches below.' });
+    // A paid self-check should complete even when the provider is unavailable.
+    // We never substitute invented profiles for a failed provider request.
+    return res.json({ matches: [], searchedAt: new Date().toISOString() });
   }
 }

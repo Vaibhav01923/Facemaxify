@@ -1,4 +1,4 @@
-// Server-side rendering for the blog (api/blog-index.js, api/blog-post.js). The app is a
+// Server-side rendering for the blog (api/_lib/blogIndexHandler.js, blogPostHandler.js). The app is a
 // client-side SPA, so without this the blog's article text and post links would only exist
 // after JavaScript runs, and Google's first pass and AI crawlers (which mostly don't run
 // JavaScript) would see an empty page. The markup mirrors pages/BlogPostPage.tsx and

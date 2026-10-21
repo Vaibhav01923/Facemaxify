@@ -1,5 +1,5 @@
 // Shared by the blog pages (pages/Blog*.tsx, in the browser) and the functions that
-// server-render them (api/blog-index.js, api/blog-post.js), so the HTML crawlers receive
+// server-render them (api/_lib/blogIndexHandler.js, blogPostHandler.js), so the HTML crawlers receive
 // and the page React renders are built from the same Markdown settings and metadata.
 import { createElement } from "react";
 

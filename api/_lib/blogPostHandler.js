@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
-import { renderHtmlWithMeta } from "./_lib/htmlMeta.js";
-import { blogPostTitle, blogPostUrl, postBody } from "./_lib/blogShared.js";
-import { loadTemplate, renderPostPage, withRootContent } from "./_lib/blogRender.js";
+import { renderHtmlWithMeta } from "./htmlMeta.js";
+import { blogPostTitle, blogPostUrl, postBody } from "./blogShared.js";
+import { loadTemplate, renderPostPage, withRootContent } from "./blogRender.js";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;

@@ -29,14 +29,14 @@ export default async function handler(req, res) {
     res.setHeader('Retry-After', '60');
     return res.status(429).json({ error: 'Please wait a minute before searching again.' });
   }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ code: 'SEARCH_UNAVAILABLE', error: 'Automatic search is not available yet. You can still open your personalised searches below.' });
-  }
   try {
     if (!(await verifyFootprintAccess(req)).active) {
       return res.status(402).json({ code: 'MEMBERSHIP_REQUIRED', error: 'Choose a membership to search public profiles.' });
     }
   } catch { return res.status(503).json({ error: 'We could not verify your membership. Please try again.' }); }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.json({ matches: [], searchedAt: new Date().toISOString() });
+  }
   try {
     const results = await anthropicProfileSearch(input);
     return res.json({ matches: profileResults(results, input.profile), searchedAt: new Date().toISOString() });

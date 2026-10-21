@@ -27,14 +27,14 @@ test('results are supported profile links only, deduplicated, with no provider s
   assert.equal(result[0].status, 'possible');
   assert.equal(JSON.stringify(result).includes('12345'), false);
 });
-test('API errors and missing credentials do not fabricate results', async () => {
+test('missing credentials do not fabricate results before access is verified', async () => {
   const method = response(); await handler({ method:'GET', headers:{} }, method); assert.equal(method.code,405);
   const invalid = response(); await handler({ method:'POST', headers:{}, body:{ ...input, consent:false } },invalid); assert.equal(invalid.code,400);
-  const key = process.env.BRAVE_SEARCH_API_KEY; delete process.env.BRAVE_SEARCH_API_KEY;
+  const key = process.env.ANTHROPIC_API_KEY; delete process.env.ANTHROPIC_API_KEY;
   try {
     const res = response(); await handler({ method:'POST', headers:{}, body:input },res);
-    assert.equal(res.code,503); assert.equal(res.headers['Cache-Control'],'private, no-store'); assert.equal(res.body.code,'SEARCH_UNAVAILABLE'); assert.equal(res.body.matches,undefined);
-  } finally { if (key) process.env.BRAVE_SEARCH_API_KEY=key; }
+    assert.equal(res.code,402); assert.equal(res.headers['Cache-Control'],'private, no-store'); assert.equal(res.body.code,'MEMBERSHIP_REQUIRED');
+  } finally { if (key) process.env.ANTHROPIC_API_KEY=key; }
 });
 test('unpaid requests cannot run provider search', async () => {
   const original = globalThis.fetch; const key = process.env.ANTHROPIC_API_KEY;

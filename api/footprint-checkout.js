@@ -2,10 +2,8 @@ import DodoPayments from 'dodopayments';
 import { createHash } from 'node:crypto';
 import { createFootprintCheckout } from './_lib/footprint-checkout.js';
 import { clientForFootprint, verifyFootprintAccess, saveCheckoutCookie } from './_lib/footprint-access.js';
-import { anthropicProfileSearch } from './_lib/footprint-search.js';
 
 const requests = new Map();
-let searchCheckedUntil = 0;
 export const config = { maxDuration: 60 };
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'private, no-store');
@@ -34,17 +32,11 @@ export default async function handler(req, res) {
   requests.set(key, entry);
   const apiKey = process.env.DODO_PAYMENTS_API_KEY?.trim();
   if (!apiKey) return res.status(503).json({ error: 'Secure checkout is not configured yet. Please try again later.' });
-  if (!process.env.ANTHROPIC_API_KEY) return res.status(503).json({ error: 'Search is not configured yet, so purchases are temporarily paused.' });
   const environment = process.env.DODO_PAYMENTS_MODE || (apiKey.startsWith('sk_test_') ? 'test_mode' : 'live_mode');
   try {
     const client = new DodoPayments({ bearerToken: apiKey, environment, timeout: 15000, maxRetries: 0 });
     const existing = await verifyFootprintAccess(req, client);
     if (existing.active) return res.status(409).json({ error: 'Your membership is already active. Close this panel and run your search.' });
-    // Verify the provider works before allowing anyone to pay. Cache only availability, never reports.
-    if (searchCheckedUntil < Date.now()) {
-      await anthropicProfileSearch({ name: 'Facemaxify', profile: { handle: 'facemaxify' } });
-      searchCheckedUntil = Date.now() + 10 * 60000;
-    }
     return res.json({ checkout_url: await createFootprintCheckout(client, req.body.offer, id => {
       if (!/^cks_[a-zA-Z0-9]+$/.test(id || '')) throw new Error('Missing checkout session.');
       saveCheckoutCookie(res, id);

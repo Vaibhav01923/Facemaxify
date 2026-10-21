@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/digital-footprint", "destination": "/digital-footprint.html" },
+    { "source": "/digital-footprint/", "destination": "/digital-footprint.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/sitemap-blog.xml", "destination": "/api/sitemap-blog" },
     { "source": "/blog", "destination": "/api/blog-index" },
@@ -7,6 +9,7 @@
     { "source": "/(.*)", "destination": "/spa.html" }
   ],
   "headers": [
+    { "source": "/digital-footprint(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }, { "key": "Referrer-Policy", "value": "no-referrer" }, { "key": "Cache-Control", "value": "private, no-store" }] },
     { "source": "/stats", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
   ]
 }

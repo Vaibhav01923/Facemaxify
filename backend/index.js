@@ -14,6 +14,8 @@ import recommendationsHandler from '../api/generate-recommendations.js';
 import colorAnalysisHandler from '../api/generate-color-analysis.js';
 import hairstyleAnalysisHandler from '../api/generate-hairstyle-analysis.js';
 import geoHandler from '../api/geo.js';
+import footprintHandler from '../api/digital-footprint.js';
+import footprintCheckout from '../api/footprint-checkout.js';
 
 // Load env vars from parent directory (.env or .env.local)
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -46,6 +48,8 @@ app.post('/api/generate-recommendations', (req, res) => recommendationsHandler(r
 app.post('/api/generate-color-analysis', (req, res) => colorAnalysisHandler(req, res));
 app.post('/api/generate-hairstyle-analysis', (req, res) => hairstyleAnalysisHandler(req, res));
 app.get('/api/geo', (req, res) => geoHandler(req, res));
+app.post('/api/digital-footprint', (req, res) => footprintHandler(req, res));
+app.post('/api/footprint-checkout', (req, res) => footprintCheckout(req, res));
 
 app.listen(port, () => {
   console.log(`Backend server listening on port ${port}`);

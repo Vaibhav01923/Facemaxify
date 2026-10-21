@@ -15,7 +15,7 @@ import colorAnalysisHandler from '../api/generate-color-analysis.js';
 import hairstyleAnalysisHandler from '../api/generate-hairstyle-analysis.js';
 import geoHandler from '../api/geo.js';
 import footprintHandler from '../api/digital-footprint.js';
-import footprintCheckout from '../api/footprint-checkout.js';
+import footprintCheckout from '../api/_lib/footprint-checkout-handler.js';
 
 // Load env vars from parent directory (.env or .env.local)
 dotenv.config({ path: path.resolve(__dirname, '../.env') });

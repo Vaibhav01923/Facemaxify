@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createFootprintCheckout, FOOTPRINT_PRODUCT } from '../api/_lib/footprint-checkout.js';
-import handler from '../api/footprint-checkout.js';
+import handler from '../api/_lib/footprint-checkout-handler.js';
 function mock(overrides = {}) {
   let payload;
   return { get payload() { return payload; },

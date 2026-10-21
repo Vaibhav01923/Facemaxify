@@ -25,3 +25,5 @@ Checkout integration is separate from fulfilment. Search membership authenticati
 ## Checkout is currently disabled
 
 The plans button, report CTA and pricing dialog are hidden (`CHECKOUT_ENABLED` in experience.tsx) and POST /api/footprint-checkout returns 503 unless `FOOTPRINT_CHECKOUT_ENABLED=true`. Re-enable both only after fulfilment is built.
+
+Note: the checkout handler lives in api/_lib/footprint-checkout-handler.js (not api/) because Vercel Hobby allows 12 functions. Re-expose it as api/footprint-checkout.js when checkout is re-enabled and there is room.

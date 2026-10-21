@@ -1,6 +1,6 @@
 import DodoPayments from 'dodopayments';
 import { createHash } from 'node:crypto';
-import { createFootprintCheckout } from './_lib/footprint-checkout.js';
+import { createFootprintCheckout } from './footprint-checkout.js';
 
 const requests = new Map();
 export default async function handler(req, res) {

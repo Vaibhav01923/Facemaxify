@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createFootprintCheckout, FOOTPRINT_PRODUCT } from '../api/_lib/footprint-checkout.js';
-import handler from '../api/_lib/footprint-checkout-handler.js';
+import handler from '../api/footprint-checkout.js';
 function mock(overrides = {}) {
   let payload;
   return { get payload() { return payload; },
@@ -31,7 +31,7 @@ test('endpoint rejects bad input and handles a missing key without leaking crede
   const previous = process.env.DODO_PAYMENTS_API_KEY; delete process.env.DODO_PAYMENTS_API_KEY;
   const res = { code:200, setHeader(){}, status(code){this.code=code;return this;}, json(body){this.body=body;return this;} };
   try {
-    await handler({method:'GET'},res); assert.equal(res.code,405);
+    await handler({method:'DELETE'},res); assert.equal(res.code,405);
     await handler({method:'POST',body:{offer:'fake'}},res); assert.equal(res.code,400);
     await handler({method:'POST',body:{offer:'exit'},headers:{}},res); assert.equal(res.code,503);
   } finally { if(previous !== undefined) process.env.DODO_PAYMENTS_API_KEY=previous; }

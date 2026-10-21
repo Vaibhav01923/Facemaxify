@@ -2,7 +2,7 @@
 
 Direct URL: `/digital-footprint`. It is an independent Vite entry, without Clerk, third-party pixels, navigation links or a sitemap entry. It has `noindex` and `no-referrer` metadata and response headers.
 
-Set **BRAVE_SEARCH_API_KEY** in Vercel and `.env.local` to enable the search endpoint. Never prefix this secret with VITE_. Each submission makes one Brave Web Search API request, focused on Indian results. Without a key the page explicitly offers manual Google searches instead of pretending it found profiles.
+The search endpoint uses the server-only **ANTHROPIC_API_KEY** and Claude web search. Never prefix this secret with VITE_. Each submission makes no more than two searches, restricted to the supported public profile platforms. Without a key the page explicitly offers manual Google searches instead of pretending it found profiles.
 
 The visitor must enter a full name, an HTTPS profile URL from a supported platform, and confirm self-check consent. Ownership is self-attested, not independently verified. Names can include Indian scripts. The API does not visit the profile URL, retain reports, or return result snippets. Supported profile links are classified as possible matches only. The client can dismiss unrelated matches and clear its report.
 
@@ -16,14 +16,6 @@ Optional Meta integration: `FootprintSearchStarted` and `FootprintReportViewed` 
 
 The standalone page includes a CSS-animated platform orbit, a real indeterminate request state, and a native modal pricing/exit flow. No percentage, fake finding, private/dating account or photo analysis is simulated. Reduced-motion preferences disable decorative motion. Native dialog provides focus containment; close/Escape on the pricing panel asks the exit question, while close/Escape on that question dismisses it. Skip and backdrop dismiss immediately.
 
-Pricing is ₹99/day as confirmed by the owner and live checkout. SEARCH50 reduces this to ₹49.50/day on every renewal. POST /api/footprint-checkout uses the existing server-only DODO_PAYMENTS_API_KEY and DODO_PAYMENTS_MODE. The fixed product is pdt_0NqF4XmJ4WdvmWyEQJSaY. Client-supplied products, prices and coupons are ignored. Both offers verify the product billing interval and price; exit checkout additionally verifies SEARCH50 is 50%, valid for this product and indefinite. The installed SDK uses the supported discount_code field. A static payment-link discount_code query was tested and ignored by Dodo, so it is not used.
+Pricing is ₹99/day. SEARCH50 reduces this to ₹49.50/day on every renewal. POST /api/footprint-checkout uses the existing server-only DODO_PAYMENTS_API_KEY and DODO_PAYMENTS_MODE. The fixed product is pdt_0NqF4XmJ4WdvmWyEQJSaY. Client-supplied products, prices and coupons are ignored. Both offers verify the product price and daily cadence; the exit offer additionally verifies SEARCH50 is 50%, applies to this product, and is indefinite. The installed SDK uses the supported discount_code field. A static payment-link discount_code query was tested and ignored by Dodo, so it is not used.
 
-The local environment currently has no Dodo API key. Set it privately in .env.local and in Vercel, never in VITE_ variables or chat. Old VITE_FOOTPRINT_* checkout settings are no longer used. No API key or searched identity is sent from the browser to checkout. Anonymous per-instance rate limits apply; use Vercel firewall protection for deployment-wide limits.
-
-Checkout integration is separate from fulfilment. Search membership authentication, payment-verified entitlement storage, cancellation/revocation handling and a post-payment report delivery flow still need implementing before selling. The existing facial-analysis webhook now explicitly excludes this product so a Search Tool payment does not grant the wrong app access. A return URL never unlocks a report. No payment was completed during verification.
-
-## Checkout is currently disabled
-
-The plans button, report CTA and pricing dialog are hidden (`CHECKOUT_ENABLED` in experience.tsx) and POST /api/footprint-checkout returns 503 unless `FOOTPRINT_CHECKOUT_ENABLED=true`. Re-enable both only after fulfilment is built.
-
-Note: the checkout handler lives in api/_lib/footprint-checkout-handler.js (not api/) because Vercel Hobby allows 12 functions. Re-expose it as api/footprint-checkout.js when checkout is re-enabled and there is room.
+The server writes a signed, HttpOnly, Secure, SameSite cookie when it creates the Dodo checkout session. After Dodo returns to the page, each search verifies the paid checkout session and the live subscription status from Dodo. The correct product with an active subscription, or an unexpired paid cancelled period, grants access. Redirect query parameters alone never unlock anything. The Dodo billing portal lets the buyer manage or cancel their subscription. The existing facial-analysis webhook excludes this product so it cannot grant the unrelated app plan. No database migration is needed for report access.

@@ -1,7 +1,7 @@
 export const FOOTPRINT_PRODUCT = 'pdt_0NqF4XmJ4WdvmWyEQJSaY';
 export const FOOTPRINT_DISCOUNT = 'SEARCH50';
 
-export async function createFootprintCheckout(client, offer) {
+export async function createFootprintCheckout(client, offer, onSession) {
   if (!['standard', 'exit'].includes(offer)) throw new Error('Choose a valid report offer.');
   const product = await client.products.retrieve(FOOTPRINT_PRODUCT);
   const p = product.price;
@@ -31,5 +31,6 @@ export async function createFootprintCheckout(client, offer) {
   if (url.protocol !== 'https:' || !['checkout.dodopayments.com', 'test.checkout.dodopayments.com'].includes(url.hostname)) {
     throw new Error('Checkout returned an invalid destination.');
   }
+  if (onSession) onSession(session.session_id);
   return url.href;
 }

@@ -42,6 +42,17 @@ export default async function handler(req, res) {
 
   console.log(`Received webhook: ${event.type} (${mode})`);
 
+  // Footprint access is verified against Dodo on each search. Never grant the main app plan.
+  const data = event.data || {};
+  if (data.metadata?.source === 'digital-footprint' || data.product_id === 'pdt_0NqF4XmJ4WdvmWyEQJSaY' ||
+      data.product_cart?.some(item => item.product_id === 'pdt_0NqF4XmJ4WdvmWyEQJSaY')) return res.json({ received: true });
+  if (event.type === 'payment.succeeded' && data.subscription_id) {
+    try {
+      const subscription = await client.subscriptions.retrieve(data.subscription_id);
+      if (subscription.product_id === 'pdt_0NqF4XmJ4WdvmWyEQJSaY') return res.json({ received: true });
+    } catch { return res.status(500).send('Subscription verification unavailable'); }
+  }
+
   try {
     const outcome = await processDodoEvent({
       db: supabase,

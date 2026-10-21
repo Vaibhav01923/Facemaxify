@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, Instagram, Linkedin, Github, Youtube, X, LockKeyhole, ArrowRight, Wallet, Undo2, Eye, Check, Sparkles } from 'lucide-react';
 
-// Paid plans stay hidden until post-payment fulfilment (entitlements, report delivery) exists.
-export const CHECKOUT_ENABLED = false;
-
 const platforms = [
   { name: 'Instagram', Icon: Instagram }, { name: 'LinkedIn', Icon: Linkedin },
   { name: 'YouTube', Icon: Youtube }, { name: 'X', Icon: X }, { name: 'GitHub', Icon: Github },
@@ -35,7 +32,7 @@ export function OfferDialog({ open, onClose, name }: { open: boolean; onClose: (
       const response = await fetch('/api/footprint-checkout', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ offer: discount ? 'exit' : 'standard' }),
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(50000),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Checkout is temporarily unavailable.');
@@ -82,7 +79,7 @@ export function OfferDialog({ open, onClose, name }: { open: boolean; onClose: (
         <button className="fp-button" onClick={startCheckout} disabled={checkingOut}>{checkingOut ? 'Opening secure checkout…' : `Continue for ₹${discount ? '49.50' : '99'}/day`} <ArrowRight size={18}/></button>
         {checkoutError && <p className="fp-error" role="alert">{checkoutError}</p>}
         <p className="fp-checkout-note">Secure checkout by Dodo Payments{discount ? ' · SEARCH50 applied automatically' : ''}</p>
-        <p className="fp-billing">Renews at ₹{discount ? '49.50' : '99'}/day until cancelled. Possible matches are unverified; private accounts aren’t included.</p>
+        <p className="fp-billing">Renews at ₹{discount ? '49.50' : '99'}/day until cancelled. Access stays in this browser. After payment, return here and run your search. Matches are unverified and not guaranteed; private accounts aren’t included.</p>
       </>}
     </div>
   </dialog>;

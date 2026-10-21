@@ -36,17 +36,14 @@ test('API errors and missing credentials do not fabricate results', async () => 
     assert.equal(res.code,503); assert.equal(res.headers['Cache-Control'],'private, no-store'); assert.equal(res.body.code,'SEARCH_UNAVAILABLE'); assert.equal(res.body.matches,undefined);
   } finally { if (key) process.env.BRAVE_SEARCH_API_KEY=key; }
 });
-test('API searches Brave and returns possible profiles without scraping submitted URL', async () => {
-  const original = globalThis.fetch; const key = process.env.BRAVE_SEARCH_API_KEY;
-  process.env.BRAVE_SEARCH_API_KEY='unit-test-key';
+test('unpaid requests cannot run provider search', async () => {
+  const original = globalThis.fetch; const key = process.env.ANTHROPIC_API_KEY;
+  process.env.ANTHROPIC_API_KEY='unit-test-key';
   globalThis.fetch = async (url, options) => {
-    assert.equal(url.hostname,'api.search.brave.com');
-    assert.equal(url.searchParams.get('country'),'IN');
-    assert.equal(options.headers['X-Subscription-Token'],'unit-test-key');
-    return { ok:true, json:async()=>({ web:{ results:[{url:'https://github.com/aanya'}] } }) };
+    assert.fail('An unpaid request must not call Anthropic.');
   };
   try {
     const res=response(); await handler({method:'POST',headers:{},body:input},res);
-    assert.equal(res.code,200); assert.equal(res.body.matches[0].status,'possible');
-  } finally { globalThis.fetch=original; if(key) process.env.BRAVE_SEARCH_API_KEY=key; else delete process.env.BRAVE_SEARCH_API_KEY; }
+    assert.equal(res.code,402); assert.equal(res.body.code,'MEMBERSHIP_REQUIRED');
+  } finally { globalThis.fetch=original; if(key) process.env.ANTHROPIC_API_KEY=key; else delete process.env.ANTHROPIC_API_KEY; }
 });

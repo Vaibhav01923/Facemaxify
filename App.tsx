@@ -1,14 +1,9 @@
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { SignedIn, SignedOut, UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { LandingPage } from "./components/LandingPage";
-import { LandmarkEditor } from "./components/LandmarkEditor";
 import { Navbar } from "./components/Navbar";
 import { FinalResult, FrontLandmarks, Point } from "./types";
-import {
-  detectLandmarksInstant,
-  initializeMediaPipe,
-} from "./services/mediaPipeService";
 import { standardizeImage } from "./utils/imageProcessing";
 import { supabase } from "./services/supabase";
 import { trackPageView } from "./services/funnel";
@@ -16,10 +11,6 @@ import { initAttribution } from "./services/attribution";
 import { trackSignedIn } from "./services/trafficSource";
 import { resolveAccess, type SubscriptionInfo } from "./services/subscription";
 
-import { DashboardHome } from "./components/DashboardHome";
-import { DashboardLayout } from "./components/dashboard/DashboardLayout";
-import { SectionPage } from "./components/dashboard/SectionPage";
-import { ScanFlow } from "./components/dashboard/ScanFlow";
 import {
   SEO,
   FacialAnalysisSEO,
@@ -52,10 +43,23 @@ import { SeoLandingPageRoute } from "./pages/SeoLandingPageRoute";
 import { BlogListingPage } from "./pages/BlogListingPage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { MethodologyPage } from "./pages/MethodologyPage";
-import { StatsPage } from "./pages/StatsPage";
 import { LocalizedHubPage } from "./components/i18n/LocalizedHubPage";
 import { LocalizedToolPage } from "./components/i18n/LocalizedToolPage";
 import { hubPath, LOCALIZED_HUBS, LOCALIZED_PAGES, pagePath } from "./i18n/registry";
+
+// Auth-gated and admin routes are not prerendered, so they load on demand instead of
+// weighing down the landing page bundle (recharts, MediaPipe, the dashboard shell).
+const DashboardHome = React.lazy(() => import("./components/DashboardHome").then((m) => ({ default: m.DashboardHome })));
+const DashboardLayout = React.lazy(() => import("./components/dashboard/DashboardLayout").then((m) => ({ default: m.DashboardLayout })));
+const SectionPage = React.lazy(() => import("./components/dashboard/SectionPage").then((m) => ({ default: m.SectionPage })));
+const ScanFlow = React.lazy(() => import("./components/dashboard/ScanFlow").then((m) => ({ default: m.ScanFlow })));
+const StatsPage = React.lazy(() => import("./pages/StatsPage").then((m) => ({ default: m.StatsPage })));
+
+const RouteSpinner = () => (
+  <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
   constructor(props: any) {
@@ -200,6 +204,7 @@ const App: React.FC = () => {
   }
 
   return (
+    <Suspense fallback={<RouteSpinner />}>
     <Routes>
       <Route
         path="/"
@@ -289,6 +294,7 @@ const App: React.FC = () => {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   );
 };
 

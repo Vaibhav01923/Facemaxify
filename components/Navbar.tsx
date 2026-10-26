@@ -15,13 +15,15 @@ export const Navbar: React.FC = () => {
   }, [menuOpen]);
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800 shadow-2xl shadow-black/20">
+    <nav className="sticky top-0 z-50 md:backdrop-blur-xl bg-slate-950/95 md:bg-slate-950/80 border-b border-slate-800 shadow-2xl shadow-black/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <a href="/" className="flex items-center gap-3">
             <img
               src="/favicon.png"
               alt="Facemaxify Logo"
+              width={32}
+              height={32}
               className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20"
             />
             <span className="text-lg font-bold tracking-tight text-white">

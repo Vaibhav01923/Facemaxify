@@ -32,7 +32,7 @@ export const FullReportSection: React.FC<{ locale: Locale }> = ({ locale }) => {
 
           <div className="space-y-5">
             <img
-              src="/pagepromo.jpg"
+              src="/pagepromo.webp"
               alt={text.imageAlt}
               width={1320}
               height={963}

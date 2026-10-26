@@ -15,8 +15,16 @@ function showFatalError(msg: string) {
   document.body.innerHTML = `<div style="color:white;padding:2rem;font-family:monospace;white-space:pre-wrap;font-size:13px"><span style="color:#f87171">FATAL ERROR (share with support):</span>\n\n${msg}</div>`;
 }
 
-window.addEventListener("error", (e) => showFatalError(e.message + "\n" + (e.error?.stack || "")));
-window.addEventListener("unhandledrejection", (e) => showFatalError(String(e.reason?.message || e.reason) + "\n" + (e.reason?.stack || "")));
+// Only our own code may replace the page with the crash screen. Errors from third-party
+// scripts, extensions and in-app browsers (empty or foreign filename) are not fatal.
+const isOwnError = (source?: string) => !!source && source.startsWith(window.location.origin);
+
+window.addEventListener("error", (e) => {
+  if (isOwnError(e.filename)) showFatalError(e.message + "\n" + (e.error?.stack || ""));
+});
+window.addEventListener("unhandledrejection", (e) => {
+  if (isOwnError(String(e.reason?.stack || ""))) showFatalError(String(e.reason?.message || e.reason) + "\n" + (e.reason?.stack || ""));
+});
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 

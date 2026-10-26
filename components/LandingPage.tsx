@@ -16,6 +16,8 @@ import { supabase } from "../services/supabase";
 import { FAQ } from "./FAQ";
 import { FIRST_PRICE } from "../i18n/offer";
 
+const PROOF_SIZES = [[1200, 380], [1200, 705], [1200, 526]];
+
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -86,8 +88,8 @@ export const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-[#050510] text-white font-sans selection:bg-indigo-500/30 overflow-hidden relative">
       {/* Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/10 rounded-full blur-[150px] animate-pulse-slow"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 rounded-full blur-[150px] animate-pulse-slow delay-1000"></div>
+        <div className="hidden md:block absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/10 rounded-full blur-[150px] animate-pulse-slow"></div>
+        <div className="hidden md:block absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 rounded-full blur-[150px] animate-pulse-slow delay-1000"></div>
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
       </div>
 
@@ -100,7 +102,7 @@ export const LandingPage: React.FC = () => {
       >
         {/* Top Tools Strip */}
         <motion.div variants={item} className="w-full max-w-4xl mx-auto mb-16">
-          <div className="bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:border-indigo-500/30 transition-colors">
+          <div className="bg-slate-900/40 md:backdrop-blur-md border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:border-indigo-500/30 transition-colors">
             <div className="flex items-center gap-3">
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -172,7 +174,7 @@ export const LandingPage: React.FC = () => {
               onClick={() => {
                 window.location.href = "/dashboard/facial-analysis";
               }}
-              className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
+              className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-semibold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 md:backdrop-blur-md"
             >
               <span className="relative z-10">Free Facial & Style Analysis</span>
               <Scan className="w-4 h-4" />
@@ -190,7 +192,7 @@ export const LandingPage: React.FC = () => {
                   .getElementById("value-prop")
                   ?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="group relative w-full sm:w-auto px-8 py-4 bg-slate-800/50 text-white border border-slate-700 rounded-full font-semibold text-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 backdrop-blur-md hover:border-indigo-500/50"
+              className="group relative w-full sm:w-auto px-8 py-4 bg-slate-800/50 text-white border border-slate-700 rounded-full font-semibold text-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 md:backdrop-blur-md hover:border-indigo-500/50"
             >
               <span className="relative z-10">Why Us?</span>
               <TrendingUp className="w-4 h-4 text-indigo-400" />
@@ -237,8 +239,8 @@ export const LandingPage: React.FC = () => {
         className="relative z-10 py-24 px-6 min-h-[90vh] flex flex-col items-center justify-center overflow-hidden"
       >
         {/* Background Gradients */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-950/10 blur-[120px] rounded-full pointer-events-none"></div>
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/5 blur-[100px] rounded-full pointer-events-none"></div>
+        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-950/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="hidden md:block absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/5 blur-[100px] rounded-full pointer-events-none"></div>
 
         <div className="max-w-6xl mx-auto w-full relative z-10">
           <motion.div
@@ -270,7 +272,7 @@ export const LandingPage: React.FC = () => {
             {/* Left Card: No BS */}
             <motion.div
               whileHover={{ y: -5 }}
-              className="md:col-span-5 bg-gradient-to-br from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
+              className="md:col-span-5 bg-gradient-to-br from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl md:backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
@@ -294,7 +296,7 @@ export const LandingPage: React.FC = () => {
             {/* Right Card: No AI Slop */}
             <motion.div
               whileHover={{ y: -5 }}
-              className="md:col-span-7 bg-gradient-to-bl from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
+              className="md:col-span-7 bg-gradient-to-bl from-slate-900/80 to-slate-900/40 border border-white/5 p-8 rounded-3xl md:backdrop-blur-xl flex flex-col justify-between group overflow-hidden relative"
             >
               <div className="absolute inset-0 bg-gradient-to-bl from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
@@ -327,7 +329,7 @@ export const LandingPage: React.FC = () => {
                 {/* Glowing Border Animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-20 animate-gradient-xy"></div>
 
-                <div className="bg-slate-950/90 backdrop-blur-xl rounded-[20px] p-8 sm:p-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/5">
+                <div className="bg-slate-950/90 md:backdrop-blur-xl rounded-[20px] p-8 sm:p-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/5">
                   {/* Left Side: Text */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-4">
@@ -418,8 +420,12 @@ export const LandingPage: React.FC = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-0 group-hover:opacity-60 transition-opacity z-10"></div>
                 <img
-                  src={`/proof-${num}.png`}
+                  src={`/proof-${num}.webp`}
                   alt={`Comparison Proof ${num}`}
+                  width={PROOF_SIZES[num - 1][0]}
+                  height={PROOF_SIZES[num - 1][1]}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
                 />
               </motion.div>

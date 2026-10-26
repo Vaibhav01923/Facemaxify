@@ -238,7 +238,7 @@ export const SimpleSeoAnalyzer: React.FC<SimpleSeoAnalyzerProps> = ({
               className="group block overflow-hidden rounded-[24px] border border-white/8 bg-black/30"
             >
               <img
-                src="/pagepromo.jpg"
+                src="/pagepromo.webp"
                 alt="Facemaxify detailed facial analysis preview"
                 className="mx-auto max-h-[340px] w-full object-contain transition duration-300 group-hover:scale-[1.01]"
               />

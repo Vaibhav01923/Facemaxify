@@ -14,6 +14,8 @@ import recommendationsHandler from '../api/generate-recommendations.js';
 import colorAnalysisHandler from '../api/generate-color-analysis.js';
 import hairstyleAnalysisHandler from '../api/generate-hairstyle-analysis.js';
 import geoHandler from '../api/geo.js';
+import videoScriptHandler from '../api/video-script.js';
+import videoVoiceHandler from '../api/video-voice.js';
 import footprintHandler from '../api/digital-footprint.js';
 import footprintCheckout from '../api/footprint-checkout.js';
 
@@ -47,6 +49,8 @@ app.post('/api/generate-skincare', (req, res) => skincareHandler(req, res));
 app.post('/api/generate-recommendations', (req, res) => recommendationsHandler(req, res));
 app.post('/api/generate-color-analysis', (req, res) => colorAnalysisHandler(req, res));
 app.post('/api/generate-hairstyle-analysis', (req, res) => hairstyleAnalysisHandler(req, res));
+app.post('/api/video-script', (req, res) => videoScriptHandler(req, res));
+app.post('/api/video-voice', (req, res) => videoVoiceHandler(req, res));
 app.get('/api/geo', (req, res) => geoHandler(req, res));
 app.post('/api/digital-footprint', (req, res) => footprintHandler(req, res));
 app.all('/api/footprint-checkout', (req, res) => footprintCheckout(req, res));

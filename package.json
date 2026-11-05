@@ -10,6 +10,7 @@
     "dev": "concurrently --kill-others \"vite\" \"node backend/index.js\"",
     "dev:frontend": "vite",
     "dev:backend": "node backend/index.js",
+    "dev:video": "concurrently --kill-others \"vite\" \"node scripts/dev-video-api.mjs\"",
     "build": "vite build && node scripts/prerender.mjs",
     "preview": "vite preview"
   },
@@ -20,6 +21,8 @@
     "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/face_mesh": "^0.4.1633559619",
     "@mediapipe/tasks-vision": "0.10.14",
+    "@remotion/media": "4.0.535",
+    "@remotion/web-renderer": "4.0.535",
     "@supabase/supabase-js": "^2.90.1",
     "@vercel/analytics": "^1.6.1",
     "clsx": "^2.1.1",
@@ -33,6 +36,7 @@
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.12.0",
     "recharts": "^3.6.0",
+    "remotion": "4.0.535",
     "svix": "^1.84.1",
     "tailwind-merge": "^3.4.0"
   },

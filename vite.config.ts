@@ -19,18 +19,20 @@ export default defineConfig(() => {
         name: 'digital-footprint-route',
         configureServer(server) {
           server.middlewares.use((req, _res, next) => {
+            if (/^\/video-maker\/?(?:\?|$)/.test(req.url || '')) req.url = '/video-maker.html';
             if (/^\/digital-footprint\/?(?:\?|$)/.test(req.url || '')) req.url = req.url!.replace(/^\/digital-footprint\/?/, '/digital-footprint.html');
             next();
           });
         },
         configurePreviewServer(server) {
           server.middlewares.use((req, _res, next) => {
+            if (/^\/video-maker\/?(?:\?|$)/.test(req.url || '')) req.url = '/video-maker.html';
             if (/^\/digital-footprint\/?(?:\?|$)/.test(req.url || '')) req.url = req.url!.replace(/^\/digital-footprint\/?/, '/digital-footprint.html');
             next();
           });
         },
       }],
-      build: { rollupOptions: { input: { main: path.resolve(__dirname, 'index.html'), footprint: path.resolve(__dirname, 'digital-footprint.html') } } },
+      build: { rollupOptions: { input: { main: path.resolve(__dirname, 'index.html'), footprint: path.resolve(__dirname, 'digital-footprint.html'), videoMaker: path.resolve(__dirname, 'video-maker.html') } } },
       // AI keys (ANTHROPIC_API_KEY, OPENAI_API_KEY) are server-only: never inline them via `define`.
       resolve: {
         alias: {

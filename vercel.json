@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/digital-footprint", "destination": "/digital-footprint.html" },
     { "source": "/digital-footprint/", "destination": "/digital-footprint.html" },
+    { "source": "/video-maker", "destination": "/video-maker.html" },
+    { "source": "/video-maker/", "destination": "/video-maker.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/sitemap-blog.xml", "destination": "/api/blog?page=sitemap" },
     { "source": "/blog", "destination": "/api/blog?page=index" },

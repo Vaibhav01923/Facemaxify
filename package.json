@@ -31,6 +31,7 @@
     "lucide-react": "^0.562.0",
     "markdown-to-jsx": "^9.7.4",
     "mini-svg-data-uri": "^1.4.4",
+    "msedge-tts": "2.1.1",
     "openai": "^6.45.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

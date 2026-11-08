@@ -1,7 +1,5 @@
-import { writeVideoScript } from "./_lib/videoScript.js";
-import { limited } from "./_lib/videoLimit.js";
-
-export const config = { maxDuration: 30 };
+import { writeVideoScript } from "./videoScript.js";
+import { limited } from "./videoLimit.js";
 
 const PRONOUNS = ["he", "she", "they"];
 const clean = (s) => String(s ?? "").replace(/[^\p{L}\p{N} '.\-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 40);

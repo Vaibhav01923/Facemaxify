@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { blogPostUrl } from "../_lib/blogShared.js";
+import { blogPostUrl } from "./blogShared.js";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

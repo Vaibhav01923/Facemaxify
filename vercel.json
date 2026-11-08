@@ -1,9 +1,13 @@
 {
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     { "source": "/digital-footprint", "destination": "/digital-footprint.html" },
     { "source": "/digital-footprint/", "destination": "/digital-footprint.html" },
     { "source": "/video-maker", "destination": "/video-maker.html" },
     { "source": "/video-maker/", "destination": "/video-maker.html" },
+    { "source": "/api/webhooks/rankongeo", "destination": "/api/misc?op=rankongeo" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/sitemap-blog.xml", "destination": "/api/blog?page=sitemap" },
     { "source": "/blog", "destination": "/api/blog?page=index" },

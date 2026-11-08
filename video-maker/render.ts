@@ -42,13 +42,13 @@ async function post(url: string, body: unknown): Promise<Response> {
 
 export async function writeScript(args: { name: string; pronouns: Pronouns; metrics: MetricData[]; overall100: number; percentileText: string }) {
   const withWhat = args.metrics.map((m) => ({ ...m, what: planByKey(m.key)?.what ?? "" }));
-  const res = await post("/api/video-script", { ...args, metrics: withWhat });
+  const res = await post("/api/misc?op=script", { ...args, metrics: withWhat });
   return (await res.json()) as { name: string; script: Script };
 }
 
 /** Records one line and measures it. */
 export async function recordLine(text: string, voice: string, pace: string): Promise<Clip> {
-  const res = await post("/api/video-voice", { text, voice, pace });
+  const res = await post("/api/misc?op=voice", { text, voice, pace });
   const bytes = await res.arrayBuffer();
   const ctx = new AudioContext();
   try {

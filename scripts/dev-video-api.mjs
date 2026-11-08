@@ -9,8 +9,8 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import script from "../api/video-script.js";
-import voice from "../api/video-voice.js";
+import script from "../api/_lib/videoScriptRoute.js";
+import voice from "../api/_lib/videoVoiceRoute.js";
 
 dotenv.config({ path: new URL("../.env.local", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1") });
 const run = promisify(execFile);
@@ -33,6 +33,5 @@ async function edgeVoice(req, res) {
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
-app.post("/api/video-script", (req, res) => script(req, res));
-app.post("/api/video-voice", (req, res) => (process.env.OPENAI_API_KEY ? voice(req, res) : edgeVoice(req, res)));
+app.post("/api/misc", (req, res) => (req.query.op === "script" ? script(req, res) : process.env.OPENAI_API_KEY ? voice(req, res) : edgeVoice(req, res)));
 app.listen(4000, () => console.log("video-maker api on :4000"));

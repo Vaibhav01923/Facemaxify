@@ -1,7 +1,5 @@
 import OpenAI from "openai";
-import { limited } from "./_lib/videoLimit.js";
-
-export const config = { maxDuration: 30 };
+import { limited } from "./videoLimit.js";
 
 // Narrators offered on the page (OpenAI text-to-speech voices).
 const VOICES = ["onyx", "ash", "echo", "fable", "nova", "shimmer", "coral", "sage"];

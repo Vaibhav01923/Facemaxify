@@ -1,5 +1,5 @@
 import { writeVideoScript } from "./videoScript.js";
-import { guard, WINDOWS } from "./videoLimit.js";
+import { guard, issueVoiceToken, WINDOWS } from "./videoLimit.js";
 
 const PRONOUNS = ["he", "she", "they"];
 const clean = (s) => String(s ?? "").replace(/[^\p{L}\p{N} '.\-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 40);
@@ -12,11 +12,11 @@ export default async function handler(req, res) {
     await guard(req, res, {
       bucket: "script",
       perIp: [
-        { window: WINDOWS.MIN, max: 3 },
-        { window: WINDOWS.HOUR, max: 6 },
-        { window: WINDOWS.DAY, max: 15 },
+        { window: WINDOWS.MIN, max: 2 },
+        { window: WINDOWS.HOUR, max: 3 },
+        { window: WINDOWS.DAY, max: 8 },
       ],
-      global: { window: WINDOWS.DAY, max: 1500 },
+      global: { window: WINDOWS.DAY, max: 1000 },
       message: "You have made a few videos already. Please try again later.",
     })
   )
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       overall100,
       percentileText: text(b.percentileText, 80),
     });
-    res.status(200).json({ name, script });
+    res.status(200).json({ name, script, token: issueVoiceToken() });
   } catch (err) {
     console.error("[video-script]", err);
     res.status(500).json({ error: "Could not write the voice-over. Please try again." });

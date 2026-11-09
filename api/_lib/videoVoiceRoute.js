@@ -1,5 +1,5 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
-import { guard, WINDOWS } from "./videoLimit.js";
+import { guard, spendVoiceToken, WINDOWS } from "./videoLimit.js";
 
 // Narrators offered on the page. The ids are the page's own; each maps to a free Microsoft Edge neural voice.
 const EDGE_VOICES = {
@@ -60,15 +60,18 @@ export default async function handler(req, res) {
     await guard(req, res, {
       bucket: "voice",
       perIp: [
-        { window: 10, max: 20 },
-        { window: WINDOWS.HOUR, max: 45 },
-        { window: WINDOWS.DAY, max: 150 },
+        { window: 10, max: 12 },
+        { window: WINDOWS.HOUR, max: 40 },
+        { window: WINDOWS.DAY, max: 100 },
       ],
-      global: { window: WINDOWS.DAY, max: 15000 },
+      global: { window: WINDOWS.DAY, max: 10000 },
       message: "Too many voice lines. Please try again later.",
     })
   )
     return;
+  if (!(await spendVoiceToken(req.body?.token))) {
+    return res.status(403).json({ error: "This video session has expired. Please start the video again." });
+  }
 
   const text = String(req.body?.text ?? "").trim().slice(0, 260);
   if (!text) return res.status(400).json({ error: "No text" });

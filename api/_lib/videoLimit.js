@@ -9,6 +9,7 @@
 // If that function is not installed or Supabase is down, the same limits are enforced in instance memory instead
 // (weaker, because instances do not share memory, but never open).
 import { createClient } from "@supabase/supabase-js";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -94,3 +95,38 @@ export async function guard(req, res, { bucket, perIp, global, message }) {
 }
 
 export const WINDOWS = { MIN, HOUR, DAY };
+
+// ---- voice tokens ----
+// The voice route only speaks for a video that passed the (strict) script check. The script route hands out a signed,
+// short-lived token worth a fixed number of voice lines; the voice route refuses anything without a valid one.
+const TOKEN_LINES = 24;
+const TOKEN_TTL_MS = 30 * 60_000;
+const secret = () => process.env.VIDEO_TOKEN_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "local-dev-only";
+const sign = (body) => createHmac("sha256", secret()).update(body).digest("base64url");
+
+export function issueVoiceToken() {
+  const body = Buffer.from(JSON.stringify({ id: randomBytes(9).toString("base64url"), exp: Date.now() + TOKEN_TTL_MS })).toString("base64url");
+  return `${body}.${sign(body)}`;
+}
+
+/** Returns the token id when valid and not expired, otherwise null. */
+function readVoiceToken(token) {
+  const [body, sig] = String(token ?? "").split(".");
+  if (!body || !sig) return null;
+  const want = Buffer.from(sign(body));
+  const got = Buffer.from(sig);
+  if (want.length !== got.length || !timingSafeEqual(want, got)) return null;
+  try {
+    const { id, exp } = JSON.parse(Buffer.from(body, "base64url").toString());
+    return typeof id === "string" && exp > Date.now() ? id : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Spends one line of the token. false = invalid, expired or used up. */
+export async function spendVoiceToken(token) {
+  const id = readVoiceToken(token);
+  if (!id) return false;
+  return hit(`voicetoken:${id}`, TOKEN_TTL_MS / 1000, TOKEN_LINES);
+}

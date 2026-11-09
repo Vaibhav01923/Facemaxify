@@ -58,6 +58,7 @@ interface Cache {
   key: string;
   name: string;
   picks: MetricData[];
+  token: string;
   voice: Voice;
 }
 
@@ -182,7 +183,7 @@ export const App: React.FC = () => {
         const count = ratioMode === "auto" ? Math.min(analysis.metrics.length, autoShortCount()) : Math.min(ratioCount, analysis.metrics.length);
         const picks = smartSelect(analysis.metrics, count);
         setMsg("Claude is writing the voice-over...");
-        const { name: cleaned, script } = await writeScript({ name: name.trim(), pronouns, metrics: picks, overall100: analysis.overall100, percentileText: analysis.percentileText });
+        const { name: cleaned, script, token } = await writeScript({ name: name.trim(), pronouns, metrics: picks, overall100: analysis.overall100, percentileText: analysis.percentileText });
 
         // 2. record every line
         setStage("voice");
@@ -198,14 +199,14 @@ export const App: React.FC = () => {
           lines,
           4,
           async (l) => {
-            clips[l.key] = await recordLine(l.text, voice, pace);
+            clips[l.key] = await recordLine(l.text, voice, pace, token);
           },
           (done) => {
             setSub(done / lines.length);
             setMsg(`Recorded ${done} of ${lines.length} lines`);
           },
         );
-        cache.current = { key, name: cleaned, picks, voice: { script, clips } };
+        cache.current = { key, name: cleaned, picks, token, voice: { script, clips } };
       }
       const c = cache.current!;
       const musicUrl = music === "none" ? undefined : music === "custom" ? custom?.url : `/video-music/${music}.wav`;
@@ -224,7 +225,7 @@ export const App: React.FC = () => {
           const victim = picks.filter((m) => !keep.has(m.key)).sort((x, y) => (x.keep ?? 0) - (y.keep ?? 0))[0];
           if (!victim) break;
           picks = picks.filter((m) => m.key !== victim.key);
-          const scan = await recordLine(scanLine(picks.length), voice, pace);
+          const scan = await recordLine(scanLine(picks.length), voice, pace, c.token);
           v = { script: { ...v.script, scan: scanLine(picks.length) }, clips: { ...v.clips, scan } };
           props = build(picks, v);
         }

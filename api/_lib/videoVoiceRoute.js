@@ -1,5 +1,5 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
-import { limited } from "./videoLimit.js";
+import { guard, WINDOWS } from "./videoLimit.js";
 
 // Narrators offered on the page. The ids are the page's own; each maps to a free Microsoft Edge neural voice.
 const EDGE_VOICES = {
@@ -56,7 +56,19 @@ async function openAiSpeech(text, voice, pace) {
 /** One narration line as an MP3. The browser asks for each line separately so responses stay small. */
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
-  if (limited(req, "voice", 40)) return res.status(429).json({ error: "Too many requests. Please try again in an hour." });
+  if (
+    await guard(req, res, {
+      bucket: "voice",
+      perIp: [
+        { window: 10, max: 20 },
+        { window: WINDOWS.HOUR, max: 45 },
+        { window: WINDOWS.DAY, max: 150 },
+      ],
+      global: { window: WINDOWS.DAY, max: 15000 },
+      message: "Too many voice lines. Please try again later.",
+    })
+  )
+    return;
 
   const text = String(req.body?.text ?? "").trim().slice(0, 260);
   if (!text) return res.status(400).json({ error: "No text" });

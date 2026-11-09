@@ -1,5 +1,5 @@
 import { writeVideoScript } from "./videoScript.js";
-import { limited } from "./videoLimit.js";
+import { guard, WINDOWS } from "./videoLimit.js";
 
 const PRONOUNS = ["he", "she", "they"];
 const clean = (s) => String(s ?? "").replace(/[^\p{L}\p{N} '.\-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 40);
@@ -8,7 +8,19 @@ const text = (s, n) => String(s ?? "").slice(0, n);
 /** Voice-over script for the public video maker. The measurements come from the visitor's browser. */
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
-  if (limited(req, "script", 6)) return res.status(429).json({ error: "You have made a few videos already. Please try again in an hour." });
+  if (
+    await guard(req, res, {
+      bucket: "script",
+      perIp: [
+        { window: WINDOWS.MIN, max: 3 },
+        { window: WINDOWS.HOUR, max: 6 },
+        { window: WINDOWS.DAY, max: 15 },
+      ],
+      global: { window: WINDOWS.DAY, max: 1500 },
+      message: "You have made a few videos already. Please try again later.",
+    })
+  )
+    return;
 
   const b = req.body ?? {};
   const name = clean(b.name);
